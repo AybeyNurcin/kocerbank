@@ -27,5 +27,7 @@ CREATE TABLE KB_PERSONEL (
     RECORDDATE DATE DEFAULT SYSDATE
 );
 
+alter table KB_PERSONEL modify ID NUMBER(19);
+
 /* KB_PERSONEL tablosundaki SICIL alanı 'KB_' ile başlamalıdır. */
 /* KB'den sonra 4 haneli rakam gelmelidir. Örn: KB1234 */
