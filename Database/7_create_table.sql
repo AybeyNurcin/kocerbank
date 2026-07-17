@@ -28,6 +28,7 @@ CREATE TABLE KB_PERSONEL (
 );
 
 alter table KB_PERSONEL modify ID NUMBER(19);
+alter table KB_SUBE modify ID NUMBER(19);
 
 /* KB_PERSONEL tablosundaki SICIL alanı 'KB_' ile başlamalıdır. */
 /* KB'den sonra 4 haneli rakam gelmelidir. Örn: KB1234 */
