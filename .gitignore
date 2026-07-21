@@ -3,9 +3,8 @@
 **/.vs/
 
 # .NET derleme dosyaları
-bin/
 obj/
-**/bin/
+runtimes
 **/obj/
 
 # Kullanıcıya özel Visual Studio dosyaları
