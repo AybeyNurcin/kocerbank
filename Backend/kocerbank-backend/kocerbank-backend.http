@@ -1,0 +1,6 @@
+@kocerbank_backend_HostAddress = http://localhost:5107
+
+GET {{kocerbank_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

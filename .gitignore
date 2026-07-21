@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+**/.vs/
+
+# .NET derleme dosyaları
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Kullanıcıya özel Visual Studio dosyaları
+*.user
+*.suo
+
+# Hassas ayarlar
+appsettings.Development.json
+
+# VS Code
+.vscode/
