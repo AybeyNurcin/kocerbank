@@ -17,6 +17,7 @@ appsettings.Development.json
 # VS Code
 .vscode/
 
+bin
 
 Wallet
 Backend/kocerbank-backend/appsettings.json
