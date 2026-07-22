@@ -1,4 +1,4 @@
-using kocerbank_backend.Models.Enums;
+using kocerbank_backend.Enums;
 
 namespace kocerbank_backend.Models.DTOs
 {
