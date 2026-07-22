@@ -4,6 +4,7 @@ using System.Data;
 using Oracle.ManagedDataAccess.Client;
 using kocerbank_backend.Models.DTOs;
 using Microsoft.Extensions.Configuration;
+using kocerbank_backend.Enums;
 
 namespace kocerbank_backend.DataAccess
 {
@@ -36,7 +37,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
                     KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
                     KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
-                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
+                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
                     KB.Parameters.Add("P_PERSONEL_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
 
                     // OUT Parametreleri
@@ -109,8 +110,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
                     KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Adres ?? DBNull.Value;
                     KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Email ?? DBNull.Value;
-                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.DurumKodu == 0 ? DBNull.Value : aramaKriterleri.DurumKodu;
-                    
+                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.DurumKodu == AktifPasifDurumlari.None ? DBNull.Value : (byte)aramaKriterleri.DurumKodu;                    
                     KB.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
@@ -146,7 +146,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
                     KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
                     KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
-                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
+                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
                     KB.Parameters.Add("P_PERSONEL_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
 
                     conn.Open();
@@ -187,7 +187,7 @@ namespace kocerbank_backend.DataAccess
                 Adres = reader["ADRES"].ToString(),
                 Email = reader["EPOSTA"].ToString(),
                 SubeKodu = reader["SUBESUBEKODU"].ToString(),
-                DurumKodu = Convert.ToByte(reader["DURUMKODU"]),
+                DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
                 RecordUser = reader["RECORDUSER"].ToString()
                 // Eğer SQL tablosunda RecordDate varsa o da buraya eklenebilir.
             };

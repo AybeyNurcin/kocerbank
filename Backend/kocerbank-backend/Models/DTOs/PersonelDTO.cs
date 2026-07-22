@@ -1,5 +1,7 @@
-namespace kocerbank_backend.Models.DTOs;
+using kocerbank_backend.Enums;
 
+namespace kocerbank_backend.Models.DTOs
+{
 public class PersonelDTO
 {
     public long Id { get; set; }
@@ -13,7 +15,8 @@ public class PersonelDTO
     public string SubeKodu { get; set; }
     public string Email { get; set; }  
     public string TelefonNo { get; set; }
-    public byte DurumKodu { get; set; }
+    public AktifPasifDurumlari DurumKodu { get; set; }
     public string RecordUser { get; set; }  
     public DateTime RecordDate { get; set; }
+}
 }
