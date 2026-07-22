@@ -1,5 +1,5 @@
 namespace kocerbank_backend.Models.DTOs;
-public class MusteriBilgileriDTO
+public class MusteriDTO
 {
     public long Id { get; set; }
     public string Ad { get; set; } 
