@@ -36,7 +36,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
                     KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
                     KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
-                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
+                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
                     KB.Parameters.Add("P_PERSONEL_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
 
                     // OUT Parametreleri
