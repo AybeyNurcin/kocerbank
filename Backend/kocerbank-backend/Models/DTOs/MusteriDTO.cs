@@ -2,9 +2,8 @@ using kocerbank_backend.Enums;
 
 namespace kocerbank_backend.Models.DTOs
 {
-    public class MusteriDTO
+    public class MusteriDTO : BaseDTO
     {
-        public long Id { get; set; }
         public string Ad { get; set; } 
         public string Soyad { get; set; }
         public string Eposta { get; set; }
@@ -19,8 +18,6 @@ namespace kocerbank_backend.Models.DTOs
         public AktifPasifDurumlari DurumKodu { get; set; }
         public string Unvan { get; set; }
         public DateTime KayitOlusturmaTarihi { get; set; }
-        public string RecordUser { get; set; }  
-        public DateTime RecordDate { get; set; }
     }
 }
 
