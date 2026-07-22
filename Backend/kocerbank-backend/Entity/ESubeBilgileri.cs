@@ -1,20 +1,173 @@
-namespace KocerBank.Backend.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using Oracle.ManagedDataAccess.Client;
+using kocerbank_backend.Models.DTOs;
+using Microsoft.Extensions.Configuration;
 
-public class ESubeBilgileri
+namespace kocerbank_backend.DataAccess
 {
-    public long Id { get; set; }
+    public class SubeRepository
+    {
+        private readonly string _connectionString;
 
-    public string SubeAdi { get; set; } = string.Empty;
+        // Bağlantı dizesini appsettings.json'dan almak için IConfiguration kullanıyoruz
+        public SubeRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("OracleConnection");
+        }
 
-    public string SubeKodu { get; set; } = string.Empty;
+        // 1. SUBE EKLEME
+        public SubeDTO Ekle(SubeDTO dto)
+        {
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand kb = new OracleCommand("KB_SUBE_EKLE", conn))
+                {
+                    kb.CommandType = CommandType.StoredProcedure;
 
-    public string SubeTelefonNo { get; set; } = string.Empty;
+                    // IN Parametreleri
+                    kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
+                    kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
+                    kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
+                    kb.Parameters.Add("P_SUBE_DURUMKODU", OracleDbType.Byte).Value = dto.SubeDurumKodu;
+                    kb.Parameters.Add("P_SUBE_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
 
-    public string SubeAdres { get; set; } = string.Empty;
+                    // OUT Parametreleri
+                    OracleParameter sId = new OracleParameter("p_yeni_id", OracleDbType.Int64) { Direction = ParameterDirection.Output };
+                    OracleParameter sKodu = new OracleParameter("p_yeni_sube_kodu", OracleDbType.Varchar2, 50) { Direction = ParameterDirection.Output };
+                    
+                    kb.Parameters.Add(sId);
+                    kb.Parameters.Add(sKodu);
 
-    public byte SubeDurumKodu { get; set; }
+                    conn.Open();
+                    kb.ExecuteNonQuery();
 
-    public string RecordUser { get; set; } = string.Empty;
+                    // Üretilen değerleri DTO'ya geri yazıyoruz
+                    dto.Id = Convert.ToInt64(sId.Value.ToString());
+                    dto.SubeKodu = sKodu.Value.ToString();
 
-    public DateTime RecordDate { get; set; }
+                    return dto;
+                }
+            }
+        }
+
+        // 2. ID'YE GÖRE GETİR (READ)
+        public SubeDTO GetirById(long id)
+        {
+            SubeDTO sube = null;
+
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand kb = new OracleCommand("KB_SUBE_GETIR", conn))
+                {
+                    kb.CommandType = CommandType.StoredProcedure;
+
+                    kb.Parameters.Add("P_SUBE_ID", OracleDbType.Int64).Value = id;
+                    
+                    // Oracle'daki SYS_REFCURSOR'u C# tarafında okumak için RefCursor tipi eklenir
+                    kb.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    conn.Open();
+                    
+                    // Cursor verisini okumak için OracleDataReader kullanıyoruz
+                    using (OracleDataReader reader = kb.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            sube = MapReaderToDTO(reader);
+                        }
+                    }
+                }
+            }
+            return sube;
+        }
+
+        // 3. KRİTERE GÖRE LİSTELE
+        public List<SubeDTO> GetirListele(SubeDTO aramaKriterleri)
+        {
+            List<SubeDTO> liste = new List<SubeDTO>();
+
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand kb = new OracleCommand("KB_SUBE_LISTELE", conn))
+                {
+                    kb.CommandType = CommandType.StoredProcedure;
+
+                    // Arama parametrelerinde NULL olabilme ihtimaline karşı DBNull.Value kullanıyoruz
+                    kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdi ?? DBNull.Value;
+                    kb.Parameters.Add("P_SUBE_SUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
+                    kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;
+                    kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdres ?? DBNull.Value;
+                    kb.Parameters.Add("P_SUBE_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu == 0 ? DBNull.Value : aramaKriterleri.SubeDurumKodu;
+
+                    kb.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    conn.Open();
+
+                    using (OracleDataReader reader = kb.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            liste.Add(MapReaderToDTO(reader));
+                        }
+                    }
+                }
+            }
+            return liste;
+        }
+
+        // 4. GÜNCELLE
+        public void Guncelle(SubeDTO dto)
+        {
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand kb = new OracleCommand("KB_SUBE_GUNCELLE", conn))
+                {
+                    kb.CommandType = CommandType.StoredProcedure;
+
+                    kb.Parameters.Add("P_ID", OracleDbType.Int64).Value = dto.Id;
+                    kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
+                    kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
+                    kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
+                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = dto.SubeDurumKodu;
+
+                    conn.Open();
+                    kb.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // 5. SİL
+        public void Sil(long id)
+        {
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand kb = new OracleCommand("KB_SUBE_SIL", conn))
+                {
+                    kb.CommandType = CommandType.StoredProcedure;
+                    kb.Parameters.Add("P_ID", OracleDbType.Int64).Value = id;
+
+                    conn.Open();
+                    kb.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // YARDIMCI METOT: Veritabanı satırını DTO nesnesine dönüştürür (Kod tekrarını önler)
+        private SubeDTO MapReaderToDTO(OracleDataReader reader)
+        {
+            return new SubeDTO
+            {
+                Id = Convert.ToInt64(reader["ID"]),
+                SubeAdi = reader["SUBE_ADI"].ToString(),
+                SubeKodu = reader["SUBESUBEKODU"].ToString(),
+                SubeTelefonNo = reader["SUBE_TELEFON_NO"].ToString(),
+                SubeAdres = reader["SUBE_ADRES"].ToString(),
+                SubeDurumKodu = Convert.ToByte(reader["SUBE_DURUM_KODU"]),
+                RecordUser = reader["RECORDUSER"].ToString()
+                // Eğer SQL tablosunda RecordDate varsa o da buraya eklenebilir.
+            };
+        }
+    }
 }
