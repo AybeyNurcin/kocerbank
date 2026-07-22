@@ -1,5 +1,5 @@
 namespace kocerbank_backend.Models.DTOs;
-
+{
 public class SubeDTO
 {
     public long Id { get; set; }
@@ -17,4 +17,5 @@ public class SubeDTO
     public string RecordUser { get; set; } = string.Empty;
 
     public DateTime RecordDate { get; set; }
+}
 }
