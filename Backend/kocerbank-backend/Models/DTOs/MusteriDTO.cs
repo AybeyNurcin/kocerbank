@@ -1,4 +1,5 @@
 namespace kocerbank_backend.Models.DTOs;
+
 public class MusteriDTO
 {
     public long Id { get; set; }
@@ -12,8 +13,9 @@ public class MusteriDTO
     public byte Cinsiyet{ get; set; }
     public int VKN { get; set; }
     public byte MusteriTipi { get; set; }
-    public string SubeKodu { get; set; }
+    public string SubeSubeKodu { get; set; }
     public byte DurumKodu { get; set; }
+    public string Unvan { get; set; }
     public DateTime KayitOlusturmaTarihi { get; set; }
     public string RecordUser { get; set; }  
     public DateTime RecordDate { get; set; }
