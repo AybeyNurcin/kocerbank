@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
 using kocerbank_backend.Models.DTOs;
-using Microsoft.Extensions.Configuration;
 using kocerbank_backend.Enums;
 
 namespace kocerbank_backend.DataAccess
