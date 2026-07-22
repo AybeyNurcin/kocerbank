@@ -22,32 +22,32 @@ namespace kocerbank_backend.DataAccess
         {
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand cmd = new OracleCommand("KB_PERSONEL_EKLE", conn))
+                using (OracleCommand KB = new OracleCommand("KB_PERSONEL_EKLE", conn))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    KB.CommandType = CommandType.StoredProcedure;
 
                     // IN Parametreleri
-                    cmd.Parameters.Add("P_PERSONEL_ADI", OracleDbType.Varchar2).Value = dto.Ad;
-                    cmd.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = dto.Soyad;
-                    cmd.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = dto.Rol;
-                    cmd.Parameters.Add("P_PERSONEL_SIFRESI", OracleDbType.Varchar2).Value = dto.Sifre;
-                    cmd.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = dto.TCKN;
-                    cmd.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = dto.TelefonNo;
-                    cmd.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
-                    cmd.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
-                    cmd.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
-                    cmd.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
-                    cmd.Parameters.Add("P_PERSONEL_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
+                    KB.Parameters.Add("P_PERSONEL_ADI", OracleDbType.Varchar2).Value = dto.Ad;
+                    KB.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = dto.Soyad;
+                    KB.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = dto.Rol;
+                    KB.Parameters.Add("P_PERSONEL_SIFRESI", OracleDbType.Varchar2).Value = dto.Sifre;
+                    KB.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = dto.TCKN;
+                    KB.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = dto.TelefonNo;
+                    KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
+                    KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
+                    KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
+                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
+                    KB.Parameters.Add("P_PERSONEL_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
 
                     // OUT Parametreleri
                     OracleParameter pId = new OracleParameter("P_PERSONEL_ID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
                     OracleParameter pSicil = new OracleParameter("P_PERSONEL_SICIL", OracleDbType.Varchar2, 50) { Direction = ParameterDirection.Output };
                     
-                    cmd.Parameters.Add(pId);
-                    cmd.Parameters.Add(pSicil);
+                    KB.Parameters.Add(pId);
+                    KB.Parameters.Add(pSicil);
 
                     conn.Open();
-                    cmd.ExecuteNonQuery();
+                    KB.ExecuteNonQuery();
 
                     // Üretilen değerleri DTO'ya geri yazıyoruz
                     dto.Id = Convert.ToInt64(pId.Value.ToString());
@@ -65,19 +65,19 @@ namespace kocerbank_backend.DataAccess
 
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand cmd = new OracleCommand("KB_PERSONEL_READ_BY_ID", conn))
+                using (OracleCommand KB = new OracleCommand("KB_PERSONEL_READ_BY_ID", conn))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    KB.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("P_PERSONEL_ID", OracleDbType.Int64).Value = id;
+                    KB.Parameters.Add("P_PERSONEL_ID", OracleDbType.Int64).Value = id;
                     
                     // Oracle'daki SYS_REFCURSOR'u C# tarafında okumak için RefCursor tipi eklenir
-                    cmd.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    KB.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
                     
                     // Cursor verisini okumak için OracleDataReader kullanıyoruz
-                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    using (OracleDataReader reader = KB.ExecuteReader())
                     {
                         if (reader.Read())
                         {
@@ -96,26 +96,26 @@ namespace kocerbank_backend.DataAccess
 
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand cmd = new OracleCommand("KB_PERSONEL_READ_BY_LISTELE", conn))
+                using (OracleCommand KB = new OracleCommand("KB_PERSONEL_READ_BY_LISTELE", conn))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    KB.CommandType = CommandType.StoredProcedure;
 
                     // Arama parametrelerinde NULL olabilme ihtimaline karşı DBNull.Value kullanıyoruz
-                    cmd.Parameters.Add("P_PERSONEL_ADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Ad ?? DBNull.Value;
-                    cmd.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Soyad ?? DBNull.Value;
-                    cmd.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Rol ?? DBNull.Value;
-                    cmd.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = aramaKriterleri.TCKN == 0 ? DBNull.Value : aramaKriterleri.TCKN;
-                    cmd.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.TelefonNo ?? DBNull.Value;
-                    cmd.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
-                    cmd.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Adres ?? DBNull.Value;
-                    cmd.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Email ?? DBNull.Value;
-                    cmd.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.DurumKodu == 0 ? DBNull.Value : aramaKriterleri.DurumKodu;
+                    KB.Parameters.Add("P_PERSONEL_ADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Ad ?? DBNull.Value;
+                    KB.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Soyad ?? DBNull.Value;
+                    KB.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Rol ?? DBNull.Value;
+                    KB.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = aramaKriterleri.TCKN == 0 ? DBNull.Value : aramaKriterleri.TCKN;
+                    KB.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.TelefonNo ?? DBNull.Value;
+                    KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
+                    KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Adres ?? DBNull.Value;
+                    KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Email ?? DBNull.Value;
+                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.DurumKodu == 0 ? DBNull.Value : aramaKriterleri.DurumKodu;
                     
-                    cmd.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    KB.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
 
-                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    using (OracleDataReader reader = KB.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -132,25 +132,25 @@ namespace kocerbank_backend.DataAccess
         {
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand cmd = new OracleCommand("KB_PERSONEL_GUNCELLE", conn))
+                using (OracleCommand KB = new OracleCommand("KB_PERSONEL_GUNCELLE", conn))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    KB.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("P_PERSONEL_ID", OracleDbType.Int64).Value = dto.Id;
-                    cmd.Parameters.Add("P_PERSONEL_ADI", OracleDbType.Varchar2).Value = dto.Ad;
-                    cmd.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = dto.Soyad;
-                    cmd.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = dto.Rol;
-                    cmd.Parameters.Add("P_PERSONEL_SIFRESI", OracleDbType.Varchar2).Value = dto.Sifre;
-                    cmd.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = dto.TCKN;
-                    cmd.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = dto.TelefonNo;
-                    cmd.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
-                    cmd.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
-                    cmd.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
-                    cmd.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
-                    cmd.Parameters.Add("P_PERSONEL_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
+                    KB.Parameters.Add("P_PERSONEL_ID", OracleDbType.Int64).Value = dto.Id;
+                    KB.Parameters.Add("P_PERSONEL_ADI", OracleDbType.Varchar2).Value = dto.Ad;
+                    KB.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = dto.Soyad;
+                    KB.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = dto.Rol;
+                    KB.Parameters.Add("P_PERSONEL_SIFRESI", OracleDbType.Varchar2).Value = dto.Sifre;
+                    KB.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = dto.TCKN;
+                    KB.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = dto.TelefonNo;
+                    KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
+                    KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
+                    KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
+                    KB.Parameters.Add("P_PERSONEL_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
+                    KB.Parameters.Add("P_PERSONEL_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
 
                     conn.Open();
-                    cmd.ExecuteNonQuery();
+                    KB.ExecuteNonQuery();
                 }
             }
         }
@@ -160,13 +160,13 @@ namespace kocerbank_backend.DataAccess
         {
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand cmd = new OracleCommand("KB_PERSONEL_SIL", conn))
+                using (OracleCommand KB = new OracleCommand("KB_PERSONEL_SIL", conn))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("P_PERSONEL_ID", OracleDbType.Int64).Value = id;
+                    KB.CommandType = CommandType.StoredProcedure;
+                    KB.Parameters.Add("P_PERSONEL_ID", OracleDbType.Int64).Value = id;
 
                     conn.Open();
-                    cmd.ExecuteNonQuery();
+                    KB.ExecuteNonQuery();
                 }
             }
         }
