@@ -36,7 +36,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = dto.Cinsiyet;
                     KB.Parameters.Add("P_VKN", OracleDbType.Int32).Value = dto.VKN;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = dto.MusteriTipi;
-                    KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
+                    KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
                     KB.Parameters.Add("P_UNVAN", OracleDbType.Varchar2).Value = dto.Unvan;
                     KB.Parameters.Add("P_KAYITOLUSTURMATARIHI", OracleDbType.Date).Value = dto.KayitOlusturmaTarihi;
@@ -109,7 +109,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = aramaKriterleri.Cinsiyet == 0 ? DBNull.Value : aramaKriterleri.Cinsiyet;
                     KB.Parameters.Add("P_VKN", OracleDbType.Int32).Value = aramaKriterleri.VKN == 0 ? DBNull.Value : aramaKriterleri.VKN;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = aramaKriterleri.MusteriTipi == 0 ? DBNull.Value : aramaKriterleri.MusteriTipi;
-                    KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
+                    KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeSubeKodu ?? DBNull.Value;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.DurumKodu == 0 ? DBNull.Value : aramaKriterleri.DurumKodu;
                     KB.Parameters.Add("P_UNVAN", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Unvan ?? DBNull.Value;
                     KB.Parameters.Add("P_KAYITOLUSTURMATARIHI", OracleDbType.Date).Value = aramaKriterleri.KayitOlusturmaTarihi == DateTime.MinValue ? DBNull.Value : (object)aramaKriterleri.KayitOlusturmaTarihi;
@@ -151,7 +151,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = dto.Cinsiyet;
                     KB.Parameters.Add("P_VKN", OracleDbType.Int32).Value = dto.VKN;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = dto.MusteriTipi;
-                    KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
+                    KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = dto.DurumKodu;
                     KB.Parameters.Add("P_UNVAN", OracleDbType.Varchar2).Value = dto.Unvan;
 
@@ -193,7 +193,7 @@ namespace kocerbank_backend.DataAccess
                 Cinsiyet = Convert.ToByte(reader["CINSIYET"]),
                 VKN = Convert.ToInt32(reader["VKN"]),
                 MusteriTipi = Convert.ToByte(reader["MUSTERITIPI"]),
-                SubeKodu = reader["SUBESUBEKODU"].ToString(),
+                SubeSubeKodu = reader["SUBESUBEKODU"].ToString(),
                 DurumKodu = Convert.ToByte(reader["DURUMKODU"]),
                 Unvan = reader["UNVAN"].ToString(),
                 KayitOlusturmaTarihi = Convert.ToDateTime(reader["KAYITOLUSTURMATARIHI"])
