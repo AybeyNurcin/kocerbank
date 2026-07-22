@@ -1,4 +1,7 @@
-namespace kocerbank_backend.Models.DTOs{
+using kocerbank_backend.Enums;
+
+namespace kocerbank_backend.Models.DTOs
+{
     public class SubeDTO
     {
         public long Id { get; set; }
@@ -11,7 +14,8 @@ namespace kocerbank_backend.Models.DTOs{
 
         public string SubeAdres { get; set; } = string.Empty;
 
-        public byte SubeDurumKodu { get; set; }
+        public AktifPasifDurumlari SubeDurumKodu { get; set; }
+            = AktifPasifDurumlari.None;
 
         public string RecordUser { get; set; } = string.Empty;
 
