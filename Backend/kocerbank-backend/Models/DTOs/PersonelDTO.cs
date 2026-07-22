@@ -8,7 +8,7 @@ public class PersonelDTO
     public string Rol { get; set; }
     public string Sicil { get; set; }
     public string Sifre { get; set; }
-    public string TCKN { get; set; }
+    public int TCKN { get; set; }
     public string Adres { get; set; }
     public string SubeKodu { get; set; }
     public string Email { get; set; }  
