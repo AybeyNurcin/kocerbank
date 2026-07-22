@@ -4,6 +4,7 @@ using System.Data;
 using Oracle.ManagedDataAccess.Client;
 using kocerbank_backend.Models.DTOs;
 using Microsoft.Extensions.Configuration;
+using kocerbank_backend.Enums;
 
 namespace kocerbank_backend.DataAccess
 {
@@ -33,7 +34,7 @@ namespace kocerbank_backend.DataAccess
                     kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
                     kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
                     kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
-                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = dto.SubeDurumKodu;
+                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = (byte)dto.SubeDurumKodu;
                     kb.Parameters.Add("P_RECORD_USER", OracleDbType.Varchar2).Value = dto.RecordUser;
                     // OUT Parametreleri
                     OracleParameter sId = new OracleParameter("p_yeni_id", OracleDbType.Int64) { Direction = ParameterDirection.Output };
@@ -102,8 +103,7 @@ namespace kocerbank_backend.DataAccess
                     kb.Parameters.Add("p_sube_kodu", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
                     kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;
                     kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdres ?? DBNull.Value;
-                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu == 0 ? DBNull.Value : aramaKriterleri.SubeDurumKodu;
-
+                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu == AktifPasifDurumlari.None ? DBNull.Value : (byte)aramaKriterleri.SubeDurumKodu;
                     kb.Parameters.Add("p_sonuc", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
@@ -134,8 +134,7 @@ namespace kocerbank_backend.DataAccess
                     kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
                     kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
                     kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
-                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = dto.SubeDurumKodu;
-
+                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = (byte)dto.SubeDurumKodu;
                     conn.Open();
                     kb.ExecuteNonQuery();
                 }
@@ -170,7 +169,7 @@ namespace kocerbank_backend.DataAccess
                 SubeKodu = reader["SUBEKODU"].ToString()!,
                 SubeTelefonNo = reader["SUBETELEFONNO"].ToString()!,
                 SubeAdres = reader["SUBEADRES"].ToString()!,
-                SubeDurumKodu = Convert.ToByte(reader["SUBEDURUMKODU"]),
+                SubeDurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["SUBEDURUMKODU"]),
                 RecordUser = reader["RECORDUSER"].ToString()!,
                 RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
             };
