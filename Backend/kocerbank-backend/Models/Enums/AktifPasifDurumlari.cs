@@ -1,6 +1,6 @@
 namespace kocerbank_backend.Enums;
 
-public enum AktifPasifDurumları : byte
+public enum AktifPasifDurumlari : byte
 {
     None = 0,
     Aktif = 1,
