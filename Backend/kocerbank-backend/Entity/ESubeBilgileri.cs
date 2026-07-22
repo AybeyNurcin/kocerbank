@@ -14,7 +14,8 @@ namespace kocerbank_backend.DataAccess
         // Bağlantı dizesini appsettings.json'dan almak için IConfiguration kullanıyoruz
         public SubeRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("OracleConnection");
+            _connectionString = configuration.GetConnectionString("OracleConnection")
+            ?? throw new InvalidOperationException("OracleConnection bağlantı bilgisi bulunamadı.");
         }
 
         // 1. SUBE EKLEME
@@ -25,14 +26,15 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand kb = new OracleCommand("KB_SUBE_EKLE", conn))
                 {
                     kb.CommandType = CommandType.StoredProcedure;
+                    kb.BindByName = true;
+
 
                     // IN Parametreleri
                     kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
                     kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
                     kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
-                    kb.Parameters.Add("P_SUBE_DURUMKODU", OracleDbType.Byte).Value = dto.SubeDurumKodu;
-                    kb.Parameters.Add("P_SUBE_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
-
+                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = dto.SubeDurumKodu;
+                    kb.Parameters.Add("P_RECORD_USER", OracleDbType.Varchar2).Value = dto.RecordUser;
                     // OUT Parametreleri
                     OracleParameter sId = new OracleParameter("p_yeni_id", OracleDbType.Int64) { Direction = ParameterDirection.Output };
                     OracleParameter sKodu = new OracleParameter("p_yeni_sube_kodu", OracleDbType.Varchar2, 50) { Direction = ParameterDirection.Output };
@@ -62,11 +64,12 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand kb = new OracleCommand("KB_SUBE_GETIR", conn))
                 {
                     kb.CommandType = CommandType.StoredProcedure;
+                    kb.BindByName = true;
 
-                    kb.Parameters.Add("P_SUBE_ID", OracleDbType.Int64).Value = id;
+                    kb.Parameters.Add("P_ID", OracleDbType.Int64).Value = id;
                     
                     // Oracle'daki SYS_REFCURSOR'u C# tarafında okumak için RefCursor tipi eklenir
-                    kb.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    kb.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
                     
@@ -93,15 +96,15 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand kb = new OracleCommand("KB_SUBE_LISTELE", conn))
                 {
                     kb.CommandType = CommandType.StoredProcedure;
-
+                    kb.BindByName = true;
                     // Arama parametrelerinde NULL olabilme ihtimaline karşı DBNull.Value kullanıyoruz
                     kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdi ?? DBNull.Value;
-                    kb.Parameters.Add("P_SUBE_SUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
+                    kb.Parameters.Add("p_sube_kodu", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
                     kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;
                     kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdres ?? DBNull.Value;
-                    kb.Parameters.Add("P_SUBE_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu == 0 ? DBNull.Value : aramaKriterleri.SubeDurumKodu;
+                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu == 0 ? DBNull.Value : aramaKriterleri.SubeDurumKodu;
 
-                    kb.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    kb.Parameters.Add("p_sonuc", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
 
@@ -125,6 +128,7 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand kb = new OracleCommand("KB_SUBE_GUNCELLE", conn))
                 {
                     kb.CommandType = CommandType.StoredProcedure;
+                    kb.BindByName = true;
 
                     kb.Parameters.Add("P_ID", OracleDbType.Int64).Value = dto.Id;
                     kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
@@ -146,6 +150,8 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand kb = new OracleCommand("KB_SUBE_SIL", conn))
                 {
                     kb.CommandType = CommandType.StoredProcedure;
+                    kb.BindByName = true;
+
                     kb.Parameters.Add("P_ID", OracleDbType.Int64).Value = id;
 
                     conn.Open();
@@ -160,13 +166,13 @@ namespace kocerbank_backend.DataAccess
             return new SubeDTO
             {
                 Id = Convert.ToInt64(reader["ID"]),
-                SubeAdi = reader["SUBE_ADI"].ToString(),
-                SubeKodu = reader["SUBESUBEKODU"].ToString(),
-                SubeTelefonNo = reader["SUBE_TELEFON_NO"].ToString(),
-                SubeAdres = reader["SUBE_ADRES"].ToString(),
-                SubeDurumKodu = Convert.ToByte(reader["SUBE_DURUM_KODU"]),
-                RecordUser = reader["RECORDUSER"].ToString()
-                // Eğer SQL tablosunda RecordDate varsa o da buraya eklenebilir.
+                SubeAdi = reader["SUBEADI"].ToString()!,
+                SubeKodu = reader["SUBEKODU"].ToString()!,
+                SubeTelefonNo = reader["SUBETELEFONNO"].ToString()!,
+                SubeAdres = reader["SUBEADRES"].ToString()!,
+                SubeDurumKodu = Convert.ToByte(reader["SUBEDURUMKODU"]),
+                RecordUser = reader["RECORDUSER"].ToString()!,
+                RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
             };
         }
     }
