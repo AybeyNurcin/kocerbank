@@ -184,19 +184,19 @@ namespace kocerbank_backend.DataAccess
             return new MusteriDTO
             {
                 Id = Convert.ToInt64(reader["ID"]),
-                Ad = reader["AD"].ToString(),
-                Soyad = reader["SOYAD"].ToString(),
-                Eposta = reader["EPOSTA"].ToString(),
-                Sifre = reader["SIFRE"].ToString(),
+                Ad = reader["AD"].ToString()!,
+                Soyad = reader["SOYAD"].ToString()!,
+                Eposta = reader["EPOSTA"].ToString()!,
+                Sifre = reader["SIFRE"].ToString()!,
                 DogumTarihi = Convert.ToDateTime(reader["DOGUMTARIHI"]),
-                TelefonNo = reader["TELEFONNO"].ToString(),
+                TelefonNo = reader["TELEFONNO"].ToString()!,
                 TCKN = Convert.ToInt32(reader["TCKN"]),
                 Cinsiyet = (CinsiyetDurumlari)Convert.ToByte(reader["CINSIYET"]),
                 VKN = Convert.ToInt32(reader["VKN"]),
                 MusteriTipi = (MusteriTipiDurumlari)Convert.ToByte(reader["MUSTERITIPI"]),
-                SubeSubeKodu = reader["SUBESUBEKODU"].ToString(),
+                SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,
                 DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
-                Unvan = reader["UNVAN"].ToString(),
+                Unvan = reader["UNVAN"].ToString()!,
                 KayitOlusturmaTarihi = Convert.ToDateTime(reader["KAYITOLUSTURMATARIHI"])
                 // Eğer SQL tablosunda RecordDate varsa o da buraya eklenebilir.
             };
