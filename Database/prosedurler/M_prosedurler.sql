@@ -11,8 +11,6 @@ CREATE OR REPLACE PROCEDURE KB_SUBE_EKLE
 )
 IS
 BEGIN
-    SELECT KB_SUBE_SEQ.NEXTVAL INTO p_yeni_id FROM DUAL;
-    SELECT KB_SUBEKODU_SEQ.NEXTVAL INTO p_yeni_sube_kodu FROM DUAL;
 
     INSERT INTO KB_SUBE
     (
@@ -51,7 +49,7 @@ DECLARE
 BEGIN
     KB_SUBE_EKLE
     (
-        p_sube_adi        => 'Başakşehir Şube',
+        p_sube_adi        => 'Başakşehir Şube3',
         p_sube_telefon_no => '02121234469',
         p_sube_adres      => 'Başakşehir, İstanbul',
         p_sube_durum_kodu => 1,
