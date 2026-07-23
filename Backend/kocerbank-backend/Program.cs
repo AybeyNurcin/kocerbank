@@ -13,6 +13,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<SubeRepository>();
 builder.Services.AddScoped<SubeService>();
+builder.Services.AddScoped<MusteriRepository>();
+builder.Services.AddScoped<MusteriService>();
 
 
 var app = builder.Build();
