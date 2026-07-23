@@ -1,4 +1,5 @@
 using kocerbank_backend.DataAccess;
+using kocerbank_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<SubeRepository>();
+builder.Services.AddScoped<SubeService>();
+
 
 var app = builder.Build();
 
