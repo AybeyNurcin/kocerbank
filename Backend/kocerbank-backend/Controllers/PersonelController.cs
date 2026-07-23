@@ -17,7 +17,7 @@ namespace kocerbank_backend.Controllers
 
         // 1. PERSONEL EKLEME
         // POST /api/Personel
-        [HttpPost("Ekle")]
+        [HttpPost]
         public IActionResult Ekle([FromBody] PersonelDTO dto)
         {
             try
@@ -41,7 +41,7 @@ namespace kocerbank_backend.Controllers
 
         // 2. ID'YE GÖRE PERSONEL GETİRME
         // GET /api/Personel/5
-        [HttpPost("{id:long}")]
+        [HttpGet("{id:long}")]
         public IActionResult GetirById(long id)
         {
             try
