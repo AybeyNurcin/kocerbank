@@ -15,7 +15,7 @@ namespace kocerbank_backend.Controllers
             _subeService = subeService;
         }
 
-        [HttpPost]
+    [HttpPost("Ekle")]
         public IActionResult Ekle([FromBody] SubeDTO dto)
         {
             try
@@ -37,7 +37,7 @@ namespace kocerbank_backend.Controllers
             }
         }
 
-        [HttpGet("{id:long}")]
+        [HttpPost("{id:long}")]
         public IActionResult GetirById(long id)
         {
             try
