@@ -59,7 +59,7 @@ namespace kocerbank_backend.DataAccess
         }
 
         // 2. ID'YE GÖRE GETİR (READ)
-        public MusteriDTO Getir(long id)
+        public MusteriDTO GetirById(long id)
         {
             MusteriDTO musteri = null;
 
@@ -90,7 +90,7 @@ namespace kocerbank_backend.DataAccess
         }
 
         // 3. KRİTERE GÖRE LİSTELE
-        public List<MusteriDTO> Listele(MusteriDTO aramaKriterleri)
+        public List<MusteriDTO>GetirListele(MusteriDTO aramaKriterleri)
         {
             List<MusteriDTO> liste = new List<MusteriDTO>();
 
