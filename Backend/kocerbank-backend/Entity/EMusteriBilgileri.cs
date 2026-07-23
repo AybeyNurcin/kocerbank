@@ -197,7 +197,9 @@ namespace kocerbank_backend.DataAccess
                 SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,
                 DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
                 Unvan = reader["UNVAN"].ToString()!,
-                KayitOlusturmaTarihi = Convert.ToDateTime(reader["KAYITOLUSTURMATARIHI"])
+                KayitOlusturmaTarihi = Convert.ToDateTime(reader["KAYITOLUSTURMATARIHI"]),
+                RecordUser = reader["RECORDUSER"].ToString()!,
+                RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
                 // Eğer SQL tablosunda RecordDate varsa o da buraya eklenebilir.
             };
         }
