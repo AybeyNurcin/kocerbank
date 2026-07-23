@@ -59,7 +59,7 @@ namespace kocerbank_backend.DataAccess
         }
 
         // 2. ID'YE GÖRE GETİR (READ)
-        public MusteriDTO Getir(long id)
+        public MusteriDTO GetirById(long id)
         {
             MusteriDTO musteri = null;
 
