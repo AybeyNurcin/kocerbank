@@ -1,118 +1,140 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using kocerbank_backend.Models.DTOs;
-using kocerbank_backend.DataAccess;
+using kocerbank_backend.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace kocerbank_backend.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class PersonelController : ControllerBase
     {
-        private readonly PersonelRepository _repository;
+        private readonly PersonelService _personelService;
 
-        // Dependency Injection: Program.cs'de kaydettiğimiz Repository buraya otomatik enjekte edilir
-        public PersonelController(PersonelRepository repository)
+        public PersonelController(PersonelService personelService)
         {
-            _repository = repository;
+            _personelService = personelService;
         }
 
-        // 1. PERSONEL EKLEME (CREATE)
-        // Dışarıdan gelen veriler JSON formatında [FromBody] ile DTO'ya dönüştürülür
-        [HttpPost("Ekle")]
+        // 1. PERSONEL EKLEME
+        // POST /api/Personel
+        [HttpPost]
         public IActionResult Ekle([FromBody] PersonelDTO dto)
         {
             try
             {
-                var yeniPersonel = _repository.Ekle(dto);
-                // Başarılı olursa 200 OK ve oluşturulan datayı geri dön
-                return Ok(yeniPersonel); 
+                PersonelDTO eklenenPersonel =
+                    _personelService.Ekle(dto);
+
+                return CreatedAtAction(
+                    nameof(GetirById),
+                    new { id = eklenenPersonel.Id },
+                    eklenenPersonel);
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                // Hata durumunda 400 Bad Request ve hatanın sebebini dön
-                return BadRequest("Kayıt sırasında bir hata oluştu: " + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
 
-        // 2. ID'YE GÖRE GETİR (READ)
-        // URL'den dinamik olarak ID alıyoruz (Örn: /api/Personel/Getir/5)
-        [HttpGet("Getir/{id}")]
-        public IActionResult Getir(long id)
+        // 2. ID'YE GÖRE PERSONEL GETİRME
+        // GET /api/Personel/5
+        [HttpGet("{id:long}")]
+        public IActionResult GetirById(long id)
         {
             try
             {
-                var personel = _repository.GetirById(id);
-                
-                if (personel == null)
-                    return NotFound("Bu ID'ye ait personel bulunamadı."); // 404 Not Found dön
-                
+                PersonelDTO? personel =
+                    _personelService.GetirById(id);
+
+                if (personel is null)
+                {
+                    return NotFound(new
+                    {
+                        mesaj = "Personel bulunamadı."
+                    });
+                }
+
                 return Ok(personel);
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest("Sorgulama sırasında hata oluştu: " + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
 
-        // 3. KRİTERE GÖRE LİSTELE (READ)
-        // Arama kriterleri çok fazla alan içerdiği için URL (GET) yerine Body (POST) kullanmak daha güvenlidir
-        [HttpPost("Listele")]
-        public IActionResult Listele([FromBody] PersonelDTO kriterler)
+        // 3. KRİTERE GÖRE PERSONEL LİSTELEME
+        // POST /api/Personel/listele
+        [HttpPost("listele")]
+        public IActionResult Listele(
+            [FromBody] PersonelDTO aramaKriterleri)
+        {
+            List<PersonelDTO> personeller =
+                _personelService.Listele(aramaKriterleri);
+
+            return Ok(personeller);
+        }
+
+        // 4. PERSONEL GÜNCELLEME
+        // PUT /api/Personel/5
+        [HttpPut("{id:long}")]
+        public IActionResult Guncelle(
+            long id,
+            [FromBody] PersonelDTO dto)
         {
             try
             {
-                var liste = _repository.GetirListele(kriterler);
-                
-                // Hiç kayıt yoksa boş liste yerine NotFound dönmeyi tercih edebiliriz
-                if (liste == null || liste.Count == 0)
-                    return NotFound("Kriterlere uygun personel bulunamadı.");
+                dto.Id = id;
 
-                return Ok(liste);
+                _personelService.Guncelle(dto);
+
+                return NoContent();
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest("Listeleme sırasında hata oluştu: " + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
 
-        // 4. GÜNCELLEME (UPDATE)
-        [HttpPut("Guncelle")]
-        public IActionResult Guncelle([FromBody] PersonelDTO dto)
-        {
-            try
-            {
-                // Güncellenecek personel var mı diye kontrol etmek iyi bir pratiktir
-                var mevcutPersonel = _repository.GetirById(dto.Id);
-                if (mevcutPersonel == null)
-                    return NotFound("Güncellenmek istenen personel bulunamadı.");
-
-                _repository.Guncelle(dto);
-                return Ok("Personel başarıyla güncellendi.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Güncelleme sırasında hata oluştu: " + ex.Message);
-            }
-        }
-
-        // 5. SİLME (DELETE)
-        [HttpDelete("Sil/{id}")]
+        // 5. PERSONEL SİLME
+        // DELETE /api/Personel/5
+        [HttpDelete("{id:long}")]
         public IActionResult Sil(long id)
         {
             try
             {
-                var mevcutPersonel = _repository.GetirById(id);
-                if (mevcutPersonel == null)
-                    return NotFound("Silinmek istenen personel zaten yok.");
+                _personelService.Sil(id);
 
-                _repository.Sil(id);
-                return Ok("Personel başarıyla silindi.");
+                return NoContent();
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest("Silme işlemi başarısız: " + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
     }
