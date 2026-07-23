@@ -15,7 +15,7 @@ namespace kocerbank_backend.Controllers
             _subeService = subeService;
         }
 
-    [HttpPost("Ekle")]
+        [HttpPost("Ekle")]
         public IActionResult Ekle([FromBody] SubeDTO dto)
         {
             try
