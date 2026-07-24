@@ -1,4 +1,4 @@
-/*
+
 using kocerbank_backend.Models.DTOs;
 using kocerbank_backend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -31,12 +31,11 @@ namespace kocerbank_backend.Controllers
                     new { id = eklenenPersonel.Id },
                     eklenenPersonel);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    "Personel ekleme işlemi sırasında hata oluştu: "
+                    + ex.Message);
             }
         }
 
@@ -60,12 +59,11 @@ namespace kocerbank_backend.Controllers
 
                 return Ok(personel);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    "Personel getirme işlemi sırasında hata oluştu: "
+                    + ex.Message);
             }
         }
 
@@ -96,19 +94,11 @@ namespace kocerbank_backend.Controllers
 
                 return NoContent();
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    "Personel güncelleme işlemi sırasında hata oluştu: "
+                    + ex.Message);
             }
         }
 
@@ -123,21 +113,12 @@ namespace kocerbank_backend.Controllers
 
                 return NoContent();
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    "Personel silme işlemi sırasında hata oluştu: "
+                    + ex.Message);
             }
         }
     }
 }
-*/
