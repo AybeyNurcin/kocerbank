@@ -31,7 +31,11 @@ namespace kocerbank_backend.Services
         {
             if (id <= 0)
             {
-                throw new ArgumentException("Geçersiz müşteri ID'si.");
+                throw new Exception("Geçersiz müşteri ID'si.");
+            }
+            if (id >= 9999999)
+            {
+                throw new Exception("Geçersiz müşteri ID'si.");
             }
 
             return _musteriRepository.GetirById(id);

@@ -28,7 +28,7 @@ namespace kocerbank_backend.Controllers
                     new { id = eklenenMusteri.Id },
                     eklenenMusteri);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new
                 {
@@ -37,7 +37,7 @@ namespace kocerbank_backend.Controllers
             }
         }
 
-        [HttpPost("{id:long}")]
+        [HttpPost("GetirById/{id:long}")]
         public IActionResult GetirById(long id)
         {
             try
@@ -55,7 +55,7 @@ namespace kocerbank_backend.Controllers
 
                 return Ok(musteri);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex) 
             {
                 return BadRequest(new
                 {
@@ -87,16 +87,9 @@ namespace kocerbank_backend.Controllers
 
                 return NoContent();
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new
                 {
                     mesaj = ex.Message
                 });
@@ -112,16 +105,9 @@ namespace kocerbank_backend.Controllers
 
                 return NoContent();
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new
                 {
                     mesaj = ex.Message
                 });
