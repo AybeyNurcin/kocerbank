@@ -152,4 +152,6 @@ namespace kocerbank_backend.Services
             }    
         }
     }
+
+        /*private static void Varmi*/
 }
