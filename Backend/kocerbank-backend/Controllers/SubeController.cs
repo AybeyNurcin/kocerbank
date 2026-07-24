@@ -15,8 +15,10 @@ namespace kocerbank_backend.Controllers
             _subeService = subeService;
         }
 
+        // 1. ŞUBE EKLEME
         [HttpPost("Ekle")]
-        public IActionResult Ekle([FromBody] SubeDTO dto)
+        public IActionResult Ekle(
+            [FromBody] SubeDTO dto)
         {
             try
             {
@@ -33,6 +35,7 @@ namespace kocerbank_backend.Controllers
             }
         }
 
+        // 2. ID'YE GÖRE ŞUBE GETİRME
         [HttpPost("{id:long}")]
         public IActionResult GetirById(long id)
         {
@@ -43,33 +46,42 @@ namespace kocerbank_backend.Controllers
 
                 if (sube is null)
                 {
-                    return NotFound(new
-                    {
-                        mesaj = "Şube bulunamadı."
-                    });
+                    throw new KeyNotFoundException(
+                        "Şube bulunamadı.");
                 }
 
                 return Ok(sube);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    "Şube getirme işlemi sırasında hata oluştu: "
+                    + ex.Message);
             }
         }
 
-        [HttpPost("listele")]
+        // 3. KRİTERE GÖRE ŞUBE LİSTELEME
+        [HttpPost("Listele")]
         public IActionResult Listele(
             [FromBody] SubeDTO aramaKriterleri)
         {
-            List<SubeDTO> subeler =
-                _subeService.Listele(aramaKriterleri);
+            try
+            {
+                List<SubeDTO> subeler =
+                    _subeService.Listele(
+                        aramaKriterleri);
 
-            return Ok(subeler);
+                return Ok(subeler);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(
+                    "Şube listeleme işlemi sırasında hata oluştu: "
+                    + ex.Message);
+            }
         }
 
+        // 4. ŞUBE GÜNCELLEME
         [HttpPut("{id:long}")]
         public IActionResult Guncelle(
             long id,
@@ -83,22 +95,15 @@ namespace kocerbank_backend.Controllers
 
                 return NoContent();
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    "Şube güncelleme işlemi sırasında hata oluştu: "
+                    + ex.Message);
             }
         }
 
+        // 5. ŞUBE SİLME
         [HttpDelete("{id:long}")]
         public IActionResult Sil(long id)
         {
@@ -108,19 +113,11 @@ namespace kocerbank_backend.Controllers
 
                 return NoContent();
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    "Şube silme işlemi sırasında hata oluştu: "
+                    + ex.Message);
             }
         }
     }
