@@ -95,6 +95,7 @@ PRINT v_sonuc;
 
 
 CREATE OR REPLACE PROCEDURE KB_SUBE_LISTELE(
+   p_sube_id           IN KB_SUBE.ID%TYPE,
    p_sube_adi          IN KB_SUBE.SUBEADI%TYPE,
    p_sube_kodu         IN KB_SUBE.SUBEKODU%TYPE,
    p_sube_telefon_no   IN KB_SUBE.SUBETELEFONNO%TYPE,
@@ -108,7 +109,8 @@ BEGIN
     OPEN p_sonuc FOR
         SELECT *
         FROM KB_SUBE
-        WHERE (p_sube_adi IS NULL OR UPPER(SUBEADI) LIKE '%' || UPPER(p_sube_adi) || '%')
+        WHERE (p_sube_id IS NULL OR ID = p_sube_id)
+          AND (p_sube_adi IS NULL OR UPPER(SUBEADI) LIKE '%' || UPPER(p_sube_adi) || '%')
           AND (p_sube_kodu IS NULL OR SUBEKODU = p_sube_kodu)
           AND (p_sube_telefon_no IS NULL OR SUBETELEFONNO = p_sube_telefon_no)
           AND (p_sube_adres IS NULL OR UPPER(SUBEADRES) LIKE '%' || UPPER(p_sube_adres) || '%')

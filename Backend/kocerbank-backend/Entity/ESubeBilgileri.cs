@@ -96,6 +96,7 @@ namespace kocerbank_backend.DataAccess
                     kb.CommandType = CommandType.StoredProcedure;
                     kb.BindByName = true;
                     // Arama parametrelerinde NULL olabilme ihtimaline karşı DBNull.Value kullanıyoruz
+                    kb.Parameters.Add("P_SUBE_ID",OracleDbType.Int64).Value = aramaKriterleri.Id <= 0 ? DBNull.Value : aramaKriterleri.Id;                    
                     kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdi ?? DBNull.Value;
                     kb.Parameters.Add("p_sube_kodu", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
                     kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;
