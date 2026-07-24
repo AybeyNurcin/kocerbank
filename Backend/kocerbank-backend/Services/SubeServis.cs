@@ -38,11 +38,6 @@ namespace kocerbank_backend.Services
         // 3. KRİTERE GÖRE ŞUBE LİSTELEME
         public List<SubeDTO> Listele(SubeDTO aramaKriterleri)
         {
-            if (aramaKriterleri is null)
-            {
-                throw new ArgumentException(
-                    "Arama kriterleri gönderilmelidir.");
-            }
 
             if (!Enum.IsDefined(
                     typeof(AktifPasifDurumlari),
@@ -123,7 +118,7 @@ namespace kocerbank_backend.Services
             if (dto.SubeTelefonNo.Length != 11)
             {
                 throw new ArgumentException(
-                    "Şube telefon numarası 11 karakter olmalıdır.");
+                    "Şube telefon numarası 11 haneli olmalıdır.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.SubeAdres))
@@ -145,30 +140,16 @@ namespace kocerbank_backend.Services
                     "Şube durumu Aktif veya Pasif olmalıdır.");
             }
 
-            if (!Enum.IsDefined(
-                    typeof(AktifPasifDurumlari),
-                    dto.SubeDurumKodu))
-            {
-                throw new ArgumentException(
-                    "Geçersiz şube durum kodu gönderildi.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(dto.RecordUser) &&
-                dto.RecordUser.Length > 10)
-            {
-                throw new ArgumentException(
-                    "RecordUser en fazla 10 karakter olabilir.");
-            }
         }
 
         // ID KULLANAN METOTLARIN ORTAK KONTROLÜ
         private static void IdKontrolEt(long id)
         {
-            if (id <= 0)
+            if (id <= 0 || id > 999999999999999999) 
             {
                 throw new ArgumentException(
-                    "Şube ID değeri sıfırdan büyük olmalıdır.");
-            }
+                    "Bu ID değerinde Şube değeri olamaz.");    
+            }    
         }
     }
 }
