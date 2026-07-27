@@ -1,27 +1,98 @@
+# ==================================================
+# Angular / Node
+# ==================================================
+
+**/node_modules/
+**/dist/
+**/tmp/
+**/out-tsc/
+**/bazel-out/
+**/.angular/
+**/coverage/
+**/.sass-cache/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+
+# ==================================================
+# .NET build output
+# ==================================================
+
+**/bin/
+**/obj/
+**/runtimes/
+**/TestResults/
+
+*.nupkg
+*.snupkg
+
+
+# ==================================================
 # Visual Studio
-.vs/
+# ==================================================
+
 **/.vs/
 
-# .NET derleme dosyaları
-obj/
-runtimes
-**/obj/
-
-# Kullanıcıya özel Visual Studio dosyaları
 *.user
 *.suo
+*.userosscache
+*.sln.docstates
 
-# Hassas ayarlar
-appsettings.Development.json
 
-# VS Code
-.vscode/
+# ==================================================
+# Visual Studio Code
+# ==================================================
 
-bin
+**/.vscode/
+**/.history/
 
-Wallet
-Backend/kocerbank-backend/appsettings.json
 
-postman
-.postman
+# ==================================================
+# JetBrains ve diğer editörler
+# ==================================================
 
+**/.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+
+# ==================================================
+# Yerel ve hassas ayarlar
+# ==================================================
+
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+**/.env
+**/.env.*
+!**/.env.example
+
+# ==================================================
+# Postman yerel dosyaları
+# ==================================================
+
+**/postman/
+**/.postman/
+
+
+# ==================================================
+# İşletim sistemi dosyaları
+# ==================================================
+
+.DS_Store
+Thumbs.db
+Desktop.ini
