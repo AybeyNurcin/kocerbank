@@ -18,9 +18,6 @@ namespace kocerbank_backend.Services
         {
             Dogrula(dto);
 
-            // Örn: Şifreyi düz metin olarak kaydetmemek için hash'leme burada yapılır
-            // dto.Sifre = _hashService.Hashle(dto.Sifre);
-
             dto.KayitOlusturmaTarihi = DateTime.Now;
 
             return _musteriRepository.Ekle(dto);

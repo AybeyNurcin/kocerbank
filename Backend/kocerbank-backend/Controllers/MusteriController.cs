@@ -74,7 +74,7 @@ namespace kocerbank_backend.Controllers
             return Ok(musteriler);
         }
 
-        [HttpPut("{id:long}")]
+        [HttpPut("Güncelle/{id:long}")]
         public IActionResult Guncelle(
             long id,
             [FromBody] MusteriDTO dto)
@@ -96,7 +96,7 @@ namespace kocerbank_backend.Controllers
             }
         }
 
-        [HttpDelete("{id:long}")]
+        [HttpDelete("Sil/{id:long}")]
         public IActionResult Sil(long id)
         {
             try
