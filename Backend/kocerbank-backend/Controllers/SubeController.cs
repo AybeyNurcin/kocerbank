@@ -63,7 +63,7 @@ namespace kocerbank_backend.Controllers
         // 3. KRİTERE GÖRE ŞUBE LİSTELEME
         [HttpPost("Listele")]
         public IActionResult Listele(
-            [FromBody] SubeDTO aramaKriterleri)
+            [FromBody] SubeAramaKriterleriDTO aramaKriterleri)
         {
             try
             {
