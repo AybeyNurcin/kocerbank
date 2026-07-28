@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
+  Observable
+} from 'rxjs';
 
 import { Sube } from '../models/sube-model';
 import { SubeFiltre } from '../models/sube-filtre-model';
@@ -23,6 +28,35 @@ export class SubeApi {
     return this.http.post<Sube[]>(
       `${this.apiUrl}/Listele`,
       kriterler
+    );
+  }
+
+  ekle(sube: {
+    subeAdi: string;
+    subeTelefonNo: string;
+    subeAdres: string;
+    subeDurumKodu: number;
+  }): Observable<Sube> {
+
+    return this.http.post<Sube>(
+      `${this.apiUrl}/Ekle`,
+      sube
+    );
+  }
+
+  guncelle(
+    id: number,
+    sube: {
+      subeAdi: string;
+      subeTelefonNo: string;
+      subeAdres: string;
+      subeDurumKodu: number;
+    }
+  ): Observable<void> {
+
+    return this.http.put<void>(
+      `${this.apiUrl}/${id}`,
+      sube
     );
   }
 }
