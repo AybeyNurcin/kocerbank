@@ -71,7 +71,7 @@ namespace kocerbank_backend.Controllers
         // POST /api/Personel/listele
         [HttpPost("listele")]
         public IActionResult Listele(
-            [FromBody] PersonelDTO aramaKriterleri)
+            [FromBody] PersonelAramaKriterleriDTO aramaKriterleri)
         {
             List<PersonelDTO> personeller =
                 _personelService.Listele(aramaKriterleri);

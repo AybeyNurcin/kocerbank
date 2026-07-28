@@ -16,7 +16,7 @@ namespace kocerbank_backend.DataAccess
         // Bağlantı dizesini appsettings.json'dan almak için IConfiguration kullanıyoruz
         public MusteriRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("OracleConnection");
+            _connectionString = configuration.GetConnectionString("OracleConnection") ?? throw new InvalidOperationException("Connection string bulunamadı: 'OracleConnection'");
         }
 
         // 1. PERSONEL EKLEME
@@ -34,7 +34,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
                     KB.Parameters.Add("P_TCKN", OracleDbType.Int64).Value = dto.TCKN;
-                    KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = (byte)dto.Cinsiyet;
+                    KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = dto.Cinsiyet.HasValue ? (object)(byte)dto.Cinsiyet.Value : DBNull.Value;
                     KB.Parameters.Add("P_VKN", OracleDbType.Int64).Value = dto.VKN;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = (byte)dto.MusteriTipi;
                     KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
@@ -50,7 +50,6 @@ namespace kocerbank_backend.DataAccess
                     conn.Open();
                     KB.ExecuteNonQuery();
 
-                    // Üretilen değerleri DTO'ya geri yazıyoruz
                     dto.Id = ((OracleDecimal)pId.Value).ToInt64();
                     dto.KayitOlusturmaTarihi = ((OracleDate)pKayitOlusturmaTarihi.Value).Value;
 
@@ -60,9 +59,9 @@ namespace kocerbank_backend.DataAccess
         }
 
         // 2. ID'YE GÖRE GETİR (READ)
-        public MusteriDTO GetirById(long id)
+        public MusteriDTO? GetirById(long id)
         {
-            MusteriDTO musteri = null;
+            MusteriDTO? musteri = null;
 
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
@@ -149,7 +148,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
                     KB.Parameters.Add("P_TCKN", OracleDbType.Varchar2).Value = (object?)dto.TCKN ?? DBNull.Value;
-                    KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = (byte)dto.Cinsiyet;
+                    KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = dto.Cinsiyet.HasValue ? (object)(byte)dto.Cinsiyet.Value : DBNull.Value;
                     KB.Parameters.Add("P_VKN", OracleDbType.Varchar2).Value = (object?)dto.VKN ?? DBNull.Value;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = (byte)dto.MusteriTipi;
                     KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
@@ -190,7 +189,7 @@ namespace kocerbank_backend.DataAccess
                 DogumTarihi = Convert.ToDateTime(reader["DOGUMTARIHI"]),
                 TelefonNo = reader["TELEFONNO"].ToString()!,
                 TCKN = GetNullableString(reader, "TCKN"),
-                Cinsiyet = (CinsiyetDurumlari)Convert.ToByte(reader["CINSIYET"]),
+                Cinsiyet = reader["CINSIYET"] == DBNull.Value ? (CinsiyetDurumlari?) null : (CinsiyetDurumlari)Convert.ToByte(reader["CINSIYET"]),
                 VKN = GetNullableString(reader, "VKN"),
                 MusteriTipi = (MusteriTipiDurumlari)Convert.ToByte(reader["MUSTERITIPI"]),
                 SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,

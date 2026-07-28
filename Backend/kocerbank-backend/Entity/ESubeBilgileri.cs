@@ -12,8 +12,7 @@ namespace kocerbank_backend.DataAccess
         // Bağlantı dizesini appsettings.json'dan almak için IConfiguration kullanıyoruz
         public SubeRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("OracleConnection")
-            ?? throw new InvalidOperationException("OracleConnection bağlantı bilgisi bulunamadı.");
+            _connectionString = configuration.GetConnectionString("OracleConnection") ?? throw new InvalidOperationException("Connection string bulunamadı: 'OracleConnection'");
         }
 
         // 1. SUBE EKLEME
@@ -45,7 +44,7 @@ namespace kocerbank_backend.DataAccess
 
                     // Üretilen değerleri DTO'ya geri yazıyoruz
                     dto.Id = Convert.ToInt64(sId.Value.ToString());
-                    dto.SubeKodu = sKodu.Value.ToString();
+                    dto.SubeKodu = sKodu.Value.ToString()!;
 
                     return dto;
                 }
@@ -53,9 +52,9 @@ namespace kocerbank_backend.DataAccess
         }
 
         // 2. ID'YE GÖRE GETİR (READ)
-        public SubeDTO GetirById(long id)
+        public SubeDTO? GetirById(long id)
         {
-            SubeDTO sube = null;
+            SubeDTO? sube = null;
 
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
@@ -96,7 +95,7 @@ namespace kocerbank_backend.DataAccess
                     kb.CommandType = CommandType.StoredProcedure;
                     kb.BindByName = true;
                     // Arama parametrelerinde NULL olabilme ihtimaline karşı DBNull.Value kullanıyoruz
-                    kb.Parameters.Add("P_ID",OracleDbType.Int64).Value = aramaKriterleri.Id <= 0 ? DBNull.Value : aramaKriterleri.Id.HasValue ? (object)aramaKriterleri.Id.Value : DBNull.Value;                    
+                    kb.Parameters.Add("P_ID",OracleDbType.Int64).Value = aramaKriterleri.Id.HasValue ? (object)aramaKriterleri.Id.Value : DBNull.Value;                    
                     kb.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeAdi ?? DBNull.Value;
                     kb.Parameters.Add("P_SUBEKODU", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeKodu ?? DBNull.Value;
                     kb.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;

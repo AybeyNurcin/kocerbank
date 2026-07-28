@@ -26,6 +26,12 @@ namespace kocerbank_backend.Services
         // 2. ID'YE GÖRE GETİR
         public MusteriDTO? GetirById(long id)
         {
+            var musteri = _musteriRepository.GetirById(id);
+            if (musteri == null)
+            {
+                throw new KeyNotFoundException($"Müşteri bulunamadı: ID = {id}");
+            }
+
             if (id <= 0)
             {
                 throw new Exception("Geçersiz müşteri ID'si.");

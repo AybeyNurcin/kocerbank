@@ -38,7 +38,7 @@ namespace kocerbank_backend.Services
         }
 
         // 3. KRİTERE GÖRE PERSONEL LİSTELEME
-        public List<PersonelDTO> Listele(PersonelDTO aramaKriterleri)
+        public List<PersonelDTO> Listele(PersonelAramaKriterleriDTO aramaKriterleri)
         {
             if (aramaKriterleri is null)
             {
