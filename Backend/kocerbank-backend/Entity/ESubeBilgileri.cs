@@ -28,14 +28,14 @@ namespace kocerbank_backend.DataAccess
 
 
                     // IN Parametreleri
-                    kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
-                    kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
-                    kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
-                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = (byte)dto.SubeDurumKodu;
-                    kb.Parameters.Add("P_RECORD_USER", OracleDbType.Varchar2).Value = dto.RecordUser;
+                    kb.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.SubeAdi;
+                    kb.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
+                    kb.Parameters.Add("P_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
+                    kb.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.SubeDurumKodu;
+                    kb.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
                     // OUT Parametreleri
-                    OracleParameter sId = new OracleParameter("p_yeni_id", OracleDbType.Int64) { Direction = ParameterDirection.Output };
-                    OracleParameter sKodu = new OracleParameter("p_yeni_sube_kodu", OracleDbType.Varchar2, 50) { Direction = ParameterDirection.Output };
+                    OracleParameter sId = new OracleParameter("P_ID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
+                    OracleParameter sKodu = new OracleParameter("P_SUBEKODU", OracleDbType.Varchar2, 50) { Direction = ParameterDirection.Output };
                     
                     kb.Parameters.Add(sId);
                     kb.Parameters.Add(sKodu);
@@ -59,7 +59,7 @@ namespace kocerbank_backend.DataAccess
 
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand kb = new OracleCommand("KB_SUBE_GETIR", conn))
+                using (OracleCommand kb = new OracleCommand("KB_SUBE_GETIRBYID", conn))
                 {
                     kb.CommandType = CommandType.StoredProcedure;
                     kb.BindByName = true;
@@ -85,7 +85,7 @@ namespace kocerbank_backend.DataAccess
         }
 
         // 3. KRİTERE GÖRE LİSTELE
-        public List<SubeDTO> GetirListele(SubeDTO aramaKriterleri)
+        public List<SubeDTO> GetirListele(SubeAramaKriterleriDTO aramaKriterleri)
         {
             List<SubeDTO> liste = new List<SubeDTO>();
 
@@ -96,13 +96,13 @@ namespace kocerbank_backend.DataAccess
                     kb.CommandType = CommandType.StoredProcedure;
                     kb.BindByName = true;
                     // Arama parametrelerinde NULL olabilme ihtimaline karşı DBNull.Value kullanıyoruz
-                    kb.Parameters.Add("P_SUBE_ID",OracleDbType.Int64).Value = aramaKriterleri.Id <= 0 ? DBNull.Value : aramaKriterleri.Id;                    
-                    kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdi ?? DBNull.Value;
-                    kb.Parameters.Add("p_sube_kodu", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
-                    kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;
-                    kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeAdres ?? DBNull.Value;
-                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu == AktifPasifDurumlari.None ? DBNull.Value : (byte)aramaKriterleri.SubeDurumKodu;
-                    kb.Parameters.Add("p_sonuc", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    kb.Parameters.Add("P_ID",OracleDbType.Int64).Value = aramaKriterleri.Id <= 0 ? DBNull.Value : aramaKriterleri.Id.HasValue ? (object)aramaKriterleri.Id.Value : DBNull.Value;                    
+                    kb.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeAdi ?? DBNull.Value;
+                    kb.Parameters.Add("P_SUBEKODU", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeKodu ?? DBNull.Value;
+                    kb.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;
+                    kb.Parameters.Add("P_ADRES", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeAdres ?? DBNull.Value;
+                    kb.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu.HasValue ? (object)(byte)aramaKriterleri.SubeDurumKodu.Value : DBNull.Value;
+                    kb.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
 
@@ -129,10 +129,10 @@ namespace kocerbank_backend.DataAccess
                     kb.BindByName = true;
 
                     kb.Parameters.Add("P_ID", OracleDbType.Int64).Value = dto.Id;
-                    kb.Parameters.Add("P_SUBE_ADI", OracleDbType.Varchar2).Value = dto.SubeAdi;
-                    kb.Parameters.Add("P_SUBE_TELEFON_NO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
-                    kb.Parameters.Add("P_SUBE_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
-                    kb.Parameters.Add("P_SUBE_DURUM_KODU", OracleDbType.Byte).Value = (byte)dto.SubeDurumKodu;
+                    kb.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.SubeAdi;
+                    kb.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
+                    kb.Parameters.Add("P_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;
+                    kb.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.SubeDurumKodu;
                     conn.Open();
                     kb.ExecuteNonQuery();
                 }

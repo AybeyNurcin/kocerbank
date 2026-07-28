@@ -3,20 +3,27 @@ CREATE TABLE KB_MUSTERIBILGILERI(
     AD                      VARCHAR2(50)                                    NOT NULL,
     SOYAD                   VARCHAR2(50)                                    NOT NULL,
     EPOSTA                  VARCHAR2(50)        UNIQUE                      NOT NULL,
-    SIFRE                   VARCHAR2 (20)                                   NOT NULL,
     DOGUMTARIHI             DATE                DEFAULT SYSDATE             NOT NULL,
     TELEFONNO               VARCHAR2(13)                                    NOT NULL,
-    TCKN                    NUMBER(11)          UNIQUE                      NOT NULL, 
+    TCKN                    VARCHAR2(11)        UNIQUE                              , 
     CINSIYET                NUMBER(1)           CHECK (CINSIYET IN (1,2))   NOT NULL,
-    VKN                     NUMBER(10)          UNIQUE                      NOT NULL,
+    VKN                     VARCHAR2(10)        UNIQUE                              ,
     MUSTERITIPI             NUMBER(1)           CHECK(MUSTERITIPI IN (1,2)) NOT NULL,
     SUBESUBEKODU            VARCHAR2(20)                                    NOT NULL,
+
+    CONSTRAINT FK_KB_MUSTERIBILGILERI_SUBESUBEKODU FOREIGN KEY (SUBESUBEKODU) REFERENCES KB_SUBE(SUBEKODU) ON DELETE CASCADE,
+
     DURUMKODU               NUMBER(1)           CHECK (DURUMKODU IN (1,2))  NOT NULL,
     UNVAN                   VARCHAR2(50)                                    NOT NULL,
-    KAYITOLUSTURMATARIHI    DATE                                            NOT NULL,
+    KAYITOLUSTURMATARIHI    DATE                DEFAULT SYSDATE             NOT NULL,
     RECORDUSER              VARCHAR2(10),                                
     RECORDDATE              DATE                DEFAULT SYSDATE
 );
+
+alter table kb_musteribilgileri add constraint chk_musteri_tckn_vkn check ((musteritipi = 1 and tckn is not null) or (musteritipi = 2 and vkn is not null));
+alter table kb_musteribilgileri add constraint chk_musteri_cinsiyet check ((musteritipi = 1 and cinsiyet is not null) or (musteritipi = 2 and cinsiyet is null));
+
+
 
 create TABLE KB_MUSTERIILETISIM(
     ID NUMBER(19) DEFAULT ON NULL KB_MUSTERIILETISIM_SEQ.NEXTVAL PRIMARY KEY,
@@ -27,3 +34,4 @@ create TABLE KB_MUSTERIILETISIM(
     RECORDUSER VARCHAR2(10),
     RECORDDATE DATE DEFAULT SYSDATE
 );
+/

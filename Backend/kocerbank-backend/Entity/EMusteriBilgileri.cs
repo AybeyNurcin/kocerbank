@@ -31,7 +31,6 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.Ad;
                     KB.Parameters.Add("P_SOYAD", OracleDbType.Varchar2).Value = dto.Soyad;
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Eposta;
-                    KB.Parameters.Add("P_SIFRE", OracleDbType.Varchar2).Value = dto.Sifre;
                     KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
                     KB.Parameters.Add("P_TCKN", OracleDbType.Int64).Value = dto.TCKN;
@@ -67,13 +66,11 @@ namespace kocerbank_backend.DataAccess
 
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand KB = new OracleCommand("KB_MUSTERIBILGILERI_GETIR", conn))
+                using (OracleCommand KB = new OracleCommand("KB_MUSTERIBILGILERI_GETIRBYID", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
 
                     KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = id;
-                    
-                    // Oracle'daki SYS_REFCURSOR'u C# tarafında okumak için RefCursor tipi eklenir
                     KB.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
@@ -110,9 +107,9 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.Eposta ?? DBNull.Value;
                     KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = aramaKriterleri.DogumTarihi.HasValue ? (object)aramaKriterleri.DogumTarihi.Value : DBNull.Value;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.TelefonNo ?? DBNull.Value;
-                    KB.Parameters.Add("P_TCKN", OracleDbType.Int64).Value = aramaKriterleri.TCKN.HasValue ? (object)aramaKriterleri.TCKN.Value : DBNull.Value;
+                    KB.Parameters.Add("P_TCKN", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.TCKN ?? DBNull.Value;
                     KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = aramaKriterleri.Cinsiyet.HasValue ? (object)(byte)aramaKriterleri.Cinsiyet.Value : DBNull.Value;
-                    KB.Parameters.Add("P_VKN", OracleDbType.Int64).Value = aramaKriterleri.VKN.HasValue ? (object)aramaKriterleri.VKN.Value : DBNull.Value;
+                    KB.Parameters.Add("P_VKN", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.VKN ?? DBNull.Value;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = aramaKriterleri.MusteriTipi.HasValue ? (object)(byte)aramaKriterleri.MusteriTipi.Value : DBNull.Value;
                     KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeSubeKodu ?? DBNull.Value;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.DurumKodu.HasValue ? (object)(byte)aramaKriterleri.DurumKodu.Value : DBNull.Value;
@@ -149,12 +146,11 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.Ad;
                     KB.Parameters.Add("P_SOYAD", OracleDbType.Varchar2).Value = dto.Soyad;
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Eposta;
-                    KB.Parameters.Add("P_SIFRE", OracleDbType.Varchar2).Value = dto.Sifre;
                     KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
-                    KB.Parameters.Add("P_TCKN", OracleDbType.Int64).Value = dto.TCKN;
+                    KB.Parameters.Add("P_TCKN", OracleDbType.Varchar2).Value = (object?)dto.TCKN ?? DBNull.Value;
                     KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = (byte)dto.Cinsiyet;
-                    KB.Parameters.Add("P_VKN", OracleDbType.Int64).Value = dto.VKN;
+                    KB.Parameters.Add("P_VKN", OracleDbType.Varchar2).Value = (object?)dto.VKN ?? DBNull.Value;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = (byte)dto.MusteriTipi;
                     KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
@@ -191,31 +187,24 @@ namespace kocerbank_backend.DataAccess
                 Ad = reader["AD"].ToString()!,
                 Soyad = reader["SOYAD"].ToString()!,
                 Eposta = reader["EPOSTA"].ToString()!,
-                Sifre = reader["SIFRE"].ToString()!,
-                DogumTarihi = GetNullableDateTime(reader, "DOGUMTARIHI"),
+                DogumTarihi = Convert.ToDateTime(reader["DOGUMTARIHI"]),
                 TelefonNo = reader["TELEFONNO"].ToString()!,
-                TCKN = GetNullableInt64(reader, "TCKN"),
+                TCKN = GetNullableString(reader, "TCKN"),
                 Cinsiyet = (CinsiyetDurumlari)Convert.ToByte(reader["CINSIYET"]),
-                VKN = GetNullableInt64 (reader,"VKN"),
+                VKN = GetNullableString(reader, "VKN"),
                 MusteriTipi = (MusteriTipiDurumlari)Convert.ToByte(reader["MUSTERITIPI"]),
                 SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,
                 DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
                 Unvan = reader["UNVAN"].ToString()!,
-                KayitOlusturmaTarihi = GetNullableDateTime(reader, "KAYITOLUSTURMATARIHI"),
+                KayitOlusturmaTarihi = Convert.ToDateTime(reader["KAYITOLUSTURMATARIHI"]),
                 RecordUser = reader["RECORDUSER"].ToString()!,
-                RecordDate = GetNullableDateTime(reader, "RECORDDATE")
-                // Eğer SQL tablosunda RecordDate varsa o da buraya eklenebilir.
+                RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
             };
         }
-        private DateTime? GetNullableDateTime(OracleDataReader reader, string columnName)
+        private string? GetNullableString(OracleDataReader reader, string columnName)
         {
             var value = reader[columnName];
-            return value == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(value);
-        }
-        private long? GetNullableInt64(OracleDataReader reader, string columnName)
-        {
-            var value = reader[columnName];
-            return value == DBNull.Value ? (long?)null : Convert.ToInt64(value);
+            return value == DBNull.Value ? null : value.ToString();
         }
     }
 }

@@ -7,17 +7,16 @@ namespace kocerbank_backend.Models.DTOs
         public string Ad { get; set; } = string.Empty;
         public string Soyad { get; set; } = string.Empty;
         public string Eposta { get; set; } = string.Empty;
-        public string Sifre { get; set; } = string.Empty;
-        public DateTime? DogumTarihi { get; set; }
+        public DateTime DogumTarihi { get; set; }
         public string TelefonNo { get; set; } = string.Empty;
-        public long? TCKN { get; set; }
+        public string? TCKN { get; set; }
         public CinsiyetDurumlari Cinsiyet { get; set; }
-        public long? VKN { get; set; }
+        public string? VKN { get; set; }
         public MusteriTipiDurumlari MusteriTipi { get; set; }
         public string SubeSubeKodu { get; set; } = string.Empty;
         public AktifPasifDurumlari DurumKodu { get; set; }
         public string Unvan { get; set; } = string.Empty;
-        public DateTime? KayitOlusturmaTarihi { get; set; }
+        public DateTime KayitOlusturmaTarihi { get; set; }
     }
     public class MusteriAramaKriterleriDTO
     {
@@ -27,9 +26,9 @@ namespace kocerbank_backend.Models.DTOs
         public string? Eposta { get; set; }
         public DateTime? DogumTarihi { get; set; }
         public string? TelefonNo { get; set; }
-        public long? TCKN { get; set; }
+        public string? TCKN { get; set; }
         public CinsiyetDurumlari? Cinsiyet { get; set; }
-        public long? VKN { get; set; }
+        public string? VKN { get; set; }
         public MusteriTipiDurumlari? MusteriTipi { get; set; }
         public string? SubeSubeKodu { get; set; }
         public AktifPasifDurumlari? DurumKodu { get; set; }

@@ -1,22 +1,19 @@
 CREATE OR REPLACE PROCEDURE KB_SUBE_EKLE
 (
-    p_sube_adi          IN  KB_SUBE.SUBEADI%TYPE,
-    p_sube_telefon_no   IN  KB_SUBE.SUBETELEFONNO%TYPE,
-    p_sube_adres        IN  KB_SUBE.SUBEADRES%TYPE,
-    p_sube_durum_kodu   IN  KB_SUBE.SUBEDURUMKODU%TYPE,
-    p_record_user       IN  KB_SUBE.RECORDUSER%TYPE,
+    P_AD            IN  KB_SUBE.SUBEADI%TYPE,
+    P_TELEFONNO     IN  KB_SUBE.SUBETELEFONNO%TYPE,
+    P_ADRES         IN  KB_SUBE.SUBEADRES%TYPE,
+    P_DURUMKODU     IN  KB_SUBE.SUBEDURUMKODU%TYPE,
+    P_RECORDUSER    IN  KB_SUBE.RECORDUSER%TYPE,
 
-    p_yeni_id           OUT KB_SUBE.ID%TYPE,
-    p_yeni_sube_kodu    OUT KB_SUBE.SUBEKODU%TYPE
+    P_ID            OUT KB_SUBE.ID%TYPE,
+    P_SUBEKODU      OUT KB_SUBE.SUBEKODU%TYPE
 )
-IS
+AS
 BEGIN
-
     INSERT INTO KB_SUBE
     (
-        ID,
         SUBEADI,
-        SUBEKODU,
         SUBETELEFONNO,
         SUBEADRES,
         SUBEDURUMKODU,
@@ -24,164 +21,85 @@ BEGIN
     )
     VALUES
     (
-        p_yeni_id,
-        p_sube_adi,
-        p_yeni_sube_kodu,
-        p_sube_telefon_no,
-        p_sube_adres,
-        p_sube_durum_kodu,
-        p_record_user
+        P_AD,
+        P_TELEFONNO,
+        P_ADRES,
+        P_DURUMKODU,
+        P_RECORDUSER
     )
-    RETURNING
-        ID,
-        SUBEKODU
-    INTO
-        p_yeni_id,
-        p_yeni_sube_kodu;
-END;
-/
-
-SET SERVEROUTPUT ON;
-
-DECLARE
-    v_yeni_id         KB_SUBE.ID%TYPE;
-    v_yeni_sube_kodu  KB_SUBE.SUBEKODU%TYPE;
-BEGIN
-    KB_SUBE_EKLE
-    (
-        p_sube_adi        => 'Başakşehir Şube3',
-        p_sube_telefon_no => '02121234469',
-        p_sube_adres      => 'Başakşehir, İstanbul',
-        p_sube_durum_kodu => 1,
-        p_record_user     => 'METEHAN',
-        p_yeni_id         => v_yeni_id,
-        p_yeni_sube_kodu  => v_yeni_sube_kodu
-    );
-
-    DBMS_OUTPUT.PUT_LINE('Yeni ID: ' || v_yeni_id);
-    DBMS_OUTPUT.PUT_LINE('Yeni şube kodu: ' || v_yeni_sube_kodu);
-
-    COMMIT;
-END;
+    RETURNING ID, SUBEKODU INTO P_ID, P_SUBEKODU;
+END KB_SUBE_EKLE;
 /
 
 select * from KB_SUBE;
 
 
-COMMIT;
 /*---------------------------------------------------------------------------------------------------------------*/
 
-CREATE OR REPLACE PROCEDURE KB_SUBE_GETIR(
-    p_id         IN KB_SUBE.ID%TYPE,
+CREATE OR REPLACE PROCEDURE KB_SUBE_GETIRBYID(
+    P_ID        IN KB_SUBE.ID%TYPE,
 
-    p_sonuc      OUT SYS_REFCURSOR
+    P_SONUC     OUT SYS_REFCURSOR
 )
-IS
+AS
 BEGIN
-    OPEN p_sonuc FOR
-        SELECT *
-        FROM KB_SUBE
-        WHERE ID = p_id;
-END;
+    OPEN P_SONUC FOR SELECT * FROM KB_SUBE WHERE ID = P_ID;
+END KB_SUBE_GETIRBYID;
 /
 
-VARIABLE v_sonuc REFCURSOR;
-
-EXEC KB_SUBE_GETIR(15, :v_sonuc);
-
-PRINT v_sonuc;
-
-/*---------------------------------------------------------------------------------------------------------------*/
 
 
 CREATE OR REPLACE PROCEDURE KB_SUBE_LISTELE(
-   p_sube_id           IN KB_SUBE.ID%TYPE,
-   p_sube_adi          IN KB_SUBE.SUBEADI%TYPE,
-   p_sube_kodu         IN KB_SUBE.SUBEKODU%TYPE,
-   p_sube_telefon_no   IN KB_SUBE.SUBETELEFONNO%TYPE,
-   p_sube_adres        IN KB_SUBE.SUBEADRES%TYPE,
-   p_sube_durum_kodu   IN KB_SUBE.SUBEDURUMKODU%TYPE,
+   P_ID             IN KB_SUBE.ID%TYPE,
+   P_AD             IN KB_SUBE.SUBEADI%TYPE,
+   P_SUBEKODU       IN KB_SUBE.SUBEKODU%TYPE,
+   P_TELEFONNO      IN KB_SUBE.SUBETELEFONNO%TYPE,
+   P_ADRES          IN KB_SUBE.SUBEADRES%TYPE,
+   P_DURUMKODU      IN KB_SUBE.SUBEDURUMKODU%TYPE,
    
-    p_sonuc      OUT SYS_REFCURSOR
+    P_SONUC         OUT SYS_REFCURSOR
 )
-IS
+AS
 BEGIN
-    OPEN p_sonuc FOR
-        SELECT *
-        FROM KB_SUBE
-        WHERE (p_sube_id IS NULL OR ID = p_sube_id)
-          AND (p_sube_adi IS NULL OR UPPER(SUBEADI) LIKE '%' || UPPER(p_sube_adi) || '%')
-          AND (p_sube_kodu IS NULL OR SUBEKODU = p_sube_kodu)
-          AND (p_sube_telefon_no IS NULL OR SUBETELEFONNO = p_sube_telefon_no)
-          AND (p_sube_adres IS NULL OR UPPER(SUBEADRES) LIKE '%' || UPPER(p_sube_adres) || '%')
-          AND (p_sube_durum_kodu IS NULL OR SUBEDURUMKODU = p_sube_durum_kodu);
+    OPEN P_SONUC FOR SELECT * FROM KB_SUBE
+    WHERE 
+        (P_ID IS NULL OR ID = P_ID)
+    AND (P_AD IS NULL OR UPPER(SUBEADI) LIKE '%' || UPPER(P_AD) || '%')
+    AND (P_SUBEKODU IS NULL OR SUBEKODU = P_SUBEKODU)
+    AND (P_TELEFONNO IS NULL OR SUBETELEFONNO = P_TELEFONNO)
+    AND (P_ADRES IS NULL OR UPPER(SUBEADRES) LIKE '%' || UPPER(P_ADRES) || '%')
+    AND (P_DURUMKODU IS NULL OR SUBEDURUMKODU = P_DURUMKODU);
 END;
 /
-
-VARIABLE v_sonuc REFCURSOR;
-
-EXEC KB_SUBE_LISTELE(p_sube_adres=> 'ş', p_sube_durum_kodu  => 1, p_sonuc => :v_sonuc);
-
-PRINT v_sonuc;
 
 
 /*---------------------------------------------------------------------------------------------------------------*/
 
 CREATE OR REPLACE PROCEDURE KB_SUBE_SIL(
-    p_id         IN KB_SUBE.ID%TYPE
-
+    P_ID IN KB_SUBE.ID%TYPE
 )
-IS
+AS
 BEGIN
-    DELETE FROM KB_SUBE
-    WHERE ID = p_id;
-
+    DELETE FROM KB_SUBE WHERE ID = P_ID;
 END;
 /
-
-EXEC KB_SUBE_SIL(16);
 
 /*---------------------------------------------------------------------------------------------------------------*/
 
 CREATE OR REPLACE PROCEDURE KB_SUBE_GUNCELLE(
-    p_id                IN KB_SUBE.ID%TYPE,
-    p_sube_adi          IN KB_SUBE.SUBEADI%TYPE,
-    p_sube_telefon_no   IN KB_SUBE.SUBETELEFONNO%TYPE,
-    p_sube_adres        IN KB_SUBE.SUBEADRES%TYPE,
-    p_sube_durum_kodu   IN KB_SUBE.SUBEDURUMKODU%TYPE
+    P_ID            IN KB_SUBE.ID%TYPE,
+    P_AD            IN KB_SUBE.SUBEADI%TYPE         DEFAULT NULL,
+    P_TELEFONNO     IN KB_SUBE.SUBETELEFONNO%TYPE   DEFAULT NULL,
+    P_ADRES         IN KB_SUBE.SUBEADRES%TYPE       DEFAULT NULL,
+    P_DURUMKODU     IN KB_SUBE.SUBEDURUMKODU%TYPE   DEFAULT NULL
 )
-IS
+AS
 BEGIN
     UPDATE KB_SUBE
-    SET SUBEADI = p_sube_adi,
-        SUBETELEFONNO = p_sube_telefon_no,
-        SUBEADRES = p_sube_adres,
-        SUBEDURUMKODU = p_sube_durum_kodu
-    WHERE ID = p_id;
-
+    SET SUBEADI         = NVL(P_AD, SUBEADI),
+        SUBETELEFONNO   = NVL(P_TELEFONNO, SUBETELEFONNO),
+        SUBEADRES       = NVL(P_ADRES, SUBEADRES),
+        SUBEDURUMKODU   = NVL(P_DURUMKODU, SUBEDURUMKODU)
+    WHERE ID = P_ID;
 END;
 /
-
-SELECT *
-FROM KB_SUBE
-WHERE ID = 15;
-
-
-BEGIN
-    KB_SUBE_GUNCELLE
-    (
-        p_id                => 15,
-        p_sube_adi          => 'Beşiktaş Şube',
-        p_sube_telefon_no   => '02121234565',
-        p_sube_adres        => 'Beşiktaş, İstanbul',
-        p_sube_durum_kodu   => 1
-    );
-END;
-/
-
-COMMIT;
-
-
-
-
-
