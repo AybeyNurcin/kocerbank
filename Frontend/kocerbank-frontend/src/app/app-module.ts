@@ -15,6 +15,8 @@ import { AdminLayout } from './layouts/admin-layout/admin-layout';
 import { Navbar } from './shared/components/navbar/navbar';
 import { SubeFormu } from './features/subeler/sube-formu/sube-formu';
 
+import { provideHttpClient } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     App,
@@ -28,7 +30,10 @@ import { SubeFormu } from './features/subeler/sube-formu/sube-formu';
     SubeFormu,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
-  providers: [provideBrowserGlobalErrorListeners()],
+  providers: [
+  provideBrowserGlobalErrorListeners(),
+  provideHttpClient()
+  ],
   bootstrap: [App],
 })
 export class AppModule {}

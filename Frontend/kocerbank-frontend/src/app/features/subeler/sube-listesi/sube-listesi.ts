@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { Sube } from '../models/sube-model';
-import { AktifPasifDurumlari } from '../../../shared/enums/aktif-pasif-durumlari-enum';
+import { SubeApi } from '../services/sube-api';
 
 @Component({
   selector: 'app-sube-listesi',
@@ -8,32 +12,51 @@ import { AktifPasifDurumlari } from '../../../shared/enums/aktif-pasif-durumlari
   templateUrl: './sube-listesi.html',
   styleUrl: './sube-listesi.css'
 })
-export class SubeListesi {
+export class SubeListesi implements OnInit {
+
+  subeler: Sube[] = [];
 
   subeFormuAcikMi: boolean = false;
+  yukleniyorMu: boolean = false;
+  hataMesaji: string = '';
 
-subeler: Sube[] = [
-  {
-    id: 1,
-    subeKodu: 'S0001',
-    subeAdi: 'Ümraniye Şubesi',
-    subeTelefonNo: '02165236841',
-    subeAdres: 'Ümraniye, İstanbul',
-    subeDurumKodu: AktifPasifDurumlari.Aktif,
-    recordUser: 'KB0001',
-    recordDate: '2026-07-28T10:00:00'
-  },
-  {
-    id: 2,
-    subeKodu: 'S0002',
-    subeAdi: 'Esenler Şubesi',
-    subeTelefonNo: '02125234124',
-    subeAdres: 'Esenler, İstanbul',
-    subeDurumKodu: AktifPasifDurumlari.Pasif,
-    recordUser: 'KB0001',
-    recordDate: '2026-07-28T10:00:00'
+  constructor(private subeApi: SubeApi) {
   }
-];
+
+  ngOnInit(): void {
+    this.subeleriGetir();
+  }
+
+  subeleriGetir(): void {
+    this.yukleniyorMu = true;
+    this.hataMesaji = '';
+
+    this.subeApi.listele().subscribe({
+
+      next: (gelenSubeler: Sube[]) => {
+        console.log(
+          'Backend’den gelen şubeler:',
+          gelenSubeler
+        );
+
+        this.subeler = gelenSubeler;
+        this.yukleniyorMu = false;
+      },
+
+      error: (hata) => {
+        console.error(
+          'Şube listeleme hatası:',
+          hata
+        );
+
+        this.hataMesaji =
+          'Şubeler getirilirken bir hata oluştu.';
+
+        this.yukleniyorMu = false;
+      }
+
+    });
+  }
 
   subeFormunuAc(): void {
     this.subeFormuAcikMi = true;
@@ -44,10 +67,16 @@ subeler: Sube[] = [
   }
 
   duzenle(id: number): void {
-    console.log('Düzenlenecek şube ID:', id);
+    console.log(
+      'Düzenlenecek şube ID:',
+      id
+    );
   }
 
   sil(id: number): void {
-    console.log('Silinecek şube ID:', id);
+    console.log(
+      'Silinecek şube ID:',
+      id
+    );
   }
 }

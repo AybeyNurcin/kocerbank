@@ -4,6 +4,7 @@
 
     <div>
       <h1>Şube Yönetimi</h1>
+
       <p>
         Banka şubelerini görüntüleyebilir, filtreleyebilir
         ve yönetebilirsiniz.
@@ -13,8 +14,10 @@
     <button type="button"
             class="new-branch-button"
             (click)="subeFormunuAc()">
+
       <span>+</span>
       Yeni Şube
+
     </button>
 
   </div>
@@ -22,51 +25,75 @@
   <div class="filter-card">
 
     <div class="filter-title">
+
       <h2>Şube Ara</h2>
 
       <button type="button"
               class="clear-button">
         Filtreleri Temizle
       </button>
+
     </div>
 
     <div class="filter-fields">
 
       <div class="form-field">
-        <label for="subeKodu">Şube kodu</label>
+        <label for="subeKodu">
+          Şube kodu
+        </label>
+
         <input id="subeKodu"
                type="text"
                placeholder="Örnek: S0001" />
       </div>
 
       <div class="form-field">
-        <label for="subeAdi">Şube adı</label>
+        <label for="subeAdi">
+          Şube adı
+        </label>
+
         <input id="subeAdi"
                type="text"
                placeholder="Şube adı giriniz" />
       </div>
 
       <div class="form-field">
-        <label for="telefon">Telefon</label>
+        <label for="telefon">
+          Telefon
+        </label>
+
         <input id="telefon"
                type="text"
                placeholder="Telefon numarası" />
       </div>
 
       <div class="form-field address-field">
-        <label for="adres">Adres</label>
+        <label for="adres">
+          Adres
+        </label>
+
         <input id="adres"
                type="text"
                placeholder="Adres bilgisi" />
       </div>
 
       <div class="form-field">
-        <label for="durum">Durum</label>
+        <label for="durum">
+          Durum
+        </label>
 
         <select id="durum">
-          <option value="">Tümü</option>
-          <option value="1">Aktif</option>
-          <option value="2">Pasif</option>
+          <option value="">
+            Tümü
+          </option>
+
+          <option value="1">
+            Aktif
+          </option>
+
+          <option value="2">
+            Pasif
+          </option>
         </select>
       </div>
 
@@ -79,13 +106,32 @@
 
   </div>
 
+  <!-- Listeleme isteği devam ediyorsa gösterilir -->
+  @if (yukleniyorMu) {
+  <div class="information-message">
+    Şubeler yükleniyor...
+  </div>
+  }
+
+  <!-- Listeleme sırasında hata oluşursa gösterilir -->
+  @if (hataMesaji !== '') {
+  <div class="error-message">
+    {{ hataMesaji }}
+  </div>
+  }
+
   <div class="table-card">
 
     <div class="table-heading">
+
       <div>
         <h2>Şubeler</h2>
-        <span>{{ subeler.length }} kayıt görüntüleniyor</span>
+
+        <span>
+          {{ subeler.length }} kayıt görüntüleniyor
+        </span>
       </div>
+
     </div>
 
     <div class="table-container">
@@ -99,13 +145,17 @@
             <th>Telefon</th>
             <th>Adres</th>
             <th>Durum</th>
-            <th class="actions-column">İşlemler</th>
+
+            <th class="actions-column">
+              İşlemler
+            </th>
           </tr>
         </thead>
 
         <tbody>
 
           @for (sube of subeler; track sube.id) {
+
           <tr>
 
             <td class="branch-code">
@@ -125,6 +175,7 @@
             </td>
 
             <td>
+
               @if (sube.subeDurumKodu === 1) {
               <span class="status active-status">
                 Aktif
@@ -134,6 +185,7 @@
                 Pasif
               </span>
               }
+
             </td>
 
             <td class="actions">
@@ -153,6 +205,19 @@
             </td>
 
           </tr>
+
+          } @empty {
+
+          <!-- Yükleme bittiyse ve kayıt yoksa gösterilir -->
+          @if (!yukleniyorMu) {
+          <tr>
+            <td colspan="6"
+                class="empty-table-message">
+              Görüntülenecek şube bulunamadı.
+            </td>
+          </tr>
+          }
+
           }
 
         </tbody>
@@ -164,9 +229,11 @@
   </div>
 
   @if (subeFormuAcikMi) {
+
   <div class="modal-background">
 
     <div class="temporary-modal">
+
       <h2>Yeni Şube Ekle</h2>
 
       <p>
@@ -177,9 +244,11 @@
               (click)="subeFormunuKapat()">
         Kapat
       </button>
+
     </div>
 
   </div>
+
   }
 
 </section>

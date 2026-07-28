@@ -232,3 +232,30 @@ tbody tr:hover {
   .temporary-modal h2 {
     margin-top: 0;
   }
+
+
+.information-message,
+.error-message {
+  margin-bottom: 18px;
+  padding: 14px;
+  border-radius: 7px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.information-message {
+  background-color: #fff6cf;
+  color: #725c00;
+}
+
+.error-message {
+  background-color: #fbe4e4;
+  color: #a52f2f;
+}
+
+.empty-table-message {
+  padding: 30px;
+  color: #77777e;
+  text-align: center;
+  font-size: 14px;
+}
