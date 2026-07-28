@@ -1,1 +1,184 @@
-<p>sube-formu works!</p>
+<div class="form-header">
+
+  <div>
+
+    @if (sube === null) {
+
+    <h2>Yeni Şube Ekle</h2>
+
+    <p>
+      Yeni şubenin bilgilerini giriniz.
+    </p>
+
+    } @else {
+
+    <h2>Şube Düzenle</h2>
+
+    <p>
+      {{ sube.subeKodu }} kodlu şubenin
+      bilgilerini güncelleyiniz.
+    </p>
+
+    }
+
+  </div>
+
+  <button type="button"
+          class="close-button"
+          [disabled]="kaydediliyorMu"
+          (click)="formuKapat()">
+    ×
+  </button>
+
+</div>
+
+
+@if (hataMesaji !== '') {
+
+<div class="form-error-message">
+  {{ hataMesaji }}
+</div>
+
+}
+
+
+<form (ngSubmit)="kaydet()">
+
+  <div class="popup-fields">
+
+
+    <!-- ŞUBE KODU SADECE GÜNCELLEMEDE GÖSTERİLİR -->
+    @if (sube !== null) {
+
+    <div class="popup-field full-field">
+
+      <label for="formSubeKodu">
+        Şube kodu
+      </label>
+
+      <input id="formSubeKodu"
+             name="formSubeKodu"
+             type="text"
+             [value]="sube.subeKodu"
+             disabled />
+
+    </div>
+
+    }
+
+
+    <!-- ŞUBE ADI -->
+    <div class="popup-field">
+
+      <label for="formSubeAdi">
+        Şube adı
+      </label>
+
+      <input id="formSubeAdi"
+             name="formSubeAdi"
+             type="text"
+             [(ngModel)]="formModel.subeAdi"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
+
+    </div>
+
+
+    <!-- TELEFON -->
+    <div class="popup-field">
+
+      <label for="formTelefon">
+        Telefon
+      </label>
+
+      <input id="formTelefon"
+             name="formTelefon"
+             type="text"
+             [(ngModel)]="formModel.subeTelefonNo"
+             [disabled]="kaydediliyorMu"
+             maxlength="11"
+             required />
+
+    </div>
+
+
+    <!-- ADRES -->
+    <div class="popup-field full-field">
+
+      <label for="formAdres">
+        Adres
+      </label>
+
+      <input id="formAdres"
+             name="formAdres"
+             type="text"
+             [(ngModel)]="formModel.subeAdres"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
+
+    </div>
+
+
+    <!-- DURUM -->
+    <div class="popup-field full-field">
+
+      <label for="formDurum">
+        Durum
+      </label>
+
+      <select id="formDurum"
+              name="formDurum"
+              [(ngModel)]="formModel.subeDurumKodu"
+              [disabled]="kaydediliyorMu"
+              required>
+
+        <option [ngValue]="1">
+          Aktif
+        </option>
+
+        <option [ngValue]="2">
+          Pasif
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <!-- FORM BUTONLARI -->
+  <div class="form-actions">
+
+    <button type="button"
+            class="cancel-button"
+            [disabled]="kaydediliyorMu"
+            (click)="formuKapat()">
+      Vazgeç
+    </button>
+
+    <button type="submit"
+            class="save-button"
+            [disabled]="kaydediliyorMu">
+
+      @if (kaydediliyorMu) {
+
+      Kaydediliyor...
+
+      } @else if (sube === null) {
+
+      Şube Ekle
+
+      } @else {
+
+      Değişiklikleri Kaydet
+
+      }
+
+    </button>
+
+  </div>
+
+</form>
