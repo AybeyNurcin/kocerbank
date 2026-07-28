@@ -19,5 +19,22 @@ namespace kocerbank_backend.Models.DTOs
         public string Unvan { get; set; } = string.Empty;
         public DateTime? KayitOlusturmaTarihi { get; set; }
     }
+    public class MusteriAramaKriterleriDTO
+    {
+        public long? Id { get; set; }
+        public string? Ad { get; set; }
+        public string? Soyad { get; set; }
+        public string? Eposta { get; set; }
+        public DateTime? DogumTarihi { get; set; }
+        public string? TelefonNo { get; set; }
+        public long? TCKN { get; set; }
+        public CinsiyetDurumlari? Cinsiyet { get; set; }
+        public long? VKN { get; set; }
+        public MusteriTipiDurumlari? MusteriTipi { get; set; }
+        public string? SubeSubeKodu { get; set; }
+        public AktifPasifDurumlari? DurumKodu { get; set; }
+        public string? Unvan { get; set; }
+        public DateTime? KayitOlusturmaTarihi { get; set; }
+    }
 }
 

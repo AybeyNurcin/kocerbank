@@ -20,20 +20,13 @@ namespace kocerbank_backend.Controllers
         {
             try
             {
-                MusteriDTO eklenenMusteri =
-                    _musteriService.Ekle(dto);
+                MusteriDTO eklenenMusteri = _musteriService.Ekle(dto);
 
-                return CreatedAtAction(
-                    nameof(GetirById),
-                    new { id = eklenenMusteri.Id },
-                    eklenenMusteri);
+                return CreatedAtAction(nameof(GetirById), new { id = eklenenMusteri.Id }, eklenenMusteri);
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(new{mesaj = ex.Message});
             }
         }
 
@@ -66,7 +59,7 @@ namespace kocerbank_backend.Controllers
 
         [HttpPost("listele")]
         public IActionResult Listele(
-            [FromBody] MusteriDTO aramaKriterleri)
+            [FromBody] MusteriAramaKriterleriDTO aramaKriterleri)
         {
             List<MusteriDTO> musteriler =
                 _musteriService.Listele(aramaKriterleri);

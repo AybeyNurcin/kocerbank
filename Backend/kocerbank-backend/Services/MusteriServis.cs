@@ -30,16 +30,12 @@ namespace kocerbank_backend.Services
             {
                 throw new Exception("Geçersiz müşteri ID'si.");
             }
-            if (id >= 9999999)
-            {
-                throw new Exception("Geçersiz müşteri ID'si.");
-            }
 
             return _musteriRepository.GetirById(id);
         }
 
         // 3. LİSTELEME
-        public List<MusteriDTO> Listele(MusteriDTO aramaKriterleri)
+        public List<MusteriDTO> Listele(MusteriAramaKriterleriDTO aramaKriterleri)
         {
             // Burada zorunlu doğrulama yok çünkü kriterler opsiyonel (None/boş olabilir)
             return _musteriRepository.Listele(aramaKriterleri);
