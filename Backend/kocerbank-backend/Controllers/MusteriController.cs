@@ -82,10 +82,7 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(new{mesaj = ex.Message});
             }
         }
 
@@ -100,10 +97,7 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(new{mesaj = ex.Message});
             }
         }
     }

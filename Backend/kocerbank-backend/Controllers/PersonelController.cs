@@ -18,30 +18,22 @@ namespace kocerbank_backend.Controllers
 
         // 1. PERSONEL EKLEME
         // POST /api/Personel
-        [HttpPost]
-        public IActionResult Ekle([FromBody] PersonelDTO dto)
-        {
-            try
+        [HttpPost("Ekle")]
+            public IActionResult Ekle([FromBody] PersonelDTO dto)
             {
-                PersonelDTO eklenenPersonel =
-                    _personelService.Ekle(dto);
+                try
+                {
+                    PersonelDTO eklenenPersonel = _personelService.Ekle(dto);
 
-                return CreatedAtAction(
-                    nameof(GetirById),
-                    new { id = eklenenPersonel.Id },
-                    eklenenPersonel);
+                    return CreatedAtAction(nameof(GetirById), new { id = eklenenPersonel.Id }, eklenenPersonel);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new{mesaj = ex.Message});
+                }
             }
-            catch (Exception ex)
-            {
-                return BadRequest(
-                    "Personel ekleme işlemi sırasında hata oluştu: "
-                    + ex.Message);
-            }
-        }
 
-        // 2. ID'YE GÖRE PERSONEL GETİRME
-        // GET /api/Personel/5
-        [HttpGet("{id:long}")]
+        [HttpGet("GetiryById/{id:long}")]
         public IActionResult GetirById(long id)
         {
             try
@@ -59,16 +51,15 @@ namespace kocerbank_backend.Controllers
 
                 return Ok(personel);
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
-                return BadRequest(
-                    "Personel getirme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
 
-        // 3. KRİTERE GÖRE PERSONEL LİSTELEME
-        // POST /api/Personel/listele
         [HttpPost("listele")]
         public IActionResult Listele(
             [FromBody] PersonelAramaKriterleriDTO aramaKriterleri)
@@ -79,9 +70,7 @@ namespace kocerbank_backend.Controllers
             return Ok(personeller);
         }
 
-        // 4. PERSONEL GÜNCELLEME
-        // PUT /api/Personel/5
-        [HttpPut("{id:long}")]
+        [HttpPut("Güncelle/{id:long}")]
         public IActionResult Guncelle(
             long id,
             [FromBody] PersonelDTO dto)
@@ -96,15 +85,12 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    "Personel güncelleme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new{mesaj = ex.Message});
             }
         }
 
-        // 5. PERSONEL SİLME
-        // DELETE /api/Personel/5
-        [HttpDelete("{id:long}")]
+
+        [HttpDelete("Sil/{id:long}")]
         public IActionResult Sil(long id)
         {
             try
@@ -115,9 +101,7 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    "Personel silme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new{mesaj = ex.Message});
             }
         }
     }
