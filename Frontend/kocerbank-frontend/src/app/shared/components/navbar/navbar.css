@@ -1,0 +1,141 @@
+.admin-header {
+  width: 100%;
+  padding: 22px 45px 14px;
+  background-color: #e3e3e7;
+  border-bottom: 2px solid #8a8a8f;
+  box-sizing: border-box;
+}
+
+/* Üst satır */
+.header-top {
+  min-height: 75px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+/* Ortadaki banka logosu */
+.bank-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.bank-symbol {
+  width: 56px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient( 145deg, #f4c400, #c99d00 );
+  border-radius: 14px 5px 14px 5px;
+  color: #f2f2f3;
+  font-family: Georgia, serif;
+  font-size: 34px;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.bank-name {
+  color: #26251d;
+  font-family: Georgia, serif;
+  font-size: 43px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+/* Sağdaki personel alanı */
+.personel-info {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.personel-sicil {
+  color: #303037;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* CSS ile oluşturulan kullanıcı simgesi */
+.personel-icon {
+  position: relative;
+  width: 34px;
+  height: 32px;
+}
+
+.icon-head {
+  position: absolute;
+  top: 2px;
+  left: 11px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #7552a8;
+  border-radius: 50%;
+}
+
+.icon-body {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  width: 25px;
+  height: 16px;
+  border: 2px solid #7552a8;
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+}
+
+/* Menü alanı */
+.navigation {
+  width: min(800px, 100%);
+  margin: 16px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 35px;
+  align-items: center;
+}
+
+  /* Menü butonları */
+  .navigation a {
+    padding: 9px 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #c6c5ca;
+    border-radius: 22px;
+    background-color: #f5f5f6;
+    color: #55515d;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 5px rgba(50, 50, 50, 0.1);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+    .navigation a:hover {
+      transform: translateY(-2px);
+      background-color: #ece8f3;
+    }
+
+    /* Açık olan sayfanın butonu */
+    .navigation a.active {
+      border-color: #7351a3;
+      background-color: #7351a3;
+      color: white;
+    }
+
+.menu-icon {
+  color: #7351a3;
+  font-size: 9px;
+}
+
+.navigation a.active .menu-icon {
+  color: white;
+}
+
+

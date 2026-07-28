@@ -1,0 +1,105 @@
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Gözü yormayan sıcak gri */
+  background-color: #d9d8d2;
+  /* Hafif geometrik desen */
+  background-image: linear-gradient( 30deg, rgba(80, 80, 75, 0.045) 12%, transparent 12.5%, transparent 87%, rgba(80, 80, 75, 0.045) 87.5% ), linear-gradient( 150deg, rgba(80, 80, 75, 0.045) 12%, transparent 12.5%, transparent 87%, rgba(80, 80, 75, 0.045) 87.5% ), linear-gradient( 30deg, rgba(80, 80, 75, 0.045) 12%, transparent 12.5%, transparent 87%, rgba(80, 80, 75, 0.045) 87.5% ), linear-gradient( 150deg, rgba(80, 80, 75, 0.045) 12%, transparent 12.5%, transparent 87%, rgba(80, 80, 75, 0.045) 87.5% );
+  background-size: 80px 140px;
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+}
+
+.login-card {
+  width: 370px;
+  padding: 38px;
+  /* Altın sarısı giriş penceresi */
+  background: linear-gradient( 145deg, #e4b900, #c99d00 );
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(50, 50, 50, 0.22);
+}
+
+  /* KoçerBank yazısı */
+  .login-card h1 {
+    margin: 0 0 6px;
+    text-align: center;
+    /* Sayfa arka planıyla aynı renk */
+    color: #eef0f2;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+  }
+
+  /* Personel Girişi */
+  .login-card h2 {
+    margin: 0 0 30px;
+    text-align: center;
+    color: #4b4635;
+    font-family: Arial, sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+  .form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: #413b29;
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    outline: none;
+    color: #333333;
+    font-size: 15px;
+  }
+
+    .form-group input:focus {
+      border-color: #75611c;
+      box-shadow: 0 0 0 3px rgba(92, 77, 24, 0.2);
+    }
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #4b4f52;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+  button:hover {
+    background-color: #363a3d;
+    transform: translateY(-1px);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+.error-message {
+  padding: 10px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #b42318;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
