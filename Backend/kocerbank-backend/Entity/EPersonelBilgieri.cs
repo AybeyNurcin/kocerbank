@@ -106,7 +106,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_PERSONEL_ADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Ad ?? DBNull.Value;
                     KB.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Soyad ?? DBNull.Value;
                     KB.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Rol ?? DBNull.Value;
-                    KB.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = aramaKriterleri.TCKN == 0 ? DBNull.Value : aramaKriterleri.TCKN;
+                    KB.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Varchar2).Value = (object)aramaKriterleri.TCKN ?? DBNull.Value;
                     KB.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = (object)aramaKriterleri.TelefonNo ?? DBNull.Value;
                     KB.Parameters.Add("P_PERSONEL_SUBEKODU", OracleDbType.Varchar2).Value = (object)aramaKriterleri.SubeKodu ?? DBNull.Value;
                     KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = (object)aramaKriterleri.Adres ?? DBNull.Value;
@@ -142,7 +142,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_PERSONEL_SOYADI", OracleDbType.Varchar2).Value = dto.Soyad;
                     KB.Parameters.Add("P_PERSONEL_ROLU", OracleDbType.Varchar2).Value = dto.Rol;
                     KB.Parameters.Add("P_PERSONEL_SIFRESI", OracleDbType.Varchar2).Value = dto.Sifre;
-                    KB.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Int32).Value = dto.TCKN;
+                    KB.Parameters.Add("P_PERSONEL_TCKN", OracleDbType.Varchar2).Value = dto.TCKN;
                     KB.Parameters.Add("P_PERSONEL_TELEFON_NO", OracleDbType.Varchar2).Value = dto.TelefonNo;
                     KB.Parameters.Add("P_PERSONEL_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
                     KB.Parameters.Add("P_PERSONEL_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
@@ -183,7 +183,7 @@ namespace kocerbank_backend.DataAccess
                 Rol = reader["ROL"].ToString(),
                 Sicil = reader["SICIL"].ToString(),
                 Sifre = reader["SIFRE"].ToString(),
-                TCKN = Convert.ToInt32(reader["TCKN"]),
+                TCKN = Convert.ToString(reader["TCKN"]),
                 TelefonNo = reader["TELEFONNO"].ToString(),
                 Adres = reader["ADRES"].ToString(),
                 Email = reader["EPOSTA"].ToString(),
