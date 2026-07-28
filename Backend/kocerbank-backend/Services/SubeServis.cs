@@ -26,7 +26,7 @@ namespace kocerbank_backend.Services
         SubeBilgileriniKontrolEt(dto);
 
         // Kullanıcının girdiği bilgilerle listeleme filtresi hazırlanır.
-        SubeDTO aramaKriterleri = new SubeDTO
+        SubeAramaKriterleriDTO aramaKriterleri = new SubeAramaKriterleriDTO
         {
             SubeAdi = dto.SubeAdi,
             SubeTelefonNo = dto.SubeTelefonNo,
@@ -66,7 +66,7 @@ namespace kocerbank_backend.Services
     }
 
         // 3. KRİTERE GÖRE ŞUBE LİSTELEME
-        public List<SubeDTO> Listele(SubeDTO aramaKriterleri)
+        public List<SubeDTO> Listele(SubeAramaKriterleriDTO aramaKriterleri)
         {
             return _subeRepository.GetirListele(aramaKriterleri);
         }
@@ -98,7 +98,7 @@ namespace kocerbank_backend.Services
 
         // Yeni bilgilerle aynı başka bir şube var mı?
         // Şube kodu ve durum kodu duplicate kontrolüne dahil edilmez.
-        SubeDTO aramaKriterleri = new SubeDTO
+        SubeAramaKriterleriDTO aramaKriterleri = new SubeAramaKriterleriDTO
         {
             SubeAdi = dto.SubeAdi,
             SubeTelefonNo = dto.SubeTelefonNo,
