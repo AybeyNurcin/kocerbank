@@ -3,10 +3,24 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
+import { PersonelGiris } from './features/auth/personel-giris/personel-giris';
+import { Dashboard } from './features/dashboard/dashboard/dashboard';
+import { SubeListesi } from './features/subeler/sube-listesi/sube-listesi';
+import { PersonelListesi } from './features/personeller/personel-listesi/personel-listesi';
+import { MusteriListesi } from './features/musteriler/musteri-listesi/musteri-listesi';
+import { AdminLayout } from './layouts/admin-layout/admin-layout';
+import { Navbar } from './shared/components/navbar/navbar';
 
 @NgModule({
   declarations: [
-    App
+    App,
+    PersonelGiris,
+    Dashboard,
+    SubeListesi,
+    PersonelListesi,
+    MusteriListesi,
+    AdminLayout,
+    Navbar
   ],
   imports: [
     BrowserModule,
