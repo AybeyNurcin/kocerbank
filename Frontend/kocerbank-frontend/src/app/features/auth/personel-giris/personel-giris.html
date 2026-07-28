@@ -1,1 +1,48 @@
-<p>personel-giris works!</p>
+<div class="login-page">
+
+  <div class="login-card">
+
+    <h1>KoçerBank</h1>
+    <h2>Personel Girişi</h2>
+
+    <form (ngSubmit)="girisYap()">
+
+      <div class="form-group">
+        <label for="sicilNo">
+          Sicil numarası
+        </label>
+
+        <input id="sicilNo"
+               name="sicilNo"
+               type="text"
+               [(ngModel)]="sicilNo"
+               placeholder="Örnek: KB0001" />
+      </div>
+
+      <div class="form-group">
+        <label for="sifre">
+          Şifre
+        </label>
+
+        <input id="sifre"
+               name="sifre"
+               type="password"
+               [(ngModel)]="sifre"
+               placeholder="Şifrenizi giriniz" />
+      </div>
+
+      @if (hataMesaji !== '') {
+      <p class="error-message">
+        {{ hataMesaji }}
+      </p>
+      }
+
+      <button type="submit">
+        Giriş Yap
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

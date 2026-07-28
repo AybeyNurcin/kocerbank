@@ -1,17 +1,56 @@
-<nav>
-  <a routerLink="/dashboard" routerLinkActive="active">
-    Dashboard
-  </a>
+<header class="admin-header">
 
-  <a routerLink="/subeler" routerLinkActive="active">
-    Şubeler
-  </a>
+  <div class="header-top">
 
-  <a routerLink="/personeller" routerLinkActive="active">
-    Personeller
-  </a>
+    <!-- Sol taraf bilinçli olarak boş bırakılıyor -->
+    <div class="header-spacer"></div>
 
-  <a routerLink="/musteriler" routerLinkActive="active">
-    Müşteriler
-  </a>
-</nav>
+    <!-- Ekranın tam ortasındaki logo -->
+    <div class="bank-brand">
+      <div class="bank-symbol">K</div>
+      <div class="bank-name">KoçerBank</div>
+    </div>
+
+    <!-- Sağdaki personel bilgisi -->
+    <div class="personel-info">
+      <span class="personel-sicil">
+        KB0001
+      </span>
+
+      <div class="personel-icon">
+        <span class="icon-head"></span>
+        <span class="icon-body"></span>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="navigation">
+
+    <a routerLink="/dashboard"
+       routerLinkActive="active">
+      <span class="menu-icon">◆</span>
+      Dashboard
+    </a>
+
+    <a routerLink="/subeler"
+       routerLinkActive="active">
+      <span class="menu-icon">◆</span>
+      Şubeler
+    </a>
+
+    <a routerLink="/personeller"
+       routerLinkActive="active">
+      <span class="menu-icon">◆</span>
+      Personeller
+    </a>
+
+    <a routerLink="/musteriler"
+       routerLinkActive="active">
+      <span class="menu-icon">◆</span>
+      Müşteriler
+    </a>
+
+  </nav>
+
+</header>

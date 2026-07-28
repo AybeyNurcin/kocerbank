@@ -1,1 +1,185 @@
-<p>sube-listesi works!</p>
+<section class="sube-page">
+
+  <div class="page-heading">
+
+    <div>
+      <h1>Şube Yönetimi</h1>
+      <p>
+        Banka şubelerini görüntüleyebilir, filtreleyebilir
+        ve yönetebilirsiniz.
+      </p>
+    </div>
+
+    <button type="button"
+            class="new-branch-button"
+            (click)="subeFormunuAc()">
+      <span>+</span>
+      Yeni Şube
+    </button>
+
+  </div>
+
+  <div class="filter-card">
+
+    <div class="filter-title">
+      <h2>Şube Ara</h2>
+
+      <button type="button"
+              class="clear-button">
+        Filtreleri Temizle
+      </button>
+    </div>
+
+    <div class="filter-fields">
+
+      <div class="form-field">
+        <label for="subeKodu">Şube kodu</label>
+        <input id="subeKodu"
+               type="text"
+               placeholder="Örnek: S0001" />
+      </div>
+
+      <div class="form-field">
+        <label for="subeAdi">Şube adı</label>
+        <input id="subeAdi"
+               type="text"
+               placeholder="Şube adı giriniz" />
+      </div>
+
+      <div class="form-field">
+        <label for="telefon">Telefon</label>
+        <input id="telefon"
+               type="text"
+               placeholder="Telefon numarası" />
+      </div>
+
+      <div class="form-field address-field">
+        <label for="adres">Adres</label>
+        <input id="adres"
+               type="text"
+               placeholder="Adres bilgisi" />
+      </div>
+
+      <div class="form-field">
+        <label for="durum">Durum</label>
+
+        <select id="durum">
+          <option value="">Tümü</option>
+          <option value="1">Aktif</option>
+          <option value="2">Pasif</option>
+        </select>
+      </div>
+
+      <button type="button"
+              class="search-button">
+        Ara
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="table-card">
+
+    <div class="table-heading">
+      <div>
+        <h2>Şubeler</h2>
+        <span>{{ subeler.length }} kayıt görüntüleniyor</span>
+      </div>
+    </div>
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Şube Kodu</th>
+            <th>Şube Adı</th>
+            <th>Telefon</th>
+            <th>Adres</th>
+            <th>Durum</th>
+            <th class="actions-column">İşlemler</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (sube of subeler; track sube.id) {
+          <tr>
+
+            <td class="branch-code">
+              {{ sube.subeKodu }}
+            </td>
+
+            <td>
+              {{ sube.subeAdi }}
+            </td>
+
+            <td>
+              {{ sube.subeTelefonNo }}
+            </td>
+
+            <td>
+              {{ sube.subeAdres }}
+            </td>
+
+            <td>
+              @if (sube.subeDurumKodu === 1) {
+              <span class="status active-status">
+                Aktif
+              </span>
+              } @else {
+              <span class="status passive-status">
+                Pasif
+              </span>
+              }
+            </td>
+
+            <td class="actions">
+
+              <button type="button"
+                      class="edit-button"
+                      (click)="duzenle(sube.id)">
+                Düzenle
+              </button>
+
+              <button type="button"
+                      class="delete-button"
+                      (click)="sil(sube.id)">
+                Sil
+              </button>
+
+            </td>
+
+          </tr>
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  @if (subeFormuAcikMi) {
+  <div class="modal-background">
+
+    <div class="temporary-modal">
+      <h2>Yeni Şube Ekle</h2>
+
+      <p>
+        Bir sonraki aşamada şube formu burada gösterilecek.
+      </p>
+
+      <button type="button"
+              (click)="subeFormunuKapat()">
+        Kapat
+      </button>
+    </div>
+
+  </div>
+  }
+
+</section>
