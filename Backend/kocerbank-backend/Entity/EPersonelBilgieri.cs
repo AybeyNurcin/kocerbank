@@ -90,6 +90,11 @@ namespace kocerbank_backend.DataAccess
             return personel;
         }
 
+        public PersonelDTO? GetirBySicil(string sicil)
+        {
+            throw new NotImplementedException();
+        }
+
         // 3. KRİTERE GÖRE LİSTELE
         public List<PersonelDTO> GetirListele(PersonelAramaKriterleriDTO aramaKriterleri)
         {
