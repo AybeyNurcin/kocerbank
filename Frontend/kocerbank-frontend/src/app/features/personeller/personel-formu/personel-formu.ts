@@ -38,10 +38,6 @@ export class PersonelFormu implements OnChanges, OnInit {
 
   subeler: Sube[] = [];
 
-  sifreGorunurMu: boolean = false;
-
-  subeAramaTerimi: string = '';
-
   kaydediliyorMu: boolean = false;
   hataMesaji: string = '';
 
@@ -97,8 +93,6 @@ export class PersonelFormu implements OnChanges, OnInit {
     }
 
     this.hataMesaji = '';
-    this.sifreGorunurMu = false;
-    this.subeAramaTerimi = '';
 
     if (this.personel === null) {
       this.formModel = {
@@ -132,37 +126,6 @@ export class PersonelFormu implements OnChanges, OnInit {
       subeKodu: this.personel.subeKodu,
       durumKodu: this.personel.durumKodu
     };
-  }
-
-  get filtrelenmisSubeler(): Sube[] {
-
-    const terim =
-      this.subeAramaTerimi.trim().toLocaleLowerCase('tr');
-
-    if (terim === '') {
-      return this.subeler;
-    }
-
-    const eslesenler = this.subeler.filter(
-      sube =>
-        sube.subeKodu.toLocaleLowerCase('tr').includes(terim) ||
-        sube.subeAdi.toLocaleLowerCase('tr').includes(terim)
-    );
-
-    // Seçili şube, arama sonuçlarında olmasa bile listeden düşmez.
-    const seciliSube = this.subeler.find(
-      sube => sube.subeKodu === this.formModel.subeKodu
-    );
-
-    if (seciliSube && !eslesenler.includes(seciliSube)) {
-      return [seciliSube, ...eslesenler];
-    }
-
-    return eslesenler;
-  }
-
-  sifreGorunurluguDegistir(): void {
-    this.sifreGorunurMu = !this.sifreGorunurMu;
   }
 
   formuKapat(): void {

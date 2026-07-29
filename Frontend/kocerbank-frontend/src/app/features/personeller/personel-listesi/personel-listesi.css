@@ -102,7 +102,7 @@
 
 .filter-fields {
   display: grid;
-  grid-template-columns: 130px 1fr 1fr 130px 160px 140px 130px;
+  grid-template-columns: 1fr 1fr 130px 160px 140px 130px;
   gap: 14px;
   align-items: end;
 }

@@ -67,59 +67,6 @@
     color: #77777e;
   }
 
-.password-field {
-  position: relative;
-  display: flex;
-}
-
-  .password-field input {
-    flex: 1;
-    width: 100%;
-    padding-right: 40px;
-    box-sizing: border-box;
-  }
-
-.password-toggle-button {
-  position: absolute;
-  top: 50%;
-  right: 6px;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  border: none;
-  border-radius: 5px;
-  background: none;
-  color: #7351a3;
-  cursor: pointer;
-}
-
-  .password-toggle-button:hover {
-    background-color: #f3edf8;
-  }
-
-  .password-toggle-button:disabled {
-    color: #a9a9ae;
-    cursor: not-allowed;
-  }
-
-.sube-secim-field select {
-  margin-top: 7px;
-  height: auto;
-  padding: 4px;
-}
-
-  .sube-secim-field select option {
-    padding: 8px 9px;
-    border-radius: 4px;
-  }
-
-  .sube-secim-field select option:checked {
-    background-color: #d2a900;
-    color: white;
-  }
-
 .form-actions {
   margin-top: 25px;
   display: flex;
