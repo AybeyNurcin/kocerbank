@@ -17,8 +17,8 @@ builder.Services.AddScoped<MusteriRepository>();
 builder.Services.AddScoped<MusteriService>();
 builder.Services.AddScoped<PersonelRepository>();
 builder.Services.AddScoped<PersonelService>();
-builder.Services.AddScoped<MusteriIletisimRepository>();
-builder.Services.AddScoped<MusteriIletisimService>();
+//builder.Services.AddScoped<MusteriIletisimRepository>();
+//builder.Services.AddScoped<MusteriIletisimService>();
 
 builder.Services.AddCors(options =>
 {

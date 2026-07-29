@@ -128,47 +128,13 @@
         Şifre
       </label>
 
-      <div class="password-field">
-
-        <input id="formSifre"
-               name="formSifre"
-               [type]="sifreGorunurMu ? 'text' : 'password'"
-               [(ngModel)]="formModel.sifre"
-               [disabled]="kaydediliyorMu"
-               maxlength="50"
-               required />
-
-        <button type="button"
-                class="password-toggle-button"
-                [disabled]="kaydediliyorMu"
-                [attr.aria-label]="sifreGorunurMu ? 'Şifreyi gizle' : 'Şifreyi göster'"
-                (click)="sifreGorunurluguDegistir()">
-
-          @if (sifreGorunurMu) {
-
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round"
-               stroke-linejoin="round">
-            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.94" />
-            <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.77 21.77 0 0 1-2.16 3.19" />
-            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
-            <line x1="1" y1="1" x2="23" y2="23" />
-          </svg>
-
-          } @else {
-
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round"
-               stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-
-          }
-
-        </button>
-
-      </div>
+      <input id="formSifre"
+             name="formSifre"
+             type="password"
+             [(ngModel)]="formModel.sifre"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
 
     </div>
 
@@ -228,37 +194,27 @@
 
 
     <!-- ŞUBE -->
-    <div class="popup-field full-field sube-secim-field">
+    <div class="popup-field">
 
-      <label for="formSubeAra">
+      <label for="formSubeKodu">
         Şube
       </label>
 
-      <input id="formSubeAra"
-             name="formSubeAra"
-             type="text"
-             autocomplete="off"
-             [(ngModel)]="subeAramaTerimi"
-             [disabled]="kaydediliyorMu"
-             placeholder="Listede aramak için yazın" />
-
       <select id="formSubeKodu"
               name="formSubeKodu"
-              size="4"
               [(ngModel)]="formModel.subeKodu"
               [disabled]="kaydediliyorMu"
               required>
 
-        @for (sube of filtrelenmisSubeler; track sube.id) {
+        <option [ngValue]="''"
+                disabled>
+          Şube seçiniz
+        </option>
+
+        @for (sube of subeler; track sube.id) {
 
         <option [ngValue]="sube.subeKodu">
           {{ sube.subeKodu }} - {{ sube.subeAdi }}
-        </option>
-
-        } @empty {
-
-        <option [ngValue]="''" disabled>
-          Eşleşen şube bulunamadı.
         </option>
 
         }

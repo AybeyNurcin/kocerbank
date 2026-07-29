@@ -19,10 +19,12 @@ CREATE TABLE KB_MUSTERIBILGILERI(
     RECORDUSER              VARCHAR2(10),                                
     RECORDDATE              DATE                DEFAULT SYSDATE
 );
+select * from KB_HESAPBILGILERI;
 
 alter table kb_musteribilgileri add constraint chk_musteri_tckn_vkn check ((musteritipi = 1 and tckn is not null) or (musteritipi = 2 and vkn is not null));
 alter table kb_musteribilgileri add constraint chk_musteri_cinsiyet check ((musteritipi = 1 and cinsiyet is not null) or (musteritipi = 2 and cinsiyet is null));
-
+ALTER TABLE KB_MUSTERIBILGILERI MODIFY UNVAN NULL;
+desc kb_musteribilgileri;
 
 
 create TABLE KB_MUSTERIILETISIM(

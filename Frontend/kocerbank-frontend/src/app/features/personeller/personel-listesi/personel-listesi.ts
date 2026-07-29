@@ -72,7 +72,7 @@ export class PersonelListesi
 
   }
 
-  herhangiBirFiltreGirilmisMi(): boolean {
+  private herhangiBirFiltreGirilmisMi(): boolean {
 
     const kriterler = this.aramaKriterleri;
 
@@ -103,28 +103,12 @@ export class PersonelListesi
     this.yukleniyorMu = true;
     this.hataMesaji = '';
 
-    // Sicil, backend'de arama kriteri olarak desteklenmez
-    // (otomatik üretilen bir değerdir); bu yüzden sonuçlar
-    // döndükten sonra istemci tarafında daraltılır.
-    const { sicil, ...backendKriterleri } = kriterler;
-    const sicilFiltresi =
-      sicil?.trim().toLocaleLowerCase('tr') ?? '';
-
     this.personelApi
-      .listele(backendKriterleri)
+      .listele(kriterler)
       .subscribe({
 
         next: (gelenPersoneller: Personel[]) => {
-          this.personeller =
-            sicilFiltresi === ''
-              ? gelenPersoneller
-              : gelenPersoneller.filter(
-                  personel =>
-                    personel.sicil
-                      .toLocaleLowerCase('tr')
-                      .includes(sicilFiltresi)
-                );
-
+          this.personeller = gelenPersoneller;
           this.yukleniyorMu = false;
 
           this.changeDetector.markForCheck();
