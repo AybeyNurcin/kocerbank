@@ -4,6 +4,7 @@ import {
 
 export interface PersonelFiltre {
   id?: number;
+  sicil?: string;
   ad?: string;
   soyad?: string;
   rol?: string;

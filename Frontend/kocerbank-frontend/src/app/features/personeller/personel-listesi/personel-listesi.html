@@ -41,6 +41,23 @@
     <div class="filter-fields">
 
 
+      <!-- SİCİL -->
+      <div class="form-field">
+
+        <label for="sicil">
+          Sicil
+        </label>
+
+        <input id="sicil"
+               name="sicil"
+               type="text"
+               [(ngModel)]="aramaKriterleri.sicil"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="Örnek: KB0001" />
+
+      </div>
+
+
       <!-- AD -->
       <div class="form-field">
 
@@ -280,9 +297,7 @@
             <td colspan="7"
                 class="empty-table-message">
 
-              @if (!aramaKriterleri.ad && !aramaKriterleri.soyad &&
-                   !aramaKriterleri.rol && !aramaKriterleri.telefonNo &&
-                   !aramaKriterleri.subeKodu && !aramaKriterleri.durumKodu) {
+              @if (!herhangiBirFiltreGirilmisMi()) {
 
               Aramak için en az bir filtre giriniz.
 
