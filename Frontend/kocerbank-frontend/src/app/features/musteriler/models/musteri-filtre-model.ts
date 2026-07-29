@@ -16,6 +16,8 @@ export interface MusteriFiltre {
   eposta?: string;
   telefonNo?: string;
 
+  dogumTarihi?: string;
+
   tckn?: string;
   vkn?: string;
 
@@ -23,6 +25,7 @@ export interface MusteriFiltre {
   musteriTipi?: MusteriTipi;
 
   subeKodu?: string;
+  unvan?: string;
 
   durumKodu?: AktifPasifDurumlari;
 }

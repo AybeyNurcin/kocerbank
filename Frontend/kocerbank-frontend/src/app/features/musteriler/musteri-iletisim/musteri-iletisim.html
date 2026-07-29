@@ -1,0 +1,29 @@
+<div class="form-header">
+
+  <div>
+
+    <h2>İletişim Bilgileri</h2>
+
+    @if (musteri !== null) {
+
+    <p>
+      {{ musteri.ad }}
+      {{ musteri.soyad }}
+    </p>
+
+    }
+
+  </div>
+
+  <button type="button"
+          (click)="popupKapat()">
+
+    ×
+
+  </button>
+
+</div>
+
+<p>
+  Müşteri iletişim bilgileri hazırlanıyor.
+</p>

@@ -1,0 +1,22 @@
+<div class="form-header">
+
+  <h2>
+    @if (musteri === null) {
+    Yeni Müşteri Ekle
+    } @else {
+    Müşteri Düzenle
+    }
+  </h2>
+
+  <button type="button"
+          (click)="formuKapat()">
+
+    ×
+
+  </button>
+
+</div>
+
+<p>
+  Müşteri formu hazırlanıyor.
+</p>

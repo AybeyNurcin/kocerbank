@@ -1,1 +1,798 @@
-<p>musteri-listesi works!</p>
+<section class="musteri-page">
+
+  <!-- SAYFA BAŞLIĞI -->
+  <div class="page-heading">
+
+    <div>
+
+      <h1>Müşteri Yönetimi</h1>
+
+      <p>
+        Banka müşterilerini görüntüleyebilir,
+        filtreleyebilir ve yönetebilirsiniz.
+      </p>
+
+    </div>
+
+    <button type="button"
+            class="new-customer-button"
+            (click)="musteriEklemeFormunuAc()">
+
+      <span>+</span>
+      Yeni Müşteri
+
+    </button>
+
+  </div>
+
+
+  <!-- FİLTRELEME KARTI -->
+  <div class="filter-card">
+
+    <div class="filter-title">
+
+      <div>
+
+        <h2>Müşteri Ara</h2>
+
+        <p class="filter-description">
+          Önce bireysel veya kurumsal müşteri
+          tipini seçiniz.
+        </p>
+
+      </div>
+
+      <button type="button"
+              class="clear-button"
+              (click)="filtreleriTemizle()">
+
+        Filtreleri Temizle
+
+      </button>
+
+    </div>
+
+
+    <!-- ÖNCE MÜŞTERİ TİPİ SEÇİLİR -->
+    <div class="customer-type-selection">
+
+      <div class="form-field">
+
+        <label for="musteriTipi">
+          Müşteri tipi
+        </label>
+
+        <select id="musteriTipi"
+                name="musteriTipi"
+                [(ngModel)]="aramaKriterleri.musteriTipi"
+                (ngModelChange)="musteriTipiDegisti()">
+
+          <option [ngValue]="undefined">
+            Müşteri tipi seçiniz
+          </option>
+
+          <option [ngValue]="1">
+            Bireysel
+          </option>
+
+          <option [ngValue]="2">
+            Kurumsal
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- MÜŞTERİ TİPİ SEÇİLDİYSE FİLTRELERİ GÖSTER -->
+    @if (
+    aramaKriterleri.musteriTipi === 1 ||
+    aramaKriterleri.musteriTipi === 2
+    ) {
+
+    <div class="selected-type-heading">
+
+      @if (aramaKriterleri.musteriTipi === 1) {
+
+      <span class="customer-type individual-type">
+        Bireysel müşteri filtreleri
+      </span>
+
+      } @else {
+
+      <span class="customer-type corporate-type">
+        Kurumsal müşteri filtreleri
+      </span>
+
+      }
+
+    </div>
+
+
+    <div class="filter-fields">
+
+      <!-- ORTAK: AD -->
+      <div class="form-field">
+
+        <label for="ad">
+          Ad
+        </label>
+
+        <input id="ad"
+               name="ad"
+               type="text"
+               [(ngModel)]="aramaKriterleri.ad"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="Müşteri adı" />
+
+      </div>
+
+
+      <!-- ORTAK: SOYAD -->
+      <div class="form-field">
+
+        <label for="soyad">
+          Soyad
+        </label>
+
+        <input id="soyad"
+               name="soyad"
+               type="text"
+               [(ngModel)]="aramaKriterleri.soyad"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="Müşteri soyadı" />
+
+      </div>
+
+
+      <!-- ORTAK: E-POSTA -->
+      <div class="form-field">
+
+        <label for="eposta">
+          E-posta
+        </label>
+
+        <input id="eposta"
+               name="eposta"
+               type="text"
+               [(ngModel)]="aramaKriterleri.eposta"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="E-posta adresi" />
+
+      </div>
+
+
+      <!-- ORTAK: TELEFON -->
+      <div class="form-field">
+
+        <label for="telefonNo">
+          Telefon
+        </label>
+
+        <input id="telefonNo"
+               name="telefonNo"
+               type="text"
+               [(ngModel)]="aramaKriterleri.telefonNo"
+               (ngModelChange)="filtreDegisti()"
+               maxlength="13"
+               placeholder="Telefon numarası" />
+
+      </div>
+
+
+      <!-- ORTAK: ŞUBE KODU -->
+      <div class="form-field">
+
+        <label for="subeKodu">
+          Şube kodu
+        </label>
+
+        <input id="subeKodu"
+               name="subeKodu"
+               type="text"
+               [(ngModel)]="aramaKriterleri.subeKodu"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="Örnek: S0001" />
+
+      </div>
+
+
+      <!-- BİREYSEL MÜŞTERİ FİLTRELERİ -->
+      @if (aramaKriterleri.musteriTipi === 1) {
+
+      <!-- DOĞUM TARİHİ -->
+      <div class="form-field">
+
+        <label for="dogumTarihi">
+          Doğum tarihi
+        </label>
+
+        <input id="dogumTarihi"
+               name="dogumTarihi"
+               type="date"
+               [(ngModel)]="aramaKriterleri.dogumTarihi"
+               (ngModelChange)="filtreDegisti()" />
+
+      </div>
+
+
+      <!-- TCKN -->
+      <div class="form-field">
+
+        <label for="tckn">
+          TCKN
+        </label>
+
+        <input id="tckn"
+               name="tckn"
+               type="text"
+               inputmode="numeric"
+               maxlength="11"
+               [(ngModel)]="aramaKriterleri.tckn"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="11 haneli TCKN" />
+
+      </div>
+
+
+      <!-- CİNSİYET -->
+      <div class="form-field">
+
+        <label for="cinsiyet">
+          Cinsiyet
+        </label>
+
+        <select id="cinsiyet"
+                name="cinsiyet"
+                [(ngModel)]="aramaKriterleri.cinsiyet"
+                (ngModelChange)="filtreDegisti()">
+
+          <option [ngValue]="undefined">
+            Tümü
+          </option>
+
+          <option [ngValue]="1">
+            Kadın
+          </option>
+
+          <option [ngValue]="2">
+            Erkek
+          </option>
+
+        </select>
+
+      </div>
+
+      }
+
+
+      <!-- KURUMSAL MÜŞTERİ FİLTRELERİ -->
+      @if (aramaKriterleri.musteriTipi === 2) {
+
+      <!-- VKN -->
+      <div class="form-field">
+
+        <label for="vkn">
+          VKN
+        </label>
+
+        <input id="vkn"
+               name="vkn"
+               type="text"
+               inputmode="numeric"
+               maxlength="10"
+               [(ngModel)]="aramaKriterleri.vkn"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="10 haneli VKN" />
+
+      </div>
+
+
+      <!-- UNVAN -->
+      <div class="form-field">
+
+        <label for="unvan">
+          Unvan
+        </label>
+
+        <input id="unvan"
+               name="unvan"
+               type="text"
+               maxlength="50"
+               [(ngModel)]="aramaKriterleri.unvan"
+               (ngModelChange)="filtreDegisti()"
+               placeholder="Şirket unvanı" />
+
+      </div>
+
+      }
+
+
+      <!-- ORTAK: DURUM -->
+      <div class="form-field">
+
+        <label for="durumKodu">
+          Durum
+        </label>
+
+        <select id="durumKodu"
+                name="durumKodu"
+                [(ngModel)]="aramaKriterleri.durumKodu"
+                (ngModelChange)="filtreDegisti()">
+
+          <option [ngValue]="undefined">
+            Tümü
+          </option>
+
+          <option [ngValue]="1">
+            Aktif
+          </option>
+
+          <option [ngValue]="2">
+            Pasif
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+    }
+
+  </div>
+
+
+  <!-- BİLGİ MESAJI -->
+  @if (bilgiMesaji !== '') {
+
+  <div class="information-message">
+    {{ bilgiMesaji }}
+  </div>
+
+  }
+
+
+  <!-- YÜKLENME MESAJI -->
+  @if (yukleniyorMu) {
+
+  <div class="information-message">
+    Müşteriler yükleniyor...
+  </div>
+
+  }
+
+
+  <!-- HATA MESAJI -->
+  @if (hataMesaji !== '') {
+
+  <div class="error-message">
+    {{ hataMesaji }}
+  </div>
+
+  }
+
+
+  <!-- MÜŞTERİ TABLOSU -->
+  <div class="table-card">
+
+    <div class="table-heading">
+
+      <div>
+
+        <h2>Müşteriler</h2>
+
+        <span>
+          Toplam {{ musteriler.length }} kayıt
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Ad Soyad</th>
+            <th>E-posta</th>
+            <th>Doğum Tarihi</th>
+            <th>Telefon</th>
+            <th>TCKN/VKN</th>
+            <th>Cinsiyet</th>
+            <th>Müşteri Tipi</th>
+            <th>Şube</th>
+            <th>Unvan</th>
+            <th>Kayıt Tarihi</th>
+            <th>Durum</th>
+
+            <th class="actions-column">
+              İşlemler
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          @for (
+          musteri of sayfadakiMusteriler;
+          track musteri.id
+          ) {
+
+          <tr>
+
+            <!-- AD SOYAD -->
+            <td class="customer-name">
+
+              {{ musteri.ad }}
+              {{ musteri.soyad }}
+
+            </td>
+
+
+            <!-- E-POSTA -->
+            <td>
+              {{ musteri.eposta }}
+            </td>
+
+
+            <!-- DOĞUM TARİHİ -->
+            <td>
+
+              @if (
+              musteri.musteriTipi === 1 &&
+              musteri.dogumTarihi !== null
+              ) {
+
+              {{
+                musteri.dogumTarihi |
+                date:'dd.MM.yyyy'
+              }}
+
+              } @else {
+
+              <span class="not-applicable">
+                -
+              </span>
+
+              }
+
+            </td>
+
+
+            <!-- TELEFON -->
+            <td>
+              {{ musteri.telefonNo }}
+            </td>
+
+
+            <!-- TCKN / VKN -->
+            <td>
+
+              @if (musteri.musteriTipi === 1) {
+
+              <span class="identity-number">
+                {{ musteri.tckn ?? '-' }}
+              </span>
+
+              } @else if (
+              musteri.musteriTipi === 2
+              ) {
+
+              <span class="identity-number">
+                {{ musteri.vkn ?? '-' }}
+              </span>
+
+              } @else {
+
+              <span class="not-applicable">
+                -
+              </span>
+
+              }
+
+            </td>
+
+
+            <!-- CİNSİYET -->
+            <td>
+
+              @if (musteri.musteriTipi === 1) {
+
+              @if (musteri.cinsiyet === 1) {
+
+              Kadın
+
+              } @else if (
+              musteri.cinsiyet === 2
+              ) {
+
+              Erkek
+
+              } @else {
+
+              <span class="not-applicable">
+                -
+              </span>
+
+              }
+
+              } @else {
+
+              <span class="not-applicable">
+                -
+              </span>
+
+              }
+
+            </td>
+
+
+            <!-- MÜŞTERİ TİPİ -->
+            <td>
+
+              @if (musteri.musteriTipi === 1) {
+
+              <span class="customer-type individual-type">
+                Bireysel
+              </span>
+
+              } @else if (
+              musteri.musteriTipi === 2
+              ) {
+
+              <span class="customer-type corporate-type">
+                Kurumsal
+              </span>
+
+              } @else {
+
+              <span class="not-applicable">
+                -
+              </span>
+
+              }
+
+            </td>
+
+
+            <!-- ŞUBE -->
+            <td>
+
+              <div class="branch-information">
+
+                <span class="branch-code">
+                  {{ musteri.subeSubeKodu }}
+                </span>
+
+                <span class="branch-name">
+                  {{ musteri.subeAdi }}
+                </span>
+
+              </div>
+
+            </td>
+
+
+            <!-- UNVAN -->
+            <td>
+
+              @if (
+              musteri.musteriTipi === 2 &&
+              musteri.unvan !== null
+              ) {
+
+              {{ musteri.unvan }}
+
+              } @else {
+
+              <span class="not-applicable">
+                -
+              </span>
+
+              }
+
+            </td>
+
+
+            <!-- KAYIT TARİHİ -->
+            <td>
+
+              {{
+                musteri.kayitOlusturmaTarihi |
+                date:'dd.MM.yyyy HH:mm'
+              }}
+
+            </td>
+
+
+            <!-- DURUM -->
+            <td>
+
+              @if (musteri.durumKodu === 1) {
+
+              <span class="status active-status">
+                Aktif
+              </span>
+
+              } @else if (
+              musteri.durumKodu === 2
+              ) {
+
+              <span class="status passive-status">
+                Pasif
+              </span>
+
+              } @else {
+
+              <span class="not-applicable">
+                -
+              </span>
+
+              }
+
+            </td>
+
+
+            <!-- İŞLEM BUTONLARI -->
+            <td class="actions">
+
+              <button type="button"
+                      class="edit-button"
+                      (click)="duzenle(musteri)">
+
+                Düzenle
+
+              </button>
+
+              <button type="button"
+                      class="contact-button"
+                      (click)="iletisimBilgileriniAc(musteri)">
+
+                İletişim Bilgileri
+
+              </button>
+
+              <button type="button"
+                      class="account-button"
+                      (click)="hesapBilgilerineGit(musteri)">
+
+                Hesaplar
+
+              </button>
+
+            </td>
+
+          </tr>
+
+          } @empty {
+
+          @if (
+          !yukleniyorMu &&
+          bilgiMesaji === '' &&
+          hataMesaji === ''
+          ) {
+
+          <tr>
+
+            <td colspan="12"
+                class="empty-table-message">
+
+              Filtrelere uygun müşteri bulunamadı.
+
+            </td>
+
+          </tr>
+
+          }
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- SAYFALAMA -->
+    @if (musteriler.length > 0) {
+
+    <div class="pagination">
+
+      <div class="pagination-info">
+
+        {{ ilkKayitNumarasi }}–{{ sonKayitNumarasi }}
+        arası gösteriliyor.
+
+        Toplam {{ musteriler.length }} kayıt.
+
+      </div>
+
+      <div class="pagination-controls">
+
+        <button type="button"
+                class="pagination-button"
+                [disabled]="mevcutSayfa === 1"
+                (click)="oncekiSayfa()">
+
+          Önceki
+
+        </button>
+
+        <span class="page-number">
+
+          Sayfa
+          {{ mevcutSayfa }} /
+          {{ toplamSayfa }}
+
+        </span>
+
+        <button type="button"
+                class="pagination-button"
+                [disabled]="mevcutSayfa === toplamSayfa"
+                (click)="sonrakiSayfa()">
+
+          Sonraki
+
+        </button>
+
+      </div>
+
+    </div>
+
+    }
+
+  </div>
+
+
+  <!-- MÜŞTERİ EKLEME / DÜZENLEME POPUP'I -->
+  @if (musteriFormuAcikMi) {
+
+  <div class="modal-background">
+
+    <div class="musteri-form-modal">
+
+      <app-musteri-formu [musteri]="seciliMusteri"
+                         (kapat)="musteriFormunuKapat()"
+                         (kaydedildi)="musteriKaydedildi()">
+      </app-musteri-formu>
+
+    </div>
+
+  </div>
+
+  }
+
+
+  <!-- İLETİŞİM BİLGİLERİ POPUP'I -->
+  @if (
+  iletisimPopupAcikMi &&
+  seciliMusteri !== null
+  ) {
+
+  <div class="modal-background">
+
+    <div class="musteri-iletisim-modal">
+
+      <app-musteri-iletisim [musteri]="seciliMusteri"
+                            (kapat)="iletisimPopupKapat()">
+      </app-musteri-iletisim>
+
+    </div>
+
+  </div>
+
+  }
+
+</section>
