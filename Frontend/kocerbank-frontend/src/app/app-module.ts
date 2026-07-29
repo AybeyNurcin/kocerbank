@@ -14,6 +14,7 @@ import { MusteriListesi } from './features/musteriler/musteri-listesi/musteri-li
 import { AdminLayout } from './layouts/admin-layout/admin-layout';
 import { Navbar } from './shared/components/navbar/navbar';
 import { SubeFormu } from './features/subeler/sube-formu/sube-formu';
+import { PersonelFormu } from './features/personeller/personel-formu/personel-formu';
 
 import { provideHttpClient } from '@angular/common/http';
 
@@ -28,6 +29,7 @@ import { provideHttpClient } from '@angular/common/http';
     AdminLayout,
     Navbar,
     SubeFormu,
+    PersonelFormu,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [

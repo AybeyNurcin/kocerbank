@@ -1,0 +1,335 @@
+<div class="form-header">
+
+  <div>
+
+    @if (personel === null) {
+
+    <h2>Yeni Personel Ekle</h2>
+
+    <p>
+      Yeni personelin bilgilerini giriniz.
+    </p>
+
+    } @else {
+
+    <h2>Personel Düzenle</h2>
+
+    <p>
+      {{ personel.sicil }} sicilli personelin
+      bilgilerini güncelleyiniz.
+    </p>
+
+    }
+
+  </div>
+
+  <button type="button"
+          class="close-button"
+          [disabled]="kaydediliyorMu"
+          (click)="formuKapat()">
+    ×
+  </button>
+
+</div>
+
+
+@if (hataMesaji !== '') {
+
+<div class="form-error-message">
+  {{ hataMesaji }}
+</div>
+
+}
+
+
+<form (ngSubmit)="kaydet()">
+
+  <div class="popup-fields">
+
+
+    <!-- SİCİL SADECE GÜNCELLEMEDE GÖSTERİLİR -->
+    @if (personel !== null) {
+
+    <div class="popup-field full-field">
+
+      <label for="formSicil">
+        Sicil
+      </label>
+
+      <input id="formSicil"
+             name="formSicil"
+             type="text"
+             [value]="personel.sicil"
+             disabled />
+
+    </div>
+
+    }
+
+
+    <!-- AD -->
+    <div class="popup-field">
+
+      <label for="formAd">
+        Ad
+      </label>
+
+      <input id="formAd"
+             name="formAd"
+             type="text"
+             [(ngModel)]="formModel.ad"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
+
+    </div>
+
+
+    <!-- SOYAD -->
+    <div class="popup-field">
+
+      <label for="formSoyad">
+        Soyad
+      </label>
+
+      <input id="formSoyad"
+             name="formSoyad"
+             type="text"
+             [(ngModel)]="formModel.soyad"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
+
+    </div>
+
+
+    <!-- ROL -->
+    <div class="popup-field">
+
+      <label for="formRol">
+        Rol
+      </label>
+
+      <input id="formRol"
+             name="formRol"
+             type="text"
+             [(ngModel)]="formModel.rol"
+             [disabled]="kaydediliyorMu"
+             maxlength="20"
+             required />
+
+    </div>
+
+
+    <!-- ŞİFRE -->
+    <div class="popup-field">
+
+      <label for="formSifre">
+        Şifre
+      </label>
+
+      <div class="password-field">
+
+        <input id="formSifre"
+               name="formSifre"
+               [type]="sifreGorunurMu ? 'text' : 'password'"
+               [(ngModel)]="formModel.sifre"
+               [disabled]="kaydediliyorMu"
+               maxlength="50"
+               required />
+
+        <button type="button"
+                class="password-toggle-button"
+                [disabled]="kaydediliyorMu"
+                (click)="sifreGorunurluguDegistir()">
+
+          @if (sifreGorunurMu) {
+          Gizle
+          } @else {
+          Göster
+          }
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- TCKN -->
+    <div class="popup-field">
+
+      <label for="formTckn">
+        TC Kimlik No
+      </label>
+
+      <input id="formTckn"
+             name="formTckn"
+             type="text"
+             [(ngModel)]="formModel.tckn"
+             [disabled]="kaydediliyorMu"
+             maxlength="11"
+             required />
+
+    </div>
+
+
+    <!-- TELEFON -->
+    <div class="popup-field">
+
+      <label for="formTelefon">
+        Telefon
+      </label>
+
+      <input id="formTelefon"
+             name="formTelefon"
+             type="text"
+             [(ngModel)]="formModel.telefonNo"
+             [disabled]="kaydediliyorMu"
+             maxlength="13"
+             required />
+
+    </div>
+
+
+    <!-- E-POSTA -->
+    <div class="popup-field">
+
+      <label for="formEmail">
+        E-posta
+      </label>
+
+      <input id="formEmail"
+             name="formEmail"
+             type="email"
+             [(ngModel)]="formModel.email"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
+
+    </div>
+
+
+    <!-- ŞUBE -->
+    <div class="popup-field sube-arama-field">
+
+      <label for="formSubeKodu">
+        Şube
+      </label>
+
+      <input id="formSubeKodu"
+             name="formSubeKodu"
+             type="text"
+             autocomplete="off"
+             [(ngModel)]="subeAramaTerimi"
+             [disabled]="kaydediliyorMu"
+             (focus)="subeListesiniAc()"
+             (input)="subeAramaGirisiDegisti()"
+             (blur)="subeListesiniKapat()"
+             placeholder="Şube kodu veya adı ile ara"
+             required />
+
+      @if (subeListesiAcikMi) {
+
+      <ul class="sube-arama-listesi">
+
+        @for (sube of filtrelenmisSubeler; track sube.id) {
+
+        <li (mousedown)="$event.preventDefault(); subeSec(sube)">
+          {{ sube.subeKodu }} - {{ sube.subeAdi }}
+        </li>
+
+        } @empty {
+
+        <li class="sube-arama-sonuc-yok">
+          Eşleşen şube bulunamadı.
+        </li>
+
+        }
+
+      </ul>
+
+      }
+
+    </div>
+
+
+    <!-- ADRES -->
+    <div class="popup-field full-field">
+
+      <label for="formAdres">
+        Adres
+      </label>
+
+      <input id="formAdres"
+             name="formAdres"
+             type="text"
+             [(ngModel)]="formModel.adres"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
+
+    </div>
+
+
+    <!-- DURUM -->
+    <div class="popup-field full-field">
+
+      <label for="formDurum">
+        Durum
+      </label>
+
+      <select id="formDurum"
+              name="formDurum"
+              [(ngModel)]="formModel.durumKodu"
+              [disabled]="kaydediliyorMu"
+              required>
+
+        <option [ngValue]="1">
+          Aktif
+        </option>
+
+        <option [ngValue]="2">
+          Pasif
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <!-- FORM BUTONLARI -->
+  <div class="form-actions">
+
+    <button type="button"
+            class="cancel-button"
+            [disabled]="kaydediliyorMu"
+            (click)="formuKapat()">
+      Vazgeç
+    </button>
+
+    <button type="submit"
+            class="save-button"
+            [disabled]="kaydediliyorMu">
+
+      @if (kaydediliyorMu) {
+
+      Kaydediliyor...
+
+      } @else if (personel === null) {
+
+      Personel Ekle
+
+      } @else {
+
+      Değişiklikleri Kaydet
+
+      }
+
+    </button>
+
+  </div>
+
+</form>

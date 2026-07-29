@@ -39,6 +39,3 @@ create TABLE KB_MUSTERIILETISIM(
     RECORDDATE DATE DEFAULT SYSDATE
 );
 /
-drop table kb_musteriiletisim;
-
-select * from KB_MUSTERIILETISIM;

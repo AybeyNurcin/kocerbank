@@ -16,9 +16,7 @@ namespace kocerbank_backend.Services
         // 1. EKLEME
         public MusteriDTO Ekle(MusteriDTO dto)
         {
-            Dogrula(dto);
-
-            dto.KayitOlusturmaTarihi = DateTime.Now;
+            RealityCheck(dto);
 
             return _musteriRepository.Ekle(dto);
         }
@@ -50,7 +48,7 @@ namespace kocerbank_backend.Services
         // 4. GÜNCELLEME
         public void Guncelle(MusteriDTO dto)
         {
-            Dogrula(dto);
+            RealityCheck(dto);
 
             MusteriDTO? mevcutMusteri = _musteriRepository.GetirById(dto.Id);
 
@@ -83,29 +81,48 @@ namespace kocerbank_backend.Services
         }
 
         // ORTAK DOĞRULAMA METODU
-        private void Dogrula(MusteriDTO dto)
+        private void RealityCheck(MusteriDTO dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Ad))
-                throw new ArgumentException("Ad alanı boş olamaz.");
+                throw new Exception("Ad girilmesi zorunludur.");
 
             if (string.IsNullOrWhiteSpace(dto.Soyad))
-                throw new ArgumentException("Soyad alanı boş olamaz.");
+                throw new Exception("Soyad girilmesi zorunludur.");
 
             if (string.IsNullOrWhiteSpace(dto.Eposta))
-                throw new ArgumentException("E-posta alanı boş olamaz.");
+                throw new Exception("E-posta girilmesi zorunludur.");
+
+            if (string.IsNullOrWhiteSpace(dto.DogumTarihi.ToString()))
+                throw new Exception("Doğum tarihi boş bırakılamaz.");
+
+            if (string.IsNullOrWhiteSpace(dto.TelefonNo))
+                throw new Exception("Telefon numarası girilmesi zorunludur.");
+
+            if (string.IsNullOrWhiteSpace(dto.SubeSubeKodu))
+                throw new Exception("Şube kodu seçilmesi zorunludur.");
 
             if (dto.MusteriTipi == MusteriTipiDurumlari.None)
-                throw new ArgumentException("Müşteri tipi seçilmelidir.");
+                throw new Exception("Bireysel/Kurumsal seçilmelidir.");
 
-            // İş kuralı: Bireysel müşteride TCKN, Kurumsal'da VKN zorunlu
-            /*if (dto.MusteriTipi == MusteriTipiDurumlari.Bireysel && dto.TCKN.ToString().Length != 11)
-                throw new ArgumentException("Bireysel müşteri için TCKN 11 haneli olmalıdır.");
+            if (dto.MusteriTipi == MusteriTipiDurumlari.Bireysel && dto.TCKN.Length != 11)
+                throw new Exception("TCKN 11 haneli olmalıdır.");
 
-            if (dto.MusteriTipi == MusteriTipiDurumlari.Kurumsal && dto.VKN.ToString().Length != 10)
-                throw new ArgumentException("Kurumsal müşteri için VKN 10 haneli olmalıdır.");*/
+            if (dto.MusteriTipi == MusteriTipiDurumlari.Kurumsal && dto.VKN.Length != 10)
+                throw new Exception("VKN 10 haneli olmalıdır.");
+
+            if (dto.MusteriTipi == MusteriTipiDurumlari.Bireysel && dto.Cinsiyet == CinsiyetDurumlari.None)
+                throw new Exception("Cinsiyet seçilmelidir.");
 
             if (dto.DurumKodu == AktifPasifDurumlari.None)
-                throw new ArgumentException("Durum kodu seçilmelidir.");
+                throw new Exception("Durum seçilmelidir.");
+        }
+
+        public void idCheck(long id)
+        {
+            if (id <= 0)
+            {
+                throw new Exception("Geçersiz ID");
+            }
         }
     }
 }

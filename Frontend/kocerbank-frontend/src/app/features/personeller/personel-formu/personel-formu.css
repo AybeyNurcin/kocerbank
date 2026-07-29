@@ -1,0 +1,185 @@
+.form-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+  .form-header h2 {
+    margin: 0 0 6px;
+    color: #33333a;
+    font-size: 22px;
+  }
+
+  .form-header p {
+    margin: 0;
+    color: #77777e;
+    font-size: 13px;
+  }
+
+.close-button {
+  border: none;
+  background: none;
+  color: #77777e;
+  font-size: 27px;
+  cursor: pointer;
+}
+
+.popup-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+}
+
+.popup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.full-field {
+  grid-column: 1 / -1;
+}
+
+.popup-field label {
+  color: #505058;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.popup-field input,
+.popup-field select {
+  height: 42px;
+  padding: 0 11px;
+  border: 1px solid #ccccd0;
+  border-radius: 6px;
+  outline: none;
+}
+
+  .popup-field input:focus,
+  .popup-field select:focus {
+    border-color: #d2a900;
+    box-shadow: 0 0 0 3px rgba(210, 169, 0, 0.14);
+  }
+
+  .popup-field input:disabled {
+    background-color: #eeeeef;
+    color: #77777e;
+  }
+
+.password-field {
+  position: relative;
+  display: flex;
+}
+
+  .password-field input {
+    flex: 1;
+    width: 100%;
+    padding-right: 62px;
+    box-sizing: border-box;
+  }
+
+.password-toggle-button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  color: #7351a3;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+  .password-toggle-button:hover {
+    text-decoration: underline;
+  }
+
+  .password-toggle-button:disabled {
+    color: #a9a9ae;
+    cursor: not-allowed;
+  }
+
+.sube-arama-field {
+  position: relative;
+}
+
+.sube-arama-listesi {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 180px;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccccd0;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+  .sube-arama-listesi li {
+    padding: 9px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .sube-arama-listesi li:hover {
+    background-color: #faf3e0;
+  }
+
+  .sube-arama-listesi li.sube-arama-sonuc-yok {
+    color: #77777e;
+    cursor: default;
+  }
+
+  .sube-arama-listesi li.sube-arama-sonuc-yok:hover {
+    background-color: transparent;
+  }
+
+.form-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button,
+.save-button {
+  padding: 10px 17px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-button {
+  border: 1px solid #bdbdc2;
+  background-color: white;
+  color: #55555c;
+}
+
+.save-button {
+  border: none;
+  background-color: #d2a900;
+  color: white;
+}
+
+.form-error-message {
+  margin-bottom: 18px;
+  padding: 11px;
+  border-radius: 6px;
+  background-color: #fbe4e4;
+  color: #a52f2f;
+  font-size: 13px;
+  text-align: center;
+}
+
+.save-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

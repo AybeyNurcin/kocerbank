@@ -7,7 +7,7 @@ namespace kocerbank_backend.Models.DTOs
         public string Ad { get; set; } = string.Empty;
         public string Soyad { get; set; } = string.Empty;
         public string Eposta { get; set; } = string.Empty;
-        public DateTime DogumTarihi { get; set; }
+        public DateTime? DogumTarihi { get; set; }
         public string TelefonNo { get; set; } = string.Empty;
         public string? TCKN { get; set; }
         public CinsiyetDurumlari? Cinsiyet { get; set; }
