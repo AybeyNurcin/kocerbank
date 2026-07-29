@@ -128,13 +128,30 @@
         Şifre
       </label>
 
-      <input id="formSifre"
-             name="formSifre"
-             type="password"
-             [(ngModel)]="formModel.sifre"
-             [disabled]="kaydediliyorMu"
-             maxlength="50"
-             required />
+      <div class="password-field">
+
+        <input id="formSifre"
+               name="formSifre"
+               [type]="sifreGorunurMu ? 'text' : 'password'"
+               [(ngModel)]="formModel.sifre"
+               [disabled]="kaydediliyorMu"
+               maxlength="50"
+               required />
+
+        <button type="button"
+                class="password-toggle-button"
+                [disabled]="kaydediliyorMu"
+                (click)="sifreGorunurluguDegistir()">
+
+          @if (sifreGorunurMu) {
+          Gizle
+          } @else {
+          Göster
+          }
+
+        </button>
+
+      </div>
 
     </div>
 
@@ -194,32 +211,45 @@
 
 
     <!-- ŞUBE -->
-    <div class="popup-field">
+    <div class="popup-field sube-arama-field">
 
       <label for="formSubeKodu">
         Şube
       </label>
 
-      <select id="formSubeKodu"
-              name="formSubeKodu"
-              [(ngModel)]="formModel.subeKodu"
-              [disabled]="kaydediliyorMu"
-              required>
+      <input id="formSubeKodu"
+             name="formSubeKodu"
+             type="text"
+             autocomplete="off"
+             [(ngModel)]="subeAramaTerimi"
+             [disabled]="kaydediliyorMu"
+             (focus)="subeListesiniAc()"
+             (input)="subeAramaGirisiDegisti()"
+             (blur)="subeListesiniKapat()"
+             placeholder="Şube kodu veya adı ile ara"
+             required />
 
-        <option [ngValue]="''"
-                disabled>
-          Şube seçiniz
-        </option>
+      @if (subeListesiAcikMi) {
 
-        @for (sube of subeler; track sube.id) {
+      <ul class="sube-arama-listesi">
 
-        <option [ngValue]="sube.subeKodu">
+        @for (sube of filtrelenmisSubeler; track sube.id) {
+
+        <li (mousedown)="$event.preventDefault(); subeSec(sube)">
           {{ sube.subeKodu }} - {{ sube.subeAdi }}
-        </option>
+        </li>
+
+        } @empty {
+
+        <li class="sube-arama-sonuc-yok">
+          Eşleşen şube bulunamadı.
+        </li>
 
         }
 
-      </select>
+      </ul>
+
+      }
 
     </div>
 

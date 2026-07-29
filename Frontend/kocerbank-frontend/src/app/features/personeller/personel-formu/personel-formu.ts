@@ -38,6 +38,11 @@ export class PersonelFormu implements OnChanges, OnInit {
 
   subeler: Sube[] = [];
 
+  sifreGorunurMu: boolean = false;
+
+  subeAramaTerimi: string = '';
+  subeListesiAcikMi: boolean = false;
+
   kaydediliyorMu: boolean = false;
   hataMesaji: string = '';
 
@@ -71,6 +76,7 @@ export class PersonelFormu implements OnChanges, OnInit {
 
         next: (gelenSubeler: Sube[]) => {
           this.subeler = gelenSubeler;
+          this.subeAramaTeriminiAyarla();
           this.changeDetector.markForCheck();
         },
 
@@ -93,6 +99,7 @@ export class PersonelFormu implements OnChanges, OnInit {
     }
 
     this.hataMesaji = '';
+    this.sifreGorunurMu = false;
 
     if (this.personel === null) {
       this.formModel = {
@@ -110,6 +117,8 @@ export class PersonelFormu implements OnChanges, OnInit {
           AktifPasifDurumlari.Aktif
       };
 
+      this.subeAramaTerimi = '';
+
       return;
     }
 
@@ -126,6 +135,65 @@ export class PersonelFormu implements OnChanges, OnInit {
       subeKodu: this.personel.subeKodu,
       durumKodu: this.personel.durumKodu
     };
+
+    this.subeAramaTeriminiAyarla();
+  }
+
+  private subeAramaTeriminiAyarla(): void {
+
+    const seciliSube =
+      this.subeler.find(
+        sube => sube.subeKodu === this.formModel.subeKodu
+      );
+
+    this.subeAramaTerimi =
+      seciliSube
+        ? `${seciliSube.subeKodu} - ${seciliSube.subeAdi}`
+        : this.formModel.subeKodu;
+  }
+
+  get filtrelenmisSubeler(): Sube[] {
+
+    const terim =
+      this.subeAramaTerimi.trim().toLocaleLowerCase('tr');
+
+    if (terim === '') {
+      return this.subeler;
+    }
+
+    return this.subeler.filter(
+      sube =>
+        sube.subeKodu.toLocaleLowerCase('tr').includes(terim) ||
+        sube.subeAdi.toLocaleLowerCase('tr').includes(terim)
+    );
+  }
+
+  subeAramaGirisiDegisti(): void {
+
+    this.subeListesiAcikMi = true;
+
+    if (this.subeAramaTerimi.trim() === '') {
+      this.formModel.subeKodu = '';
+    }
+  }
+
+  subeListesiniAc(): void {
+    this.subeListesiAcikMi = true;
+  }
+
+  subeListesiniKapat(): void {
+    this.subeListesiAcikMi = false;
+  }
+
+  subeSec(sube: Sube): void {
+
+    this.formModel.subeKodu = sube.subeKodu;
+    this.subeAramaTerimi = `${sube.subeKodu} - ${sube.subeAdi}`;
+    this.subeListesiAcikMi = false;
+  }
+
+  sifreGorunurluguDegistir(): void {
+    this.sifreGorunurMu = !this.sifreGorunurMu;
   }
 
   formuKapat(): void {
