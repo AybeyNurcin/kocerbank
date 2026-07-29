@@ -21,9 +21,9 @@ namespace kocerbank_backend.Services
         {
             PersonelBilgileriniKontrolEt(dto);
 
-            dto.Sifre = _passwordHasher.HashPassword(dto, dto.Sifre);
+                dto.Sifre = _passwordHasher.HashPassword(dto, dto.Sifre);
 
-            return _personelRepository.Ekle(dto);
+                return _personelRepository.Ekle(dto);
         }
 
         // 2. ID'YE GÖRE PERSONEL GETİRME
