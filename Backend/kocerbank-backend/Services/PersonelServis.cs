@@ -29,14 +29,62 @@ namespace kocerbank_backend.Services
         // 2. ID'YE GÖRE PERSONEL GETİRME
         public PersonelDTO? GetirById(long id)
         {
-            var personel = _personelRepository.GetirById(id);
-            if (personel == null)
-            {
-                throw new KeyNotFoundException($"Personel bulunamadı: ID = {id}");
-            }
             IdKontrolEt(id);
 
-            return _personelRepository.GetirById(id);
+                var personel = _personelRepository.GetirById(id);
+
+                if (personel == null)
+                {
+                    throw new KeyNotFoundException($"Personel bulunamadı: ID = {id}");
+                }
+
+            return personel;
+        }
+
+        public PersonelDTO Login(PersonelLoginDTO dto)
+        {
+            // Sicil boş mu?
+            if (string.IsNullOrWhiteSpace(dto.Sicil))
+            {
+                throw new ArgumentException("Sicil boş bırakılamaz.");
+            }
+
+            // Şifre boş mu?
+            if (string.IsNullOrWhiteSpace(dto.Sifre))
+            {
+                throw new ArgumentException("Şifre boş bırakılamaz.");
+            }
+
+            // Sicile göre personeli getir
+            PersonelDTO? personel = GetirBySicil(dto.Sicil);
+
+            if (personel == null)
+            {
+                throw new UnauthorizedAccessException("Sicil veya şifre hatalı.");
+            }
+
+            // Şifreyi doğrula
+            var sonuc = _passwordHasher.VerifyHashedPassword(
+            personel,
+            personel.Sifre,
+            dto.Sifre);
+
+            if (sonuc == PasswordVerificationResult.Failed)
+            {
+                throw new UnauthorizedAccessException("Sicil veya şifre hatalı.");
+            }
+
+        return personel;
+        }
+
+        private PersonelDTO? GetirBySicil(string sicil)
+        {
+            if (string.IsNullOrWhiteSpace(sicil))
+            {
+                throw new ArgumentException("Sicil boş bırakılamaz.");
+            }
+
+            return _personelRepository.GetirBySicil(sicil);
         }
 
         public List<PersonelDTO> Listele(PersonelAramaKriterleriDTO aramaKriterleri)
@@ -92,6 +140,16 @@ namespace kocerbank_backend.Services
             {
                 throw new ArgumentException(
                     "Personel soyadı boş bırakılamaz.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Sifre))
+            {
+                throw new ArgumentException("Şifre boş bırakılamaz.");
+            }
+
+            if (dto.Sifre.Length < 8)
+            {
+                throw new ArgumentException("Şifre en az 8 karakter olmalıdır.");
             }
 
             // TCKN kontrolü (Genelde 11 hane olmalıdır)
