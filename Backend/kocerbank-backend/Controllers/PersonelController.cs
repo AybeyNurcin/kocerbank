@@ -33,7 +33,7 @@ namespace kocerbank_backend.Controllers
                 }
             }
 
-        [HttpGet("GetiryById/{id:long}")]
+        [HttpGet("GetirById/{id:long}")]
         public IActionResult GetirById(long id)
         {
             try
@@ -52,6 +52,31 @@ namespace kocerbank_backend.Controllers
                 return Ok(personel);
             }
             catch (Exception ex) 
+            {
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] PersonelLoginDTO dto)
+        {
+            try
+            {
+                PersonelDTO personel = _personelService.Login(dto);
+
+                return Ok(personel);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+                catch (Exception ex)
             {
                 return BadRequest(new
                 {
