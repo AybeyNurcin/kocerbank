@@ -22,20 +22,24 @@ namespace kocerbank_backend.Services
         }
 
         // 2. ID'YE GÖRE GETİR
-        public MusteriDTO? GetirById(long id)
+        public MusteriDTO GetirById(long id)
         {
-            var musteri = _musteriRepository.GetirById(id);
-            if (musteri == null)
-            {
-                throw new KeyNotFoundException($"Müşteri bulunamadı: ID = {id}");
-            }
-
             if (id <= 0)
             {
-                throw new Exception("Geçersiz müşteri ID'si.");
+                throw new ArgumentException(
+                    "Geçersiz müşteri ID'si.");
             }
 
-            return _musteriRepository.GetirById(id);
+            MusteriDTO? musteri =
+                _musteriRepository.GetirById(id);
+
+            if (musteri is null)
+            {
+                throw new KeyNotFoundException(
+                    $"Müşteri bulunamadı: ID = {id}");
+            }
+
+            return musteri;
         }
 
         // 3. LİSTELEME
@@ -83,38 +87,106 @@ namespace kocerbank_backend.Services
         // ORTAK DOĞRULAMA METODU
         private void RealityCheck(MusteriDTO dto)
         {
+            if (dto is null)
+            {
+                throw new ArgumentException(
+                    "Müşteri bilgileri gönderilmelidir.");
+            }
+
             if (string.IsNullOrWhiteSpace(dto.Ad))
-                throw new Exception("Ad girilmesi zorunludur.");
+            {
+                throw new ArgumentException(
+                    "Ad girilmesi zorunludur.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.Soyad))
-                throw new Exception("Soyad girilmesi zorunludur.");
+            {
+                throw new ArgumentException(
+                    "Soyad girilmesi zorunludur.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.Eposta))
-                throw new Exception("E-posta girilmesi zorunludur.");
-
-            if (string.IsNullOrWhiteSpace(dto.DogumTarihi.ToString()))
-                throw new Exception("Doğum tarihi boş bırakılamaz.");
+            {
+                throw new ArgumentException(
+                    "E-posta girilmesi zorunludur.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.TelefonNo))
-                throw new Exception("Telefon numarası girilmesi zorunludur.");
+            {
+                throw new ArgumentException(
+                    "Telefon numarası girilmesi zorunludur.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.SubeSubeKodu))
-                throw new Exception("Şube kodu seçilmesi zorunludur.");
+            {
+                throw new ArgumentException(
+                    "Şube seçilmesi zorunludur.");
+            }
 
-            if (dto.MusteriTipi == MusteriTipiDurumlari.None)
-                throw new Exception("Bireysel/Kurumsal seçilmelidir.");
+            if (dto.MusteriTipi ==
+                MusteriTipiDurumlari.None)
+            {
+                throw new ArgumentException(
+                    "Bireysel veya kurumsal müşteri tipi seçilmelidir.");
+            }
 
-            if (dto.MusteriTipi == MusteriTipiDurumlari.Bireysel && dto.TCKN.Length != 11)
-                throw new Exception("TCKN 11 haneli olmalıdır.");
+            if (dto.DurumKodu ==
+                AktifPasifDurumlari.None)
+            {
+                throw new ArgumentException(
+                    "Durum seçilmelidir.");
+            }
 
-            if (dto.MusteriTipi == MusteriTipiDurumlari.Kurumsal && dto.VKN.Length != 10)
-                throw new Exception("VKN 10 haneli olmalıdır.");
+            if (dto.MusteriTipi ==
+                MusteriTipiDurumlari.Bireysel)
+            {
+                if (string.IsNullOrWhiteSpace(dto.TCKN) ||
+                    dto.TCKN.Length != 11)
+                {
+                    throw new ArgumentException(
+                        "TCKN 11 haneli olmalıdır.");
+                }
 
-            if (dto.MusteriTipi == MusteriTipiDurumlari.Bireysel && dto.Cinsiyet == CinsiyetDurumlari.None)
-                throw new Exception("Cinsiyet seçilmelidir.");
+                if (!dto.DogumTarihi.HasValue && dto.MusteriTipi==MusteriTipiDurumlari.Bireysel)
+                {
+                    throw new ArgumentException(
+                        "Doğum tarihi girilmelidir.");
+                }
 
-            if (dto.DurumKodu == AktifPasifDurumlari.None)
-                throw new Exception("Durum seçilmelidir.");
+                if (!dto.Cinsiyet.HasValue ||
+                    dto.Cinsiyet ==
+                    CinsiyetDurumlari.None)
+                {
+                    throw new ArgumentException(
+                        "Cinsiyet seçilmelidir.");
+                }
+
+                // Bireysel müşteride kullanılmaz.
+                dto.VKN = null;
+                dto.Unvan = null;
+            }
+
+            if (dto.MusteriTipi ==
+                MusteriTipiDurumlari.Kurumsal)
+            {
+                if (string.IsNullOrWhiteSpace(dto.VKN) ||
+                    dto.VKN.Length != 10)
+                {
+                    throw new ArgumentException(
+                        "VKN 10 haneli olmalıdır.");
+                }
+
+                if (string.IsNullOrWhiteSpace(dto.Unvan))
+                {
+                    throw new ArgumentException(
+                        "Unvan girilmesi zorunludur.");
+                }
+
+                // Kurumsal müşteride kullanılmaz.
+                dto.TCKN = null;
+                dto.DogumTarihi = null;
+                dto.Cinsiyet = null;
+            }
         }
 
         public void idCheck(long id)

@@ -67,7 +67,7 @@ namespace kocerbank_backend.Controllers
             return Ok(musteriler);
         }
 
-        [HttpPut("Güncelle/{id:long}")]
+        [HttpPut("Guncelle/{id:long}")]
         public IActionResult Guncelle(
             long id,
             [FromBody] MusteriDTO dto)
