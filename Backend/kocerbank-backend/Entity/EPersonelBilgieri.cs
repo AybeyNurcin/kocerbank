@@ -92,8 +92,31 @@ namespace kocerbank_backend.DataAccess
 
         public PersonelDTO? GetirBySicil(string sicil)
         {
-            throw new NotImplementedException();
-        }
+            PersonelDTO? personel = null;
+
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                 using (OracleCommand KB = new OracleCommand("KB_PERSONEL_GETIRBYSICIL", conn))
+                {
+                    KB.CommandType = CommandType.StoredProcedure;
+
+                    KB.Parameters.Add("P_SICIL", OracleDbType.Varchar2).Value = sicil;
+                    KB.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    conn.Open();
+
+                    using (OracleDataReader reader = KB.ExecuteReader())
+                {
+                    if (reader.Read())
+                {
+                    personel = MapReaderToDTO(reader);
+                }
+                }
+            }
+    }
+
+    return personel;
+}
 
         // 3. KRİTERE GÖRE LİSTELE
         public List<PersonelDTO> GetirListele(PersonelAramaKriterleriDTO aramaKriterleri)
