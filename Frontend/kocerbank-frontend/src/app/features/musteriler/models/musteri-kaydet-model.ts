@@ -10,15 +10,13 @@ import {
   Cinsiyet
 } from '../../../shared/enums/cinsiyet-enum';
 
-export interface Musteri {
-  id: number;
-
+export interface MusteriKaydet {
   ad: string;
   soyad: string;
   eposta: string;
+  telefonNo: string;
 
   dogumTarihi: string | null;
-  telefonNo: string;
 
   tckn: string | null;
   vkn: string | null;
@@ -27,14 +25,8 @@ export interface Musteri {
   musteriTipi: MusteriTipi;
 
   subeSubeKodu: string;
-  subeAdi: string;
-
-  durumKodu: AktifPasifDurumlari;
 
   unvan: string | null;
 
-  kayitOlusturmaTarihi: string;
-
-  recordUser: string | null;
-  recordDate: string;
+  durumKodu: AktifPasifDurumlari;
 }
