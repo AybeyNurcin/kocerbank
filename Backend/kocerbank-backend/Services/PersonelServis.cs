@@ -1,23 +1,29 @@
 using kocerbank_backend.DataAccess;
 using kocerbank_backend.Enums;
 using kocerbank_backend.Models.DTOs;
+using Microsoft.AspNetCore.Identity;
 
 namespace kocerbank_backend.Services
 {
     public class PersonelService
     {
         private readonly PersonelRepository _personelRepository;
+        private readonly PasswordHasher<PersonelDTO> _passwordHasher;
 
         public PersonelService(PersonelRepository personelRepository)
         {
             _personelRepository = personelRepository;
+            _passwordHasher = new PasswordHasher<PersonelDTO>();
         }
 
         // 1. PERSONEL EKLEME
         public PersonelDTO Ekle(PersonelDTO dto)
         {
             PersonelBilgileriniKontrolEt(dto);
-            return _personelRepository.Ekle(dto);
+
+                dto.Sifre = _passwordHasher.HashPassword(dto, dto.Sifre);
+
+                return _personelRepository.Ekle(dto);
         }
 
         // 2. ID'YE GÖRE PERSONEL GETİRME
@@ -134,3 +140,5 @@ namespace kocerbank_backend.Services
         }
     }
 }
+
+
