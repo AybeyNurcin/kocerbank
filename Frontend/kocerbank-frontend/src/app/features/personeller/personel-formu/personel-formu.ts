@@ -41,7 +41,6 @@ export class PersonelFormu implements OnChanges, OnInit {
   sifreGorunurMu: boolean = false;
 
   subeAramaTerimi: string = '';
-  subeListesiAcikMi: boolean = false;
 
   kaydediliyorMu: boolean = false;
   hataMesaji: string = '';
@@ -76,7 +75,6 @@ export class PersonelFormu implements OnChanges, OnInit {
 
         next: (gelenSubeler: Sube[]) => {
           this.subeler = gelenSubeler;
-          this.subeAramaTeriminiAyarla();
           this.changeDetector.markForCheck();
         },
 
@@ -100,6 +98,7 @@ export class PersonelFormu implements OnChanges, OnInit {
 
     this.hataMesaji = '';
     this.sifreGorunurMu = false;
+    this.subeAramaTerimi = '';
 
     if (this.personel === null) {
       this.formModel = {
@@ -117,8 +116,6 @@ export class PersonelFormu implements OnChanges, OnInit {
           AktifPasifDurumlari.Aktif
       };
 
-      this.subeAramaTerimi = '';
-
       return;
     }
 
@@ -135,21 +132,6 @@ export class PersonelFormu implements OnChanges, OnInit {
       subeKodu: this.personel.subeKodu,
       durumKodu: this.personel.durumKodu
     };
-
-    this.subeAramaTeriminiAyarla();
-  }
-
-  private subeAramaTeriminiAyarla(): void {
-
-    const seciliSube =
-      this.subeler.find(
-        sube => sube.subeKodu === this.formModel.subeKodu
-      );
-
-    this.subeAramaTerimi =
-      seciliSube
-        ? `${seciliSube.subeKodu} - ${seciliSube.subeAdi}`
-        : this.formModel.subeKodu;
   }
 
   get filtrelenmisSubeler(): Sube[] {
@@ -161,35 +143,22 @@ export class PersonelFormu implements OnChanges, OnInit {
       return this.subeler;
     }
 
-    return this.subeler.filter(
+    const eslesenler = this.subeler.filter(
       sube =>
         sube.subeKodu.toLocaleLowerCase('tr').includes(terim) ||
         sube.subeAdi.toLocaleLowerCase('tr').includes(terim)
     );
-  }
 
-  subeAramaGirisiDegisti(): void {
+    // Seçili şube, arama sonuçlarında olmasa bile listeden düşmez.
+    const seciliSube = this.subeler.find(
+      sube => sube.subeKodu === this.formModel.subeKodu
+    );
 
-    this.subeListesiAcikMi = true;
-
-    if (this.subeAramaTerimi.trim() === '') {
-      this.formModel.subeKodu = '';
+    if (seciliSube && !eslesenler.includes(seciliSube)) {
+      return [seciliSube, ...eslesenler];
     }
-  }
 
-  subeListesiniAc(): void {
-    this.subeListesiAcikMi = true;
-  }
-
-  subeListesiniKapat(): void {
-    this.subeListesiAcikMi = false;
-  }
-
-  subeSec(sube: Sube): void {
-
-    this.formModel.subeKodu = sube.subeKodu;
-    this.subeAramaTerimi = `${sube.subeKodu} - ${sube.subeAdi}`;
-    this.subeListesiAcikMi = false;
+    return eslesenler;
   }
 
   sifreGorunurluguDegistir(): void {
