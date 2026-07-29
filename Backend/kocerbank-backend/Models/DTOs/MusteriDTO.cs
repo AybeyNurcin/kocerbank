@@ -15,7 +15,7 @@ namespace kocerbank_backend.Models.DTOs
         public MusteriTipiDurumlari MusteriTipi { get; set; }
         public string SubeSubeKodu { get; set; } = string.Empty;
         public AktifPasifDurumlari DurumKodu { get; set; }
-        public string Unvan { get; set; } = string.Empty;
+        public string? Unvan { get; set; }
         public DateTime KayitOlusturmaTarihi { get; set; }
     }
     public class MusteriAramaKriterleriDTO
