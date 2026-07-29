@@ -1,8 +1,6 @@
 using kocerbank_backend.DataAccess;
 using kocerbank_backend.Enums;
 using kocerbank_backend.Models.DTOs;
-using System;
-using System.Collections.Generic;
 
 namespace kocerbank_backend.Services
 {
@@ -18,60 +16,36 @@ namespace kocerbank_backend.Services
         // 1. PERSONEL EKLEME
         public PersonelDTO Ekle(PersonelDTO dto)
         {
-            if (dto is null)
-            {
-                throw new ArgumentException(
-                    "Personel bilgileri gönderilmelidir.");
-            }
-
             PersonelBilgileriniKontrolEt(dto);
-
             return _personelRepository.Ekle(dto);
         }
 
         // 2. ID'YE GÖRE PERSONEL GETİRME
         public PersonelDTO? GetirById(long id)
         {
+            var personel = _personelRepository.GetirById(id);
+            if (personel == null)
+            {
+                throw new KeyNotFoundException($"Personel bulunamadı: ID = {id}");
+            }
             IdKontrolEt(id);
 
             return _personelRepository.GetirById(id);
         }
 
-        // 3. KRİTERE GÖRE PERSONEL LİSTELEME
         public List<PersonelDTO> Listele(PersonelAramaKriterleriDTO aramaKriterleri)
         {
-            if (aramaKriterleri is null)
-            {
-                throw new ArgumentException(
-                    "Arama kriterleri gönderilmelidir.");
-            }
-
-            if (!Enum.IsDefined(
-                    typeof(AktifPasifDurumlari),
-                    aramaKriterleri.DurumKodu))
-            {
-                throw new ArgumentException(
-                    "Geçersiz personel durum kodu gönderildi.");
-            }
-
             return _personelRepository.GetirListele(aramaKriterleri);
         }
 
         // 4. PERSONEL GÜNCELLEME
         public void Guncelle(PersonelDTO dto)
         {
-            if (dto is null)
-            {
-                throw new ArgumentException(
-                    "Güncellenecek personel bilgileri gönderilmelidir.");
-            }
-
             IdKontrolEt(dto.Id);
 
             PersonelBilgileriniKontrolEt(dto);
 
-            PersonelDTO? mevcutPersonel =
-                _personelRepository.GetirById(dto.Id);
+            PersonelDTO? mevcutPersonel = _personelRepository.GetirById(dto.Id);
 
             if (mevcutPersonel is null)
             {
@@ -87,8 +61,7 @@ namespace kocerbank_backend.Services
         {
             IdKontrolEt(id);
 
-            PersonelDTO? mevcutPersonel =
-                _personelRepository.GetirById(id);
+            PersonelDTO? mevcutPersonel =  _personelRepository.GetirById(id);
 
             if (mevcutPersonel is null)
             {
