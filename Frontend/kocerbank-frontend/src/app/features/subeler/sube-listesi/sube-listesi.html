@@ -22,6 +22,8 @@
 
   </div>
 
+
+  <!-- FİLTRELEME ALANI -->
   <div class="filter-card">
 
     <div class="filter-title">
@@ -38,6 +40,8 @@
 
     <div class="filter-fields">
 
+
+      <!-- ŞUBE KODU -->
       <div class="form-field">
 
         <label for="subeKodu">
@@ -48,10 +52,13 @@
                name="subeKodu"
                type="text"
                [(ngModel)]="aramaKriterleri.subeKodu"
+               (ngModelChange)="filtreDegisti()"
                placeholder="Örnek: S0001" />
 
       </div>
 
+
+      <!-- ŞUBE ADI -->
       <div class="form-field">
 
         <label for="subeAdi">
@@ -62,10 +69,13 @@
                name="subeAdi"
                type="text"
                [(ngModel)]="aramaKriterleri.subeAdi"
+               (ngModelChange)="filtreDegisti()"
                placeholder="Şube adı giriniz" />
 
       </div>
 
+
+      <!-- TELEFON -->
       <div class="form-field">
 
         <label for="telefon">
@@ -76,10 +86,13 @@
                name="telefon"
                type="text"
                [(ngModel)]="aramaKriterleri.subeTelefonNo"
+               (ngModelChange)="filtreDegisti()"
                placeholder="Telefon numarası" />
 
       </div>
 
+
+      <!-- ADRES -->
       <div class="form-field address-field">
 
         <label for="adres">
@@ -90,10 +103,13 @@
                name="adres"
                type="text"
                [(ngModel)]="aramaKriterleri.subeAdres"
+               (ngModelChange)="filtreDegisti()"
                placeholder="Adres bilgisi" />
 
       </div>
 
+
+      <!-- DURUM -->
       <div class="form-field">
 
         <label for="durum">
@@ -102,7 +118,8 @@
 
         <select id="durum"
                 name="durum"
-                [(ngModel)]="aramaKriterleri.subeDurumKodu">
+                [(ngModel)]="aramaKriterleri.subeDurumKodu"
+                (ngModelChange)="filtreDegisti()">
 
           <option [ngValue]="undefined">
             Tümü
@@ -120,16 +137,12 @@
 
       </div>
 
-      <button type="button"
-              class="search-button"
-              (click)="ara()">
-        Ara
-      </button>
-
     </div>
 
   </div>
 
+
+  <!-- YÜKLENME MESAJI -->
   @if (yukleniyorMu) {
 
   <div class="information-message">
@@ -138,6 +151,8 @@
 
   }
 
+
+  <!-- HATA MESAJI -->
   @if (hataMesaji !== '') {
 
   <div class="error-message">
@@ -146,6 +161,8 @@
 
   }
 
+
+  <!-- ŞUBE TABLOSU -->
   <div class="table-card">
 
     <div class="table-heading">
@@ -259,6 +276,8 @@
 
   </div>
 
+
+  <!-- EKLEME / DÜZENLEME POPUP -->
   @if (subeFormuAcikMi) {
 
   <div class="modal-background">

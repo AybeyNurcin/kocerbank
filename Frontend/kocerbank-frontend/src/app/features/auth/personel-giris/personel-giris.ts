@@ -1,5 +1,13 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
+
+import {
+  AuthService
+} from '../../../core/services/auth';
 
 @Component({
   selector: 'app-personel-giris',
@@ -13,18 +21,26 @@ export class PersonelGiris {
   sifre: string = '';
   hataMesaji: string = '';
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService
+  ) {
   }
 
   girisYap(): void {
 
     if (this.sicilNo.trim() === '') {
-      this.hataMesaji = 'Sicil numarası boş bırakılamaz.';
+      this.hataMesaji =
+        'Sicil numarası boş bırakılamaz.';
+
       return;
     }
 
     if (this.sifre.trim() === '') {
-      this.hataMesaji = 'Şifre boş bırakılamaz.';
+      this.hataMesaji =
+        'Şifre boş bırakılamaz.';
+
       return;
     }
 
@@ -33,7 +49,33 @@ export class PersonelGiris {
       this.sifre === '1234'
     ) {
       this.hataMesaji = '';
-      this.router.navigate(['/dashboard']);
+
+      // Personelin oturumunu açar.
+      this.authService.oturumAc(
+        this.sicilNo
+      );
+
+      // Guard tarafından saklanan adresi alır.
+      const returnUrl =
+        this.activatedRoute.snapshot
+          .queryParamMap
+          .get('returnUrl');
+
+      // Kullanıcı doğrudan korumalı bir sayfaya
+      // gitmek istemişse o sayfaya yönlendirilir.
+      if (returnUrl !== null) {
+        this.router.navigateByUrl(
+          returnUrl
+        );
+
+        return;
+      }
+
+      // Normal girişte Dashboard açılır.
+      this.router.navigate([
+        '/dashboard'
+      ]);
+
       return;
     }
 

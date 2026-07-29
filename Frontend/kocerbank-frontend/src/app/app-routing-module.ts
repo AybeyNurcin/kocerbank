@@ -1,5 +1,9 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+
+import {
+  RouterModule,
+  Routes
+} from '@angular/router';
 
 import { PersonelGiris } from './features/auth/personel-giris/personel-giris';
 import { Dashboard } from './features/dashboard/dashboard/dashboard';
@@ -8,14 +12,28 @@ import { PersonelListesi } from './features/personeller/personel-listesi/persone
 import { MusteriListesi } from './features/musteriler/musteri-listesi/musteri-listesi';
 import { AdminLayout } from './layouts/admin-layout/admin-layout';
 
+import {
+  authGuard
+} from './core/guards/auth-guard';
+
 const routes: Routes = [
+
+  // Giriş sayfası koruma altında değildir.
   {
     path: 'giris',
     component: PersonelGiris
   },
+
+  // Girişten sonraki bütün sayfaların ortak layout'u.
   {
     path: '',
     component: AdminLayout,
+
+    // AdminLayout açılmadan önce oturum kontrol edilir.
+    canActivate: [
+      authGuard
+    ],
+
     children: [
       {
         path: 'dashboard',
@@ -33,6 +51,8 @@ const routes: Routes = [
         path: 'musteriler',
         component: MusteriListesi
       },
+
+      // Ana adrese gidilirse Dashboard açılır.
       {
         path: '',
         redirectTo: 'dashboard',
@@ -40,10 +60,13 @@ const routes: Routes = [
       }
     ]
   },
+
+  // Tanımlanmayan adresler giriş ekranına gider.
   {
     path: '**',
     redirectTo: 'giris'
   }
+
 ];
 
 @NgModule({
@@ -54,4 +77,5 @@ const routes: Routes = [
     RouterModule
   ]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
