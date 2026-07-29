@@ -20,6 +20,9 @@ namespace kocerbank_backend.Services
         public PersonelDTO Ekle(PersonelDTO dto)
         {
             PersonelBilgileriniKontrolEt(dto);
+
+            dto.Sifre = _passwordHasher.HashPassword(dto, dto.Sifre);
+
             return _personelRepository.Ekle(dto);
         }
 
@@ -137,4 +140,5 @@ namespace kocerbank_backend.Services
         }
     }
 }
+
 
