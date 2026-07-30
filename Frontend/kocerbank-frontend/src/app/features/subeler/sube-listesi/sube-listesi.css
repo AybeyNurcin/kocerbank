@@ -357,3 +357,32 @@ tbody tr:hover {
     justify-content: center;
   }
 }
+
+/* FİLTRE ARAMA BUTONU */
+
+.filter-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-button {
+  min-width: 110px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 7px;
+  background-color: #d2a900;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+  .search-button:hover:not(:disabled) {
+    background-color: #b99200;
+  }
+
+  .search-button:disabled {
+    background-color: #d8d2b8;
+    cursor: not-allowed;
+  }

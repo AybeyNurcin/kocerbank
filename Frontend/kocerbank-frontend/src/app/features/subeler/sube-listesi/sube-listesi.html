@@ -1,14 +1,17 @@
 <section class="sube-page">
 
+  <!-- SAYFA BAŞLIĞI -->
   <div class="page-heading">
 
     <div>
+
       <h1>Şube Yönetimi</h1>
 
       <p>
-        Banka şubelerini görüntüleyebilir, filtreleyebilir
-        ve yönetebilirsiniz.
+        Banka şubelerini görüntüleyebilir,
+        filtreleyebilir ve yönetebilirsiniz.
       </p>
+
     </div>
 
     <button type="button"
@@ -33,13 +36,15 @@
       <button type="button"
               class="clear-button"
               (click)="filtreleriTemizle()">
+
         Filtreleri Temizle
+
       </button>
 
     </div>
 
-    <div class="filter-fields">
 
+    <div class="filter-fields">
 
       <!-- ŞUBE KODU -->
       <div class="form-field">
@@ -52,7 +57,6 @@
                name="subeKodu"
                type="text"
                [(ngModel)]="aramaKriterleri.subeKodu"
-               (ngModelChange)="filtreDegisti()"
                placeholder="Örnek: S0001" />
 
       </div>
@@ -69,7 +73,6 @@
                name="subeAdi"
                type="text"
                [(ngModel)]="aramaKriterleri.subeAdi"
-               (ngModelChange)="filtreDegisti()"
                placeholder="Şube adı giriniz" />
 
       </div>
@@ -86,7 +89,6 @@
                name="telefon"
                type="text"
                [(ngModel)]="aramaKriterleri.subeTelefonNo"
-               (ngModelChange)="filtreDegisti()"
                placeholder="Telefon numarası" />
 
       </div>
@@ -103,7 +105,7 @@
                name="adres"
                type="text"
                [(ngModel)]="aramaKriterleri.subeAdres"
-               (ngModelChange)="filtreDegisti()"
+               (ngModelChange)="adresDegisti()"
                placeholder="Adres bilgisi" />
 
       </div>
@@ -118,8 +120,7 @@
 
         <select id="durum"
                 name="durum"
-                [(ngModel)]="aramaKriterleri.subeDurumKodu"
-                (ngModelChange)="filtreDegisti()">
+                [(ngModel)]="aramaKriterleri.subeDurumKodu">
 
           <option [ngValue]="undefined">
             Tümü
@@ -136,6 +137,29 @@
         </select>
 
       </div>
+
+    </div>
+
+
+    <!-- ARA BUTONU -->
+    <div class="filter-actions">
+
+      <button type="button"
+              class="search-button"
+              [disabled]="yukleniyorMu"
+              (click)="ara()">
+
+        @if (yukleniyorMu) {
+
+        Aranıyor...
+
+        } @else {
+
+        Ara
+
+        }
+
+      </button>
 
     </div>
 
@@ -178,14 +202,17 @@
     <div class="table-heading">
 
       <div>
+
         <h2>Şubeler</h2>
 
         <span>
           Toplam {{ subeler.length }} kayıt
         </span>
+
       </div>
 
     </div>
+
 
     <div class="table-container">
 
@@ -194,6 +221,7 @@
         <thead>
 
           <tr>
+
             <th>Şube Kodu</th>
             <th>Şube Adı</th>
             <th>Telefon</th>
@@ -203,13 +231,19 @@
             <th class="actions-column">
               İşlemler
             </th>
+
           </tr>
 
         </thead>
 
+
         <tbody>
 
-          @for (sube of sayfadakiSubeler; track sube.id) {
+          @for (
+          sube of sayfadakiSubeler;
+          track sube.id
+          ) {
+
           <tr>
 
             <td class="branch-code">
@@ -236,10 +270,18 @@
                 Aktif
               </span>
 
-              } @else {
+              } @else if (
+              sube.subeDurumKodu === 2
+              ) {
 
               <span class="status passive-status">
                 Pasif
+              </span>
+
+              } @else {
+
+              <span>
+                -
               </span>
 
               }
@@ -251,7 +293,9 @@
               <button type="button"
                       class="edit-button"
                       (click)="duzenle(sube)">
+
                 Düzenle
+
               </button>
 
             </td>
@@ -271,7 +315,7 @@
             <td colspan="6"
                 class="empty-table-message">
 
-              Görüntülenecek şube bulunamadı.
+              Filtrelere uygun şube bulunamadı.
 
             </td>
 
@@ -287,6 +331,8 @@
 
     </div>
 
+
+    <!-- SAYFALAMA -->
     @if (subeler.length > 0) {
 
     <div class="pagination">
@@ -306,18 +352,26 @@
                 class="pagination-button"
                 [disabled]="mevcutSayfa === 1"
                 (click)="oncekiSayfa()">
+
           Önceki
+
         </button>
 
         <span class="page-number">
-          Sayfa {{ mevcutSayfa }} / {{ toplamSayfa }}
+
+          Sayfa
+          {{ mevcutSayfa }} /
+          {{ toplamSayfa }}
+
         </span>
 
         <button type="button"
                 class="pagination-button"
                 [disabled]="mevcutSayfa === toplamSayfa"
                 (click)="sonrakiSayfa()">
+
           Sonraki
+
         </button>
 
       </div>
@@ -329,7 +383,7 @@
   </div>
 
 
-  <!-- EKLEME / DÜZENLEME POPUP -->
+  <!-- EKLEME / DÜZENLEME POPUP'I -->
   @if (subeFormuAcikMi) {
 
   <div class="modal-background">
