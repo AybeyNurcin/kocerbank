@@ -20,6 +20,7 @@ import { MusteriFormu } from './features/musteriler/musteri-formu/musteri-formu'
 import { MusteriIletisim } from './features/musteriler/musteri-iletisim/musteri-iletisim';
 
 import { provideHttpClient } from '@angular/common/http';
+import { HesapListesi } from './features/hesaplar/hesap-listesi/hesap-listesi';
 
 @NgModule({
   declarations: [
@@ -36,12 +37,10 @@ import { provideHttpClient } from '@angular/common/http';
     SubeSecici,
     MusteriFormu,
     MusteriIletisim,
+    HesapListesi,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
-  providers: [
-  provideBrowserGlobalErrorListeners(),
-  provideHttpClient()
-  ],
+  providers: [provideBrowserGlobalErrorListeners(), provideHttpClient()],
   bootstrap: [App],
 })
 export class AppModule {}
