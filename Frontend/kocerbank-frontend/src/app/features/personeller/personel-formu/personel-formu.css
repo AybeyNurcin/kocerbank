@@ -67,6 +67,39 @@
     color: #77777e;
   }
 
+
+/* ŞİFRE ALANI VE GÖZ İKONU */
+
+.password-field {
+  position: relative;
+}
+
+  .password-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 40px;
+  }
+
+.password-toggle-button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: #77777e;
+  cursor: pointer;
+}
+
+  .password-toggle-button:hover {
+    color: #33333a;
+  }
+
+
 .form-actions {
   margin-top: 25px;
   display: flex;

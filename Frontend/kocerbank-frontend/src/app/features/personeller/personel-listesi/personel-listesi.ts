@@ -19,12 +19,15 @@ import { PersonelApi } from '../services/personel-api';
   selector: 'app-personel-listesi',
   standalone: false,
   templateUrl: './personel-listesi.html',
-  styleUrl: './personel-listesi.css',
+  styleUrl: './personel-listesi.css'
 })
 export class PersonelListesi
   implements OnInit, OnDestroy {
 
   personeller: Personel[] = [];
+
+  mevcutSayfa: number = 1;
+  sayfaBasinaKayit: number = 10;
 
   aramaKriterleri: PersonelFiltre = {};
 
@@ -33,6 +36,9 @@ export class PersonelListesi
 
   yukleniyorMu: boolean = false;
   hataMesaji: string = '';
+
+  bilgiMesaji: string =
+    'Lütfen en az bir filtreleme kriteri giriniz.';
 
   private filtreDegisikligi =
     new Subject<void>();
@@ -47,9 +53,8 @@ export class PersonelListesi
 
   ngOnInit(): void {
 
-    // Sayfa ilk açıldığında hiçbir filtre girilmediği için liste boş kalır.
-
-    // Kullanıcı yazmayı bıraktıktan 400 ms sonra filtreler.
+    // Kullanıcı adres alanında yazmayı bıraktıktan
+    // 400 ms sonra filtreleme yapar.
     this.filtreAboneligi =
       this.filtreDegisikligi
         .pipe(
@@ -58,6 +63,7 @@ export class PersonelListesi
         .subscribe(() => {
           this.personelleriGetir();
         });
+
   }
 
   ngOnDestroy(): void {
@@ -66,23 +72,83 @@ export class PersonelListesi
 
   }
 
-  filtreDegisti(): void {
+  adresDegisti(): void {
 
+    // Yalnızca adres alanındaki değişiklikler
+    // 400 ms gecikmeli otomatik arama başlatır.
     this.filtreDegisikligi.next();
 
   }
 
-  private herhangiBirFiltreGirilmisMi(): boolean {
+  ara(): void {
 
-    const kriterler = this.aramaKriterleri;
+    // Kullanıcının o anda doldurduğu
+    // bütün filtrelerle sorgu gönderir.
+    this.personelleriGetir();
 
-    return Object.values(kriterler)
-      .some(
-        deger =>
-          deger !== undefined &&
-          deger !== null &&
-          deger !== ''
-      );
+  }
+
+  get sayfadakiPersoneller(): Personel[] {
+
+    const baslangicIndeksi =
+      (this.mevcutSayfa - 1) *
+      this.sayfaBasinaKayit;
+
+    const bitisIndeksi =
+      baslangicIndeksi +
+      this.sayfaBasinaKayit;
+
+    return this.personeller.slice(
+      baslangicIndeksi,
+      bitisIndeksi
+    );
+  }
+
+  get toplamSayfa(): number {
+
+    return Math.ceil(
+      this.personeller.length /
+      this.sayfaBasinaKayit
+    );
+  }
+
+  get ilkKayitNumarasi(): number {
+
+    if (this.personeller.length === 0) {
+      return 0;
+    }
+
+    return (
+      (this.mevcutSayfa - 1) *
+      this.sayfaBasinaKayit
+    ) + 1;
+  }
+
+  get sonKayitNumarasi(): number {
+
+    return Math.min(
+      this.mevcutSayfa *
+      this.sayfaBasinaKayit,
+      this.personeller.length
+    );
+  }
+
+  oncekiSayfa(): void {
+
+    if (this.mevcutSayfa > 1) {
+      this.mevcutSayfa--;
+    }
+
+  }
+
+  sonrakiSayfa(): void {
+
+    if (
+      this.mevcutSayfa <
+      this.toplamSayfa
+    ) {
+      this.mevcutSayfa++;
+    }
 
   }
 
@@ -91,30 +157,48 @@ export class PersonelListesi
       this.aramaKriterleri
   ): void {
 
-    // Hiçbir filtre girilmemişse sonuç gösterilmez.
-    if (!this.herhangiBirFiltreGirilmisMi()) {
-      this.personeller = [];
-      this.hataMesaji = '';
-      this.yukleniyorMu = false;
+    // Herhangi bir filtre girilmiş mi kontrol eder.
+    if (!this.filtreVarMi(kriterler)) {
 
+      // Filtrelerin tamamı boşsa eski listeyi temizler.
+      this.personeller = [];
+      this.mevcutSayfa = 1;
+
+      this.yukleniyorMu = false;
+      this.hataMesaji = '';
+
+      this.bilgiMesaji =
+        'Lütfen en az bir filtreleme kriteri giriniz.';
+
+      this.changeDetector.markForCheck();
+
+      // Backend'e istek göndermeden metottan çıkar.
       return;
     }
 
     this.yukleniyorMu = true;
     this.hataMesaji = '';
+    this.bilgiMesaji = '';
 
     this.personelApi
       .listele(kriterler)
       .subscribe({
 
         next: (gelenPersoneller: Personel[]) => {
+
           this.personeller = gelenPersoneller;
+
+          // Her yeni filtre sonucunda ilk sayfa açılır.
+          this.mevcutSayfa = 1;
+
           this.yukleniyorMu = false;
 
           this.changeDetector.markForCheck();
+
         },
 
         error: (hata) => {
+
           console.error(
             'Personel listeleme hatası:',
             hata
@@ -126,18 +210,86 @@ export class PersonelListesi
           this.yukleniyorMu = false;
 
           this.changeDetector.markForCheck();
+
         }
 
       });
   }
 
+  private filtreVarMi(
+    kriterler: PersonelFiltre
+  ): boolean {
+
+    const idGirildiMi =
+      kriterler.id !== undefined &&
+      kriterler.id !== null;
+
+    const sicilGirildiMi =
+      (kriterler.sicil?.trim().length ?? 0) > 0;
+
+    const adGirildiMi =
+      (kriterler.ad?.trim().length ?? 0) > 0;
+
+    const soyadGirildiMi =
+      (kriterler.soyad?.trim().length ?? 0) > 0;
+
+    const rolGirildiMi =
+      (kriterler.rol?.trim().length ?? 0) > 0;
+
+    const tcknGirildiMi =
+      (kriterler.tckn?.trim().length ?? 0) > 0;
+
+    const telefonGirildiMi =
+      (
+        kriterler.telefonNo
+          ?.trim()
+          .length ?? 0
+      ) > 0;
+
+    const subeGirildiMi =
+      (kriterler.subeKodu?.trim().length ?? 0) > 0;
+
+    const adresGirildiMi =
+      (
+        kriterler.adres
+          ?.trim()
+          .length ?? 0
+      ) > 0;
+
+    const epostaGirildiMi =
+      (kriterler.email?.trim().length ?? 0) > 0;
+
+    const durumSecildiMi =
+      kriterler.durumKodu !== undefined &&
+      kriterler.durumKodu !== null;
+
+    return (
+      idGirildiMi ||
+      sicilGirildiMi ||
+      adGirildiMi ||
+      soyadGirildiMi ||
+      rolGirildiMi ||
+      tcknGirildiMi ||
+      telefonGirildiMi ||
+      subeGirildiMi ||
+      adresGirildiMi ||
+      epostaGirildiMi ||
+      durumSecildiMi
+    );
+  }
+
   filtreleriTemizle(): void {
 
     this.aramaKriterleri = {};
-
-    // Filtre kalmadığı için liste de boşaltılır.
     this.personeller = [];
+    this.mevcutSayfa = 1;
+
     this.hataMesaji = '';
+
+    this.bilgiMesaji =
+      'Lütfen en az bir filtreleme kriteri giriniz.';
+
+    this.changeDetector.markForCheck();
 
   }
 
@@ -168,6 +320,9 @@ export class PersonelListesi
   personelKaydedildi(): void {
 
     this.personelFormunuKapat();
+
+    // Filtre varsa mevcut listeyi yeniler.
+    // Filtre yoksa backend'e istek göndermez.
     this.personelleriGetir();
 
   }

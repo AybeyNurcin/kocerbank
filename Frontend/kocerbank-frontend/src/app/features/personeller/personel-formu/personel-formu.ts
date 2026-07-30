@@ -4,16 +4,12 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges
 } from '@angular/core';
 
 import { Personel } from '../models/personel-model';
 import { PersonelApi } from '../services/personel-api';
-
-import { Sube } from '../../subeler/models/sube-model';
-import { SubeApi } from '../../subeler/services/sube-api';
 
 import {
   AktifPasifDurumlari
@@ -25,7 +21,7 @@ import {
   templateUrl: './personel-formu.html',
   styleUrl: './personel-formu.css'
 })
-export class PersonelFormu implements OnChanges, OnInit {
+export class PersonelFormu implements OnChanges {
 
   @Input()
   personel: Personel | null = null;
@@ -36,52 +32,30 @@ export class PersonelFormu implements OnChanges, OnInit {
   @Output()
   kaydedildi = new EventEmitter<void>();
 
-  subeler: Sube[] = [];
-
   kaydediliyorMu: boolean = false;
   hataMesaji: string = '';
+
+  sifreGoster: boolean = false;
 
   formModel = {
     id: 0,
     ad: '',
     soyad: '',
-    rol: '',
+    email: '',
     sifre: '',
+    rol: '',
     tckn: '',
     telefonNo: '',
-    adres: '',
-    email: '',
     subeKodu: '',
+    adres: '',
     durumKodu:
       AktifPasifDurumlari.Aktif
   };
 
   constructor(
     private personelApi: PersonelApi,
-    private subeApi: SubeApi,
     private changeDetector: ChangeDetectorRef
   ) {
-  }
-
-  ngOnInit(): void {
-
-    this.subeApi
-      .listele({})
-      .subscribe({
-
-        next: (gelenSubeler: Sube[]) => {
-          this.subeler = gelenSubeler;
-          this.changeDetector.markForCheck();
-        },
-
-        error: (hata) => {
-          console.error(
-            'Şube listeleme hatası:',
-            hata
-          );
-        }
-
-      });
   }
 
   ngOnChanges(
@@ -93,19 +67,20 @@ export class PersonelFormu implements OnChanges, OnInit {
     }
 
     this.hataMesaji = '';
+    this.sifreGoster = false;
 
     if (this.personel === null) {
       this.formModel = {
         id: 0,
         ad: '',
         soyad: '',
-        rol: '',
+        email: '',
         sifre: '',
+        rol: '',
         tckn: '',
         telefonNo: '',
-        adres: '',
-        email: '',
         subeKodu: '',
+        adres: '',
         durumKodu:
           AktifPasifDurumlari.Aktif
       };
@@ -117,15 +92,20 @@ export class PersonelFormu implements OnChanges, OnInit {
       id: this.personel.id,
       ad: this.personel.ad,
       soyad: this.personel.soyad,
-      rol: this.personel.rol,
+      email: this.personel.email,
       sifre: this.personel.sifre,
+      rol: this.personel.rol,
       tckn: this.personel.tckn,
       telefonNo: this.personel.telefonNo,
-      adres: this.personel.adres,
-      email: this.personel.email,
       subeKodu: this.personel.subeKodu,
-      durumKodu: this.personel.durumKodu
+      adres: this.personel.adres,
+      durumKodu:
+        this.personel.durumKodu
     };
+  }
+
+  sifreGosterDegistir(): void {
+    this.sifreGoster = !this.sifreGoster;
   }
 
   formuKapat(): void {
@@ -137,23 +117,32 @@ export class PersonelFormu implements OnChanges, OnInit {
     if (
       this.formModel.ad.trim() === '' ||
       this.formModel.soyad.trim() === '' ||
+      this.formModel.email.trim() === '' ||
       this.formModel.rol.trim() === '' ||
-      this.formModel.sifre.trim() === '' ||
       this.formModel.tckn.trim() === '' ||
       this.formModel.telefonNo.trim() === '' ||
-      this.formModel.adres.trim() === '' ||
-      this.formModel.email.trim() === '' ||
-      this.formModel.subeKodu.trim() === ''
+      this.formModel.subeKodu.trim() === '' ||
+      this.formModel.adres.trim() === ''
     ) {
       this.hataMesaji =
-        'Şube, ad, soyad, rol, şifre, TC kimlik no, telefon, adres ve e-posta zorunludur.';
+        'Şube ve durum dahil bütün alanlar zorunludur.';
+
+      return;
+    }
+
+    if (
+      this.personel === null &&
+      this.formModel.sifre.trim().length < 8
+    ) {
+      this.hataMesaji =
+        'Şifre en az 8 karakter olmalıdır.';
 
       return;
     }
 
     if (this.formModel.tckn.trim().length !== 11) {
       this.hataMesaji =
-        'TC kimlik numarası 11 haneli olmalıdır.';
+        'TC Kimlik Numarası 11 haneli olmalıdır.';
 
       return;
     }
@@ -164,14 +153,15 @@ export class PersonelFormu implements OnChanges, OnInit {
     const gonderilecekPersonel = {
       ad: this.formModel.ad,
       soyad: this.formModel.soyad,
-      rol: this.formModel.rol,
+      email: this.formModel.email,
       sifre: this.formModel.sifre,
+      rol: this.formModel.rol,
       tckn: this.formModel.tckn,
       telefonNo: this.formModel.telefonNo,
-      adres: this.formModel.adres,
-      email: this.formModel.email,
       subeKodu: this.formModel.subeKodu,
-      durumKodu: this.formModel.durumKodu
+      adres: this.formModel.adres,
+      durumKodu:
+        this.formModel.durumKodu
     };
 
     if (this.personel === null) {
@@ -234,7 +224,10 @@ export class PersonelFormu implements OnChanges, OnInit {
 
     if (typeof hata.error === 'string') {
       this.hataMesaji = hata.error;
-    } else if (hata.error?.mesaj) {
+    } else if (
+      hata.error &&
+      typeof hata.error.mesaj === 'string'
+    ) {
       this.hataMesaji = hata.error.mesaj;
     } else {
       this.hataMesaji = varsayilanMesaj;

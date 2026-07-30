@@ -1,14 +1,17 @@
 <section class="personel-page">
 
+  <!-- SAYFA BAŞLIĞI -->
   <div class="page-heading">
 
     <div>
+
       <h1>Personel Yönetimi</h1>
 
       <p>
-        Banka personellerini görüntüleyebilir, filtreleyebilir
-        ve yönetebilirsiniz.
+        Banka personellerini görüntüleyebilir,
+        filtreleyebilir ve yönetebilirsiniz.
       </p>
+
     </div>
 
     <button type="button"
@@ -33,12 +36,45 @@
       <button type="button"
               class="clear-button"
               (click)="filtreleriTemizle()">
+
         Filtreleri Temizle
+
       </button>
 
     </div>
 
+
     <div class="filter-fields">
+
+      <!-- SİCİL -->
+      <div class="form-field">
+
+        <label for="sicil">
+          Sicil
+        </label>
+
+        <input id="sicil"
+               name="sicil"
+               type="text"
+               [(ngModel)]="aramaKriterleri.sicil"
+               placeholder="Örnek: KB0001" />
+
+      </div>
+
+
+      <!-- ŞUBE -->
+      <div class="form-field">
+
+        <label for="sube">
+          Şube
+        </label>
+
+        <app-sube-secici
+          [(seciliSubeKodu)]="aramaKriterleri.subeKodu"
+          [bosSecenekGoster]="true">
+        </app-sube-secici>
+
+      </div>
 
 
       <!-- AD -->
@@ -52,8 +88,7 @@
                name="ad"
                type="text"
                [(ngModel)]="aramaKriterleri.ad"
-               (ngModelChange)="filtreDegisti()"
-               placeholder="Personel adı" />
+               placeholder="Ad giriniz" />
 
       </div>
 
@@ -69,8 +104,7 @@
                name="soyad"
                type="text"
                [(ngModel)]="aramaKriterleri.soyad"
-               (ngModelChange)="filtreDegisti()"
-               placeholder="Personel soyadı" />
+               placeholder="Soyad giriniz" />
 
       </div>
 
@@ -86,8 +120,7 @@
                name="rol"
                type="text"
                [(ngModel)]="aramaKriterleri.rol"
-               (ngModelChange)="filtreDegisti()"
-               placeholder="Örnek: Admin" />
+               placeholder="Örnek: Müdür" />
 
       </div>
 
@@ -103,25 +136,57 @@
                name="telefon"
                type="text"
                [(ngModel)]="aramaKriterleri.telefonNo"
-               (ngModelChange)="filtreDegisti()"
                placeholder="Telefon numarası" />
 
       </div>
 
 
-      <!-- ŞUBE KODU -->
+      <!-- TCKN -->
       <div class="form-field">
 
-        <label for="subeKodu">
-          Şube kodu
+        <label for="tckn">
+          TC Kimlik No
         </label>
 
-        <input id="subeKodu"
-               name="subeKodu"
+        <input id="tckn"
+               name="tckn"
                type="text"
-               [(ngModel)]="aramaKriterleri.subeKodu"
-               (ngModelChange)="filtreDegisti()"
-               placeholder="Örnek: S0001" />
+               [(ngModel)]="aramaKriterleri.tckn"
+               maxlength="11"
+               placeholder="11 haneli TCKN" />
+
+      </div>
+
+
+      <!-- E-POSTA -->
+      <div class="form-field">
+
+        <label for="eposta">
+          E-posta
+        </label>
+
+        <input id="eposta"
+               name="eposta"
+               type="text"
+               [(ngModel)]="aramaKriterleri.email"
+               placeholder="E-posta adresi" />
+
+      </div>
+
+
+      <!-- ADRES -->
+      <div class="form-field address-field">
+
+        <label for="adres">
+          Adres
+        </label>
+
+        <input id="adres"
+               name="adres"
+               type="text"
+               [(ngModel)]="aramaKriterleri.adres"
+               (ngModelChange)="adresDegisti()"
+               placeholder="Adres bilgisi" />
 
       </div>
 
@@ -135,8 +200,7 @@
 
         <select id="durum"
                 name="durum"
-                [(ngModel)]="aramaKriterleri.durumKodu"
-                (ngModelChange)="filtreDegisti()">
+                [(ngModel)]="aramaKriterleri.durumKodu">
 
           <option [ngValue]="undefined">
             Tümü
@@ -156,7 +220,40 @@
 
     </div>
 
+
+    <!-- ARA BUTONU -->
+    <div class="filter-actions">
+
+      <button type="button"
+              class="search-button"
+              [disabled]="yukleniyorMu"
+              (click)="ara()">
+
+        @if (yukleniyorMu) {
+
+        Aranıyor...
+
+        } @else {
+
+        Ara
+
+        }
+
+      </button>
+
+    </div>
+
   </div>
+
+
+  <!-- BİLGİ MESAJI -->
+  @if (bilgiMesaji !== '') {
+
+  <div class="information-message">
+    {{ bilgiMesaji }}
+  </div>
+
+  }
 
 
   <!-- YÜKLENME MESAJI -->
@@ -185,14 +282,17 @@
     <div class="table-heading">
 
       <div>
+
         <h2>Personeller</h2>
 
         <span>
-          {{ personeller.length }} kayıt görüntüleniyor
+          Toplam {{ personeller.length }} kayıt
         </span>
+
       </div>
 
     </div>
+
 
     <div class="table-container">
 
@@ -201,28 +301,41 @@
         <thead>
 
           <tr>
+
             <th>Sicil</th>
+            <th>Şube</th>
             <th>Ad Soyad</th>
             <th>Rol</th>
             <th>Telefon</th>
-            <th>Şube Kodu</th>
+            <th>TCKN</th>
+            <th>E-posta</th>
+            <th>Adres</th>
             <th>Durum</th>
 
             <th class="actions-column">
               İşlemler
             </th>
+
           </tr>
 
         </thead>
 
+
         <tbody>
 
-          @for (personel of personeller; track personel.id) {
+          @for (
+          personel of sayfadakiPersoneller;
+          track personel.id
+          ) {
 
           <tr>
 
-            <td class="personel-code">
+            <td class="personel-sicil">
               {{ personel.sicil }}
+            </td>
+
+            <td>
+              {{ personel.subeKodu }}
             </td>
 
             <td>
@@ -238,7 +351,15 @@
             </td>
 
             <td>
-              {{ personel.subeKodu }}
+              {{ personel.tckn }}
+            </td>
+
+            <td>
+              {{ personel.email }}
+            </td>
+
+            <td>
+              {{ personel.adres }}
             </td>
 
             <td>
@@ -249,10 +370,18 @@
                 Aktif
               </span>
 
-              } @else {
+              } @else if (
+              personel.durumKodu === 2
+              ) {
 
               <span class="status passive-status">
                 Pasif
+              </span>
+
+              } @else {
+
+              <span>
+                -
               </span>
 
               }
@@ -264,7 +393,9 @@
               <button type="button"
                       class="edit-button"
                       (click)="duzenle(personel)">
+
                 Düzenle
+
               </button>
 
             </td>
@@ -273,24 +404,18 @@
 
           } @empty {
 
-          @if (!yukleniyorMu) {
+          @if (
+          !yukleniyorMu &&
+          bilgiMesaji === '' &&
+          hataMesaji === ''
+          ) {
 
           <tr>
 
-            <td colspan="7"
+            <td colspan="10"
                 class="empty-table-message">
 
-              @if (!aramaKriterleri.ad && !aramaKriterleri.soyad &&
-                   !aramaKriterleri.rol && !aramaKriterleri.telefonNo &&
-                   !aramaKriterleri.subeKodu && !aramaKriterleri.durumKodu) {
-
-              Aramak için en az bir filtre giriniz.
-
-              } @else {
-
-              Görüntülenecek personel bulunamadı.
-
-              }
+              Filtrelere uygun personel bulunamadı.
 
             </td>
 
@@ -306,10 +431,59 @@
 
     </div>
 
+
+    <!-- SAYFALAMA -->
+    @if (personeller.length > 0) {
+
+    <div class="pagination">
+
+      <div class="pagination-info">
+
+        {{ ilkKayitNumarasi }}–{{ sonKayitNumarasi }}
+        arası gösteriliyor.
+
+        Toplam {{ personeller.length }} kayıt.
+
+      </div>
+
+      <div class="pagination-controls">
+
+        <button type="button"
+                class="pagination-button"
+                [disabled]="mevcutSayfa === 1"
+                (click)="oncekiSayfa()">
+
+          Önceki
+
+        </button>
+
+        <span class="page-number">
+
+          Sayfa
+          {{ mevcutSayfa }} /
+          {{ toplamSayfa }}
+
+        </span>
+
+        <button type="button"
+                class="pagination-button"
+                [disabled]="mevcutSayfa === toplamSayfa"
+                (click)="sonrakiSayfa()">
+
+          Sonraki
+
+        </button>
+
+      </div>
+
+    </div>
+
+    }
+
   </div>
 
 
-  <!-- EKLEME / DÜZENLEME POPUP -->
+  <!-- EKLEME / DÜZENLEME POPUP'I -->
   @if (personelFormuAcikMi) {
 
   <div class="modal-background">

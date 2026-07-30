@@ -1,0 +1,82 @@
+<div class="sube-secici">
+
+  <button type="button"
+          class="secici-buton"
+          [class.devre-disi]="devreDisiMi"
+          [class.bos-secim]="
+            !seciliSubeKodu &&
+            !bosSecenekGoster
+          "
+          [disabled]="devreDisiMi"
+          (click)="panelAcKapat()">
+
+    <span>{{ seciliSubeMetni }}</span>
+
+    <span class="ok-isareti"
+          [class.ters]="panelAcikMi">
+      ▾
+    </span>
+
+  </button>
+
+
+  @if (panelAcikMi) {
+
+  <div class="secici-panel">
+
+    <input type="text"
+           class="secici-arama"
+           [(ngModel)]="aramaMetni"
+           placeholder="Şube adı veya kodu ile ara"
+           autocomplete="off" />
+
+    <div class="secici-liste">
+
+      @if (bosSecenekGoster) {
+
+      <div class="secici-secenek"
+           [class.secili]="!seciliSubeKodu"
+           (click)="sec(null)">
+
+        {{ bosSecenekMetni }}
+
+      </div>
+
+      }
+
+      @for (
+      sube of filtrelenmisSubeler;
+      track sube.id
+      ) {
+
+      <div class="secici-secenek"
+           [class.secili]="
+             sube.subeKodu === seciliSubeKodu
+           "
+           (click)="sec(sube)">
+
+        <span class="secenek-kodu">
+          {{ sube.subeKodu }}
+        </span>
+
+        <span class="secenek-adi">
+          {{ sube.subeAdi }}
+        </span>
+
+      </div>
+
+      } @empty {
+
+      <div class="secici-bos-mesaj">
+        Şube bulunamadı.
+      </div>
+
+      }
+
+    </div>
+
+  </div>
+
+  }
+
+</div>

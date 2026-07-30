@@ -102,9 +102,13 @@
 
 .filter-fields {
   display: grid;
-  grid-template-columns: 1fr 1fr 130px 160px 140px 130px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 14px;
   align-items: end;
+}
+
+.address-field {
+  grid-column: span 2;
 }
 
 .form-field {
@@ -172,9 +176,10 @@ tbody tr:hover {
   background-color: #faf9f3;
 }
 
-.personel-code {
+.personel-sicil {
   color: #7351a3;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 
@@ -289,3 +294,104 @@ tbody tr:hover {
   text-align: center;
   font-size: 14px;
 }
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 4px 0;
+  border-top: 1px solid #e7e7eb;
+  margin-top: 16px;
+}
+
+.pagination-info {
+  color: #77777e;
+  font-size: 13px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination-button {
+  min-width: 82px;
+  padding: 9px 14px;
+  border: 1px solid #d2a900;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #9b7d00;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+  .pagination-button:hover:not(:disabled) {
+    background-color: #d2a900;
+    color: #ffffff;
+  }
+
+  .pagination-button:disabled {
+    border-color: #d7d7dc;
+    background-color: #f3f3f5;
+    color: #aaaab0;
+    cursor: not-allowed;
+  }
+
+.page-number {
+  min-width: 100px;
+  color: #34343a;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 650px) {
+  .pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination-info {
+    text-align: center;
+  }
+
+  .pagination-controls {
+    justify-content: center;
+  }
+
+  .address-field {
+    grid-column: span 1;
+  }
+}
+
+/* FİLTRE ARAMA BUTONU */
+
+.filter-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-button {
+  min-width: 110px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 7px;
+  background-color: #d2a900;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+  .search-button:hover:not(:disabled) {
+    background-color: #b99200;
+  }
+
+  .search-button:disabled {
+    background-color: #d8d2b8;
+    cursor: not-allowed;
+  }

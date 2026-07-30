@@ -1,9 +1,9 @@
 export interface Personel {
   id: number;
+  sicil: string;
   ad: string;
   soyad: string;
   rol: string;
-  sicil: string;
   sifre: string;
   tckn: string;
   telefonNo: string;

@@ -121,24 +121,6 @@
     </div>
 
 
-    <!-- ŞİFRE -->
-    <div class="popup-field">
-
-      <label for="formSifre">
-        Şifre
-      </label>
-
-      <input id="formSifre"
-             name="formSifre"
-             type="password"
-             [(ngModel)]="formModel.sifre"
-             [disabled]="kaydediliyorMu"
-             maxlength="50"
-             required />
-
-    </div>
-
-
     <!-- TCKN -->
     <div class="popup-field">
 
@@ -178,12 +160,12 @@
     <!-- E-POSTA -->
     <div class="popup-field">
 
-      <label for="formEmail">
+      <label for="formEposta">
         E-posta
       </label>
 
-      <input id="formEmail"
-             name="formEmail"
+      <input id="formEposta"
+             name="formEposta"
              type="email"
              [(ngModel)]="formModel.email"
              [disabled]="kaydediliyorMu"
@@ -193,57 +175,81 @@
     </div>
 
 
-    <!-- ŞUBE -->
+    <!-- ŞİFRE SADECE EKLEMEDE GÖSTERİLİR -->
+    @if (personel === null) {
+
     <div class="popup-field">
 
-      <label for="formSubeKodu">
-        Şube
+      <label for="formSifre">
+        Şifre
       </label>
 
-      <select id="formSubeKodu"
-              name="formSubeKodu"
-              [(ngModel)]="formModel.subeKodu"
-              [disabled]="kaydediliyorMu"
-              required>
+      <div class="password-field">
 
-        <option [ngValue]="''"
-                disabled>
-          Şube seçiniz
-        </option>
+        <input id="formSifre"
+               name="formSifre"
+               [type]="sifreGoster ? 'text' : 'password'"
+               [(ngModel)]="formModel.sifre"
+               [disabled]="kaydediliyorMu"
+               minlength="8"
+               required />
 
-        @for (sube of subeler; track sube.id) {
+        <button type="button"
+                class="password-toggle-button"
+                [attr.aria-label]="
+                  sifreGoster
+                    ? 'Şifreyi gizle'
+                    : 'Şifreyi göster'
+                "
+                (click)="sifreGosterDegistir()">
 
-        <option [ngValue]="sube.subeKodu">
-          {{ sube.subeKodu }} - {{ sube.subeAdi }}
-        </option>
+          @if (sifreGoster) {
 
-        }
+          <svg viewBox="0 0 24 24"
+               width="18"
+               height="18">
+            <path fill="currentColor"
+                  d="M2 4.27L3.28 3l18 18-1.27 1.27-3.05-3.05A12.3 12.3 0 0 1 12 20c-5 0-9.27-3.11-11-7.5a12.4 12.4 0 0 1 4.11-5.44L2 4.27zM12 7a5.5 5.5 0 0 1 5.5 5.5c0 .72-.15 1.4-.41 2.02l-1.6-1.6a3.5 3.5 0 0 0-3.91-3.91l-1.6-1.6c.62-.26 1.3-.41 2.02-.41zm-2.9 2.68l3.72 3.72a3.5 3.5 0 0 1-3.72-3.72zM12 4c5 0 9.27 3.11 11 7.5a12.4 12.4 0 0 1-3.11 4.42l-1.42-1.42A10.4 10.4 0 0 0 21 11.5C19.44 8.06 15.94 6 12 6c-1.12 0-2.2.17-3.2.48L7.35 5.03A11.9 11.9 0 0 1 12 4z" />
+          </svg>
 
-      </select>
+          } @else {
+
+          <svg viewBox="0 0 24 24"
+               width="18"
+               height="18">
+            <path fill="currentColor"
+                  d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+          </svg>
+
+          }
+
+        </button>
+
+      </div>
 
     </div>
 
+    }
 
-    <!-- ADRES -->
-    <div class="popup-field full-field">
 
-      <label for="formAdres">
-        Adres
+    <!-- ŞUBE -->
+    <div class="popup-field">
+
+      <label for="formSube">
+        Şube
       </label>
 
-      <input id="formAdres"
-             name="formAdres"
-             type="text"
-             [(ngModel)]="formModel.adres"
-             [disabled]="kaydediliyorMu"
-             maxlength="50"
-             required />
+      <app-sube-secici
+        id="formSube"
+        [(seciliSubeKodu)]="formModel.subeKodu"
+        [devreDisiMi]="kaydediliyorMu">
+      </app-sube-secici>
 
     </div>
 
 
     <!-- DURUM -->
-    <div class="popup-field full-field">
+    <div class="popup-field">
 
       <label for="formDurum">
         Durum
@@ -264,6 +270,24 @@
         </option>
 
       </select>
+
+    </div>
+
+
+    <!-- ADRES -->
+    <div class="popup-field full-field">
+
+      <label for="formAdres">
+        Adres
+      </label>
+
+      <input id="formAdres"
+             name="formAdres"
+             type="text"
+             [(ngModel)]="formModel.adres"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             required />
 
     </div>
 
