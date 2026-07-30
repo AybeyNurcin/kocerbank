@@ -37,7 +37,19 @@ export class PersonelFormu implements OnChanges {
 
   sifreGoster: boolean = false;
 
-  formModel = {
+  formModel: {
+    id: number;
+    ad: string;
+    soyad: string;
+    email: string;
+    sifre: string;
+    rol: string;
+    tckn: string;
+    telefonNo: string;
+    subeKodu: string | undefined;
+    adres: string;
+    durumKodu: AktifPasifDurumlari;
+  } = {
     id: 0,
     ad: '',
     soyad: '',
@@ -121,7 +133,7 @@ export class PersonelFormu implements OnChanges {
       this.formModel.rol.trim() === '' ||
       this.formModel.tckn.trim() === '' ||
       this.formModel.telefonNo.trim() === '' ||
-      this.formModel.subeKodu.trim() === '' ||
+      (this.formModel.subeKodu?.trim() ?? '') === '' ||
       this.formModel.adres.trim() === ''
     ) {
       this.hataMesaji =
@@ -158,7 +170,7 @@ export class PersonelFormu implements OnChanges {
       rol: this.formModel.rol,
       tckn: this.formModel.tckn,
       telefonNo: this.formModel.telefonNo,
-      subeKodu: this.formModel.subeKodu,
+      subeKodu: this.formModel.subeKodu ?? '',
       adres: this.formModel.adres,
       durumKodu:
         this.formModel.durumKodu

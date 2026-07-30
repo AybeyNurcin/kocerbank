@@ -27,14 +27,6 @@ import {
   MusteriApi
 } from '../services/musteri-api';
 
-import {
-  Sube
-} from '../../subeler/models/sube-model';
-
-import {
-  SubeApi
-} from '../../subeler/services/sube-api';
-
 @Component({
   selector: 'app-musteri-listesi',
   standalone: false,
@@ -63,15 +55,6 @@ export class MusteriListesi
     'Filtreleme yapmak için önce müşteri tipini seçiniz.';
 
 
-  // ŞUBE AUTOCOMPLETE ALANLARI
-
-  tumSubeler: Sube[] = [];
-
-  subeAramaMetni: string = '';
-  subeSecenekleriAcikMi: boolean = false;
-  subelerYukleniyorMu: boolean = false;
-
-
   // TELEFON İÇİN OTOMATİK ARAMA
 
   private telefonDegisikligi =
@@ -82,7 +65,6 @@ export class MusteriListesi
 
   constructor(
     private musteriApi: MusteriApi,
-    private subeApi: SubeApi,
     private router: Router,
     private changeDetector: ChangeDetectorRef
   ) {
@@ -101,9 +83,6 @@ export class MusteriListesi
         .subscribe(() => {
           this.telefonlaOtomatikAra();
         });
-
-    // Şube autocomplete seçeneklerini getirir.
-    this.subeSecenekleriniGetir();
 
   }
 
@@ -182,9 +161,6 @@ export class MusteriListesi
       this.aramaKriterleri = {};
       this.musteriler = [];
 
-      this.subeAramaMetni = '';
-      this.subeSecenekleriAcikMi = false;
-
       this.mevcutSayfa = 1;
       this.yukleniyorMu = false;
       this.hataMesaji = '';
@@ -221,161 +197,6 @@ export class MusteriListesi
       'Filtreleri belirledikten sonra Ara butonuna basınız.';
 
     this.changeDetector.markForCheck();
-
-  }
-
-
-  // ŞUBE AUTOCOMPLETE
-
-  private subeSecenekleriniGetir(): void {
-
-    this.subelerYukleniyorMu = true;
-
-    // Buradaki filtresiz listeleme müşteri tablosu
-    // için değil, şube seçim seçenekleri içindir.
-    this.subeApi
-      .listele({})
-      .subscribe({
-
-        next: (gelenSubeler: Sube[]) => {
-
-          this.tumSubeler = gelenSubeler;
-          this.subelerYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        },
-
-        error: (hata) => {
-
-          console.error(
-            'Şube seçenekleri getirilirken hata oluştu:',
-            hata
-          );
-
-          this.tumSubeler = [];
-          this.subelerYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        }
-
-      });
-  }
-
-
-  get filtrelenmisSubeler(): Sube[] {
-
-    const aranan =
-      this.subeAramaMetni
-        .trim()
-        .toLocaleLowerCase('tr-TR');
-
-    // Kullanıcı henüz bir şey yazmadıysa
-    // ilk 10 şubeyi seçenek olarak gösterir.
-    if (aranan === '') {
-
-      return this.tumSubeler.slice(
-        0,
-        10
-      );
-
-    }
-
-    // Yazılan metni hem şube kodunda
-    // hem de şube adında arar.
-    return this.tumSubeler
-      .filter((sube: Sube) => {
-
-        const subeKodu =
-          sube.subeKodu
-            .toLocaleLowerCase('tr-TR');
-
-        const subeAdi =
-          sube.subeAdi
-            .toLocaleLowerCase('tr-TR');
-
-        return (
-          subeKodu.includes(aranan) ||
-          subeAdi.includes(aranan)
-        );
-
-      })
-      .slice(
-        0,
-        10
-      );
-  }
-
-
-  subeAramasiDegisti(): void {
-
-    this.subeSecenekleriAcikMi = true;
-
-    // Kullanıcı seçilmiş şubenin üzerine
-    // tekrar yazarsa eski seçimi temizler.
-    const tamEslesenSube =
-      this.tumSubeler.find(
-        (sube: Sube) =>
-          this.subeGorunumMetni(sube) ===
-          this.subeAramaMetni
-      );
-
-    this.aramaKriterleri.subeKodu =
-      tamEslesenSube?.subeKodu;
-
-  }
-
-
-  subeSecenekleriniAc(): void {
-
-    this.subeSecenekleriAcikMi = true;
-
-  }
-
-
-  subeSecenekleriniKapat(): void {
-
-    // Kullanıcının seçeneğe tıklayabilmesi için
-    // çok kısa süre bekleyerek kapatır.
-    setTimeout(() => {
-
-      this.subeSecenekleriAcikMi = false;
-
-      this.changeDetector.markForCheck();
-
-    }, 150);
-
-  }
-
-
-  subeSec(
-    sube: Sube
-  ): void {
-
-    // Backend müşteri filtresine
-    // yalnızca seçilen şubenin kodu gönderilir.
-    this.aramaKriterleri.subeKodu =
-      sube.subeKodu;
-
-    // Input içerisinde kod ve ad birlikte görünür.
-    this.subeAramaMetni =
-      this.subeGorunumMetni(sube);
-
-    this.subeSecenekleriAcikMi = false;
-
-  }
-
-
-  subeGorunumMetni(
-    sube: Sube
-  ): string {
-
-    return (
-      sube.subeKodu +
-      ' - ' +
-      sube.subeAdi
-    );
 
   }
 
@@ -535,9 +356,6 @@ export class MusteriListesi
 
     this.aramaKriterleri = {};
     this.musteriler = [];
-
-    this.subeAramaMetni = '';
-    this.subeSecenekleriAcikMi = false;
 
     this.mevcutSayfa = 1;
     this.yukleniyorMu = false;

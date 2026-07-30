@@ -180,72 +180,16 @@
       </div>
 
 
-      <!-- ORTAK: ŞUBE AUTOCOMPLETE -->
+      <!-- ORTAK: ŞUBE SEÇİCİ -->
       <div class="form-field branch-filter-field">
 
         <label for="subeArama">
           Şube
         </label>
 
-        <div class="branch-autocomplete">
-
-          <input id="subeArama"
-                 name="subeArama"
-                 type="text"
-                 autocomplete="off"
-                 [(ngModel)]="subeAramaMetni"
-                 (ngModelChange)="subeAramasiDegisti()"
-                 (focus)="subeSecenekleriniAc()"
-                 (blur)="subeSecenekleriniKapat()"
-                 placeholder="Şube kodu veya adı yazınız" />
-
-
-          @if (subeSecenekleriAcikMi) {
-
-          <div class="branch-options">
-
-            @if (subelerYukleniyorMu) {
-
-            <div class="branch-option-message">
-              Şubeler yükleniyor...
-            </div>
-
-            } @else {
-
-            @for (
-            sube of filtrelenmisSubeler;
-            track sube.id
-            ) {
-
-            <button type="button"
-                    class="branch-option"
-                    (mousedown)="subeSec(sube)">
-
-              <span class="option-branch-code">
-                {{ sube.subeKodu }}
-              </span>
-
-              <span class="option-branch-name">
-                {{ sube.subeAdi }}
-              </span>
-
-            </button>
-
-            } @empty {
-
-            <div class="branch-option-message">
-              Uygun şube bulunamadı.
-            </div>
-
-            }
-
-            }
-
-          </div>
-
-          }
-
-        </div>
+        <app-sube-secici
+          [(seciliSubeKodu)]="aramaKriterleri.subeKodu">
+        </app-sube-secici>
 
       </div>
 
