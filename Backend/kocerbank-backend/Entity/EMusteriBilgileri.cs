@@ -177,6 +177,38 @@ namespace kocerbank_backend.DataAccess
             }
         }
 
+        public MusteriDashboardDTO GetirDashboardOzet()
+        {
+            MusteriDashboardDTO ozet = new MusteriDashboardDTO();
+
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand KB = new OracleCommand("KB_MUSTERIDASHBOARD", conn))
+                {
+                    KB.CommandType = CommandType.StoredProcedure;
+
+                    KB.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    conn.Open();
+
+                    using (OracleDataReader reader = KB.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            ozet.ToplamMusteri = Convert.ToInt32(reader["TOPLAMMUSTERI"]);
+                            ozet.AktifSayi     = Convert.ToInt32(reader["AKTIFSAYI"]);
+                            ozet.PasifSayi     = Convert.ToInt32(reader["PASIFSAYI"]);
+                            ozet.BireyselSayi  = Convert.ToInt32(reader["BIREYSELSAYI"]);
+                            ozet.KurumsalSayi  = Convert.ToInt32(reader["KURUMSALSAYI"]);
+                        }
+                    }
+                }
+            }
+
+            return ozet;
+        }
+
+
         // YARDIMCI METOT: Veritabanı satırını DTO nesnesine dönüştürür (Kod tekrarını önler)
         private MusteriDTO MapReaderToDTO(OracleDataReader reader)
         {
