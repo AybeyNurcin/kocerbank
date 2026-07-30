@@ -1,13 +1,12 @@
 <div class="branch-autocomplete">
 
-  <input #subeGirdisi
-         type="text"
+  <input type="text"
          autocomplete="off"
          [(ngModel)]="subeAramaMetni"
          (ngModelChange)="subeAramasiDegisti()"
          (focus)="subeSecenekleriniAc()"
          (blur)="subeSecenekleriniKapat()"
-         (keydown.escape)="kacisTuslandi(subeGirdisi)"
+         (keydown.escape)="escTuslandi($event)"
          [disabled]="devreDisiMi"
          [placeholder]="placeholder" />
 
@@ -32,6 +31,10 @@
     <button type="button"
             class="branch-option"
             (mousedown)="subeSec(sube)">
+
+      <span class="option-branch-code">
+        {{ sube.subeKodu }}
+      </span>
 
       <span class="option-branch-name">
         {{ sube.subeAdi }}

@@ -205,17 +205,17 @@ export class SubeSecici implements OnInit, OnChanges {
 
   }
 
-  kacisTuslandi(
-    girdi: HTMLInputElement
+  escTuslandi(
+    event: Event
   ): void {
 
     this.subeSecenekleriAcikMi = false;
 
-    girdi.blur();
+    (event.target as HTMLElement).blur();
 
   }
 
-  @HostListener('document:click', ['$event'])
+  @HostListener('document:mousedown', ['$event'])
   disariTiklandi(event: MouseEvent): void {
 
     if (!this.elementRef.nativeElement.contains(

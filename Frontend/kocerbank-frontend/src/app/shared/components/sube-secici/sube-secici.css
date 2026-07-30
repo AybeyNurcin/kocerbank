@@ -47,7 +47,10 @@
   padding: 11px 13px;
   border: none;
   border-bottom: 1px solid #eeeeef;
-  display: block;
+  display: grid;
+  grid-template-columns: 85px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
   background-color: #ffffff;
   text-align: left;
   cursor: pointer;
@@ -62,6 +65,13 @@
     outline: none;
     background-color: #faf9f3;
   }
+
+.option-branch-code {
+  color: #7351a3;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
 
 .option-branch-name {
   overflow: hidden;

@@ -19,7 +19,7 @@ namespace kocerbank_backend.DataAccess
             _connectionString = configuration.GetConnectionString("OracleConnection") ?? throw new InvalidOperationException("Connection string bulunamadı: 'OracleConnection'");
         }
 
-        // 1. PERSONEL EKLEME
+        // 1. MÜŞTERİ EKLEME
         public MusteriDTO Ekle(MusteriDTO dto)
         {
             using (OracleConnection conn = new OracleConnection(_connectionString))
@@ -31,15 +31,15 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.Ad;
                     KB.Parameters.Add("P_SOYAD", OracleDbType.Varchar2).Value = dto.Soyad;
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Eposta;
-                    KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi;
+                    KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi.HasValue ? dto.DogumTarihi.Value : DBNull.Value;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
-                    KB.Parameters.Add("P_TCKN", OracleDbType.Int64).Value = dto.TCKN;
+                    KB.Parameters.Add("P_TCKN", OracleDbType.Varchar2).Value  = (object?)dto.TCKN ?? DBNull.Value;
                     KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = dto.Cinsiyet.HasValue ? (object)(byte)dto.Cinsiyet.Value : DBNull.Value;
-                    KB.Parameters.Add("P_VKN", OracleDbType.Int64).Value = dto.VKN;
+                    KB.Parameters.Add("P_VKN", OracleDbType.Varchar2).Value = (object?)dto.VKN ?? DBNull.Value;
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = (byte)dto.MusteriTipi;
                     KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
-                    KB.Parameters.Add("P_UNVAN", OracleDbType.Varchar2).Value = dto.Unvan;
+                    KB.Parameters.Add("P_UNVAN", OracleDbType.Varchar2).Value = (object?)dto.Unvan ?? DBNull.Value;
 
                     // OUT Parametreleri
                     OracleParameter pId = new OracleParameter("P_ID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
@@ -186,7 +186,7 @@ namespace kocerbank_backend.DataAccess
                 Ad = reader["AD"].ToString()!,
                 Soyad = reader["SOYAD"].ToString()!,
                 Eposta = reader["EPOSTA"].ToString()!,
-                DogumTarihi = Convert.ToDateTime(reader["DOGUMTARIHI"]),
+                DogumTarihi = reader["DOGUMTARIHI"] == DBNull.Value ? null : Convert.ToDateTime(reader["DOGUMTARIHI"]),
                 TelefonNo = reader["TELEFONNO"].ToString()!,
                 TCKN = GetNullableString(reader, "TCKN"),
                 Cinsiyet = reader["CINSIYET"] == DBNull.Value ? (CinsiyetDurumlari?) null : (CinsiyetDurumlari)Convert.ToByte(reader["CINSIYET"]),
@@ -194,7 +194,7 @@ namespace kocerbank_backend.DataAccess
                 MusteriTipi = (MusteriTipiDurumlari)Convert.ToByte(reader["MUSTERITIPI"]),
                 SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,
                 DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
-                Unvan = reader["UNVAN"].ToString()!,
+                Unvan = GetNullableString(reader, "UNVAN"),
                 KayitOlusturmaTarihi = Convert.ToDateTime(reader["KAYITOLUSTURMATARIHI"]),
                 RecordUser = reader["RECORDUSER"].ToString()!,
                 RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
