@@ -18,6 +18,35 @@ namespace kocerbank_backend.DataAccess
             _connectionString = configuration.GetConnectionString("OracleConnection") ?? throw new InvalidOperationException("Connection string bulunamadı: 'OracleConnection'");
         }
 
+        public MusteriIletisimDTO Ekle(MusteriIletisimDTO dto)
+        {
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand KB = new OracleCommand("KB_MUSTERIILETISIM_EKLE", conn))
+                {
+                    KB.CommandType = CommandType.StoredProcedure;
+
+                    KB.Parameters.Add("P_MUSTERIBILGILERIID", OracleDbType.Int64).Value = dto.MusteriBilgileriId;
+                    KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
+                    KB.Parameters.Add("P_EVTELEFON", OracleDbType.Varchar2).Value = (object?)dto.EvTelefonNo ?? DBNull.Value;
+                    KB.Parameters.Add("P_ISTELEFON", OracleDbType.Varchar2).Value = (object?)dto.IsTelefonNo ?? DBNull.Value;
+                    KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Eposta;
+                    KB.Parameters.Add("P_EVADRES", OracleDbType.Varchar2).Value = (object?)dto.EvAdres ?? DBNull.Value;
+                    KB.Parameters.Add("P_ISADRES", OracleDbType.Varchar2).Value = (object?)dto.IsAdres ?? DBNull.Value;
+
+                    // OUT Parametreleri
+                    OracleParameter pId = new OracleParameter("P_ID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
+                    
+                    KB.Parameters.Add(pId);
+                    conn.Open();
+                    KB.ExecuteNonQuery();
+
+                    dto.Id = ((OracleDecimal)pId.Value).ToInt64();
+                    return dto;
+                }
+            }
+        }
+
         public MusteriIletisimDTO? GetirById(long id)
         {
             MusteriIletisimDTO? iletisim = null;
@@ -45,6 +74,28 @@ namespace kocerbank_backend.DataAccess
             return iletisim;
         }
 
+        public void Guncelle(MusteriIletisimAramaKriterleriDTO dto)
+        {
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand KB = new OracleCommand("KB_MUSTERIILETISIM_GUNCELLE", conn))
+                {
+                    KB.CommandType = CommandType.StoredProcedure;
+
+
+                    KB.Parameters.Add("P_MUSTERIBILGILERIID", OracleDbType.Int64).Value = dto.MusteriBilgileriId;
+                    KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = (object?)dto.TelefonNo ?? DBNull.Value;
+                    KB.Parameters.Add("P_EVTELEFON", OracleDbType.Varchar2).Value = (object?)dto.EvTelefonNo ?? DBNull.Value;
+                    KB.Parameters.Add("P_ISTELEFON", OracleDbType.Varchar2).Value = (object?)dto.IsTelefonNo ?? DBNull.Value;
+                    KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = (object?)dto.Eposta ?? DBNull.Value;
+                    KB.Parameters.Add("P_EVADRES", OracleDbType.Varchar2).Value = (object?)dto.EvAdres ?? DBNull.Value;
+                    KB.Parameters.Add("P_ISADRES", OracleDbType.Varchar2).Value = (object?)dto.IsAdres ?? DBNull.Value;
+                    conn.Open();
+                    KB.ExecuteNonQuery();
+                }
+            }
+        }
+
         private MusteriIletisimDTO MapReaderToDTO(OracleDataReader reader)
         {
             return new MusteriIletisimDTO
@@ -58,6 +109,8 @@ namespace kocerbank_backend.DataAccess
                 MusteriBilgileriId = Convert.ToInt64(reader["MUSTERIBILGILERIID"])
             };
         }
+
+        
         private string? GetNullableString(OracleDataReader reader, string columnName)
         {
             var value = reader[columnName];

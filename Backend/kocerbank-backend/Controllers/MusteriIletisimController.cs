@@ -15,6 +15,21 @@ namespace kocerbank_backend.Controllers
             _musteriIletisimService = musteriIletisimService;
         }
     
+    [HttpPost("Ekle")]
+        public IActionResult Ekle([FromBody] MusteriIletisimDTO dto)
+        {
+            try
+            {
+                MusteriIletisimDTO eklenenIletisim = _musteriIletisimService.Ekle(dto);
+
+                return CreatedAtAction(nameof(GetirById), new { id = eklenenIletisim.Id }, eklenenIletisim);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new{mesaj = ex.Message});
+            }
+        }
+    
     [HttpPost("GetirById/{id:long}")]
         public IActionResult GetirById(long id)
         {
@@ -37,6 +52,25 @@ namespace kocerbank_backend.Controllers
                 {
                     mesaj = ex.Message
                 });
+            }
+        }
+    
+    [HttpPut("Guncelle/{id:long}")]
+        public IActionResult Guncelle(
+            long id,
+            [FromBody] MusteriIletisimAramaKriterleriDTO dto)
+        {
+            try
+            {
+                dto.MusteriBilgileriId = id;
+
+                _musteriIletisimService.Guncelle(dto);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new{mesaj = ex.Message});
             }
         }
     }

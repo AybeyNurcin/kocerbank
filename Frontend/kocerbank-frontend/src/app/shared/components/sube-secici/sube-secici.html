@@ -1,79 +1,56 @@
-<div class="sube-secici">
+<div class="branch-autocomplete">
 
-  <button type="button"
-          class="secici-buton"
-          [class.devre-disi]="devreDisiMi"
-          [class.bos-secim]="
-            !seciliSubeKodu &&
-            !bosSecenekGoster
-          "
-          [disabled]="devreDisiMi"
-          (click)="panelAcKapat()">
-
-    <span>{{ seciliSubeMetni }}</span>
-
-    <span class="ok-isareti"
-          [class.ters]="panelAcikMi">
-      ▾
-    </span>
-
-  </button>
+  <input type="text"
+         autocomplete="off"
+         [(ngModel)]="subeAramaMetni"
+         (ngModelChange)="subeAramasiDegisti()"
+         (focus)="subeSecenekleriniAc()"
+         (blur)="subeSecenekleriniKapat()"
+         (keydown.escape)="escTuslandi($event)"
+         [disabled]="devreDisiMi"
+         [placeholder]="placeholder" />
 
 
-  @if (panelAcikMi) {
+  @if (subeSecenekleriAcikMi) {
 
-  <div class="secici-panel">
+  <div class="branch-options">
 
-    <input type="text"
-           class="secici-arama"
-           [(ngModel)]="aramaMetni"
-           placeholder="Şube adı veya kodu ile ara"
-           autocomplete="off" />
+    @if (subelerYukleniyorMu) {
 
-    <div class="secici-liste">
-
-      @if (bosSecenekGoster) {
-
-      <div class="secici-secenek"
-           [class.secili]="!seciliSubeKodu"
-           (click)="sec(null)">
-
-        {{ bosSecenekMetni }}
-
-      </div>
-
-      }
-
-      @for (
-      sube of filtrelenmisSubeler;
-      track sube.id
-      ) {
-
-      <div class="secici-secenek"
-           [class.secili]="
-             sube.subeKodu === seciliSubeKodu
-           "
-           (click)="sec(sube)">
-
-        <span class="secenek-kodu">
-          {{ sube.subeKodu }}
-        </span>
-
-        <span class="secenek-adi">
-          {{ sube.subeAdi }}
-        </span>
-
-      </div>
-
-      } @empty {
-
-      <div class="secici-bos-mesaj">
-        Şube bulunamadı.
-      </div>
-
-      }
-
+    <div class="branch-option-message">
+      Şubeler yükleniyor...
     </div>
+
+    } @else {
+
+    @for (
+    sube of filtrelenmisSubeler;
+    track sube.id
+    ) {
+
+    <button type="button"
+            class="branch-option"
+            (mousedown)="subeSec(sube)">
+
+      <span class="option-branch-code">
+        {{ sube.subeKodu }}
+      </span>
+
+      <span class="option-branch-name">
+        {{ sube.subeAdi }}
+      </span>
+
+    </button>
+
+    } @empty {
+
+    <div class="branch-option-message">
+      Uygun şube bulunamadı.
+    </div>
+
+    }
+
+    }
 
   </div>
 

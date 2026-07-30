@@ -107,7 +107,8 @@
   align-items: end;
 }
 
-.address-field {
+.address-field,
+.sube-field {
   grid-column: span 2;
 }
 
@@ -362,7 +363,8 @@ tbody tr:hover {
     justify-content: center;
   }
 
-  .address-field {
+  .address-field,
+  .sube-field {
     grid-column: span 1;
   }
 }

@@ -529,75 +529,10 @@ tbody tr:hover {
   }
 
 
-/* ŞUBE AUTOCOMPLETE */
+/* ŞUBE SEÇİCİ ALANI */
 
 .branch-filter-field {
   grid-column: span 2;
-}
-
-.branch-autocomplete {
-  position: relative;
-  width: 100%;
-}
-
-.branch-options {
-  position: absolute;
-  top: calc(100% + 5px);
-  left: 0;
-  right: 0;
-  z-index: 100;
-  max-height: 250px;
-  overflow-y: auto;
-  border: 1px solid #ccccd0;
-  border-radius: 7px;
-  background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(40, 40, 45, 0.16);
-}
-
-.branch-option {
-  width: 100%;
-  padding: 11px 13px;
-  border: none;
-  border-bottom: 1px solid #eeeeef;
-  display: grid;
-  grid-template-columns: 85px minmax(0, 1fr);
-  gap: 12px;
-  align-items: center;
-  background-color: #ffffff;
-  text-align: left;
-  cursor: pointer;
-}
-
-  .branch-option:last-child {
-    border-bottom: none;
-  }
-
-  .branch-option:hover,
-  .branch-option:focus {
-    outline: none;
-    background-color: #faf9f3;
-  }
-
-.option-branch-code {
-  color: #7351a3;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.option-branch-name {
-  overflow: hidden;
-  color: #34343a;
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.branch-option-message {
-  padding: 15px;
-  color: #77777e;
-  text-align: center;
-  font-size: 12px;
 }
 
 /* ORTA BOY EKRANLAR */
