@@ -27,6 +27,14 @@ import {
   MusteriApi
 } from '../services/musteri-api';
 
+import {
+  Sube
+} from '../../subeler/models/sube-model';
+
+import {
+  SubeApi
+} from '../../subeler/services/sube-api';
+
 @Component({
   selector: 'app-musteri-listesi',
   standalone: false,
@@ -54,42 +62,110 @@ export class MusteriListesi
   bilgiMesaji: string =
     'Filtreleme yapmak için önce müşteri tipini seçiniz.';
 
-  private filtreDegisikligi =
+
+  // ŞUBE AUTOCOMPLETE ALANLARI
+
+  tumSubeler: Sube[] = [];
+
+  subeAramaMetni: string = '';
+  subeSecenekleriAcikMi: boolean = false;
+  subelerYukleniyorMu: boolean = false;
+
+
+  // TELEFON İÇİN OTOMATİK ARAMA
+
+  private telefonDegisikligi =
     new Subject<void>();
 
-  private filtreAboneligi?: Subscription;
+  private telefonAboneligi?: Subscription;
+
 
   constructor(
     private musteriApi: MusteriApi,
+    private subeApi: SubeApi,
     private router: Router,
     private changeDetector: ChangeDetectorRef
   ) {
   }
 
+
   ngOnInit(): void {
 
-    this.filtreAboneligi =
-      this.filtreDegisikligi
+    // Yalnızca telefon numarası yazılırken
+    // 400 ms sonra otomatik müşteri araması yapar.
+    this.telefonAboneligi =
+      this.telefonDegisikligi
         .pipe(
           debounceTime(400)
         )
         .subscribe(() => {
-          this.musterileriGetir();
+          this.telefonlaOtomatikAra();
         });
 
+    // Şube autocomplete seçeneklerini getirir.
+    this.subeSecenekleriniGetir();
+
   }
+
 
   ngOnDestroy(): void {
 
-    this.filtreAboneligi?.unsubscribe();
+    this.telefonAboneligi?.unsubscribe();
 
   }
 
-  filtreDegisti(): void {
 
-    this.filtreDegisikligi.next();
+  // ARAMA İŞLEMLERİ
+
+  telefonDegisti(): void {
+
+    // Yalnızca telefon alanındaki değişiklik
+    // gecikmeli sorgu gönderir.
+    this.telefonDegisikligi.next();
 
   }
+
+  private telefonlaOtomatikAra(): void {
+
+    const telefonNo =
+      this.aramaKriterleri.telefonNo?.trim();
+
+    // Telefon alanı tamamen silindiyse
+    // backend'e istek göndermez.
+    if (
+      telefonNo === undefined ||
+      telefonNo === ''
+    ) {
+
+      this.musteriler = [];
+      this.mevcutSayfa = 1;
+
+      this.yukleniyorMu = false;
+      this.hataMesaji = '';
+
+      this.bilgiMesaji =
+        'Filtreleri belirledikten sonra Ara butonuna basınız.';
+
+      this.changeDetector.markForCheck();
+
+      return;
+    }
+
+    // Telefon doluysa 400 ms sonunda
+    // mevcut kriterlerle otomatik sorgu gönderir.
+    this.musterileriGetir();
+
+  }
+
+
+  ara(): void {
+
+    // Diğer filtreler yalnızca bu butona
+    // basıldığında sorguya gönderilir.
+    this.musterileriGetir();
+
+  }
+
 
   musteriTipiDegisti(): void {
 
@@ -102,11 +178,14 @@ export class MusteriListesi
     ) {
 
       // Müşteri tipi kaldırılırsa
-      // bütün filtreleri temizler.
+      // bütün müşteri filtrelerini temizler.
       this.aramaKriterleri = {};
       this.musteriler = [];
-      this.mevcutSayfa = 1;
 
+      this.subeAramaMetni = '';
+      this.subeSecenekleriAcikMi = false;
+
+      this.mevcutSayfa = 1;
       this.yukleniyorMu = false;
       this.hataMesaji = '';
 
@@ -120,7 +199,7 @@ export class MusteriListesi
 
     if (musteriTipi === 1) {
 
-      // Bireysel seçildiyse
+      // Bireysel müşteri seçildiyse
       // kurumsal alanları temizler.
       delete this.aramaKriterleri.vkn;
       delete this.aramaKriterleri.unvan;
@@ -129,7 +208,7 @@ export class MusteriListesi
 
     if (musteriTipi === 2) {
 
-      // Kurumsal seçildiyse
+      // Kurumsal müşteri seçildiyse
       // bireysel alanları temizler.
       delete this.aramaKriterleri.tckn;
       delete this.aramaKriterleri.cinsiyet;
@@ -137,9 +216,169 @@ export class MusteriListesi
 
     }
 
-    this.filtreDegisti();
+    // Müşteri tipi değiştiğinde otomatik sorgu göndermez.
+    this.bilgiMesaji =
+      'Filtreleri belirledikten sonra Ara butonuna basınız.';
+
+    this.changeDetector.markForCheck();
 
   }
+
+
+  // ŞUBE AUTOCOMPLETE
+
+  private subeSecenekleriniGetir(): void {
+
+    this.subelerYukleniyorMu = true;
+
+    // Buradaki filtresiz listeleme müşteri tablosu
+    // için değil, şube seçim seçenekleri içindir.
+    this.subeApi
+      .listele({})
+      .subscribe({
+
+        next: (gelenSubeler: Sube[]) => {
+
+          this.tumSubeler = gelenSubeler;
+          this.subelerYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Şube seçenekleri getirilirken hata oluştu:',
+            hata
+          );
+
+          this.tumSubeler = [];
+          this.subelerYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        }
+
+      });
+  }
+
+
+  get filtrelenmisSubeler(): Sube[] {
+
+    const aranan =
+      this.subeAramaMetni
+        .trim()
+        .toLocaleLowerCase('tr-TR');
+
+    // Kullanıcı henüz bir şey yazmadıysa
+    // ilk 10 şubeyi seçenek olarak gösterir.
+    if (aranan === '') {
+
+      return this.tumSubeler.slice(
+        0,
+        10
+      );
+
+    }
+
+    // Yazılan metni hem şube kodunda
+    // hem de şube adında arar.
+    return this.tumSubeler
+      .filter((sube: Sube) => {
+
+        const subeKodu =
+          sube.subeKodu
+            .toLocaleLowerCase('tr-TR');
+
+        const subeAdi =
+          sube.subeAdi
+            .toLocaleLowerCase('tr-TR');
+
+        return (
+          subeKodu.includes(aranan) ||
+          subeAdi.includes(aranan)
+        );
+
+      })
+      .slice(
+        0,
+        10
+      );
+  }
+
+
+  subeAramasiDegisti(): void {
+
+    this.subeSecenekleriAcikMi = true;
+
+    // Kullanıcı seçilmiş şubenin üzerine
+    // tekrar yazarsa eski seçimi temizler.
+    const tamEslesenSube =
+      this.tumSubeler.find(
+        (sube: Sube) =>
+          this.subeGorunumMetni(sube) ===
+          this.subeAramaMetni
+      );
+
+    this.aramaKriterleri.subeKodu =
+      tamEslesenSube?.subeKodu;
+
+  }
+
+
+  subeSecenekleriniAc(): void {
+
+    this.subeSecenekleriAcikMi = true;
+
+  }
+
+
+  subeSecenekleriniKapat(): void {
+
+    // Kullanıcının seçeneğe tıklayabilmesi için
+    // çok kısa süre bekleyerek kapatır.
+    setTimeout(() => {
+
+      this.subeSecenekleriAcikMi = false;
+
+      this.changeDetector.markForCheck();
+
+    }, 150);
+
+  }
+
+
+  subeSec(
+    sube: Sube
+  ): void {
+
+    // Backend müşteri filtresine
+    // yalnızca seçilen şubenin kodu gönderilir.
+    this.aramaKriterleri.subeKodu =
+      sube.subeKodu;
+
+    // Input içerisinde kod ve ad birlikte görünür.
+    this.subeAramaMetni =
+      this.subeGorunumMetni(sube);
+
+    this.subeSecenekleriAcikMi = false;
+
+  }
+
+
+  subeGorunumMetni(
+    sube: Sube
+  ): string {
+
+    return (
+      sube.subeKodu +
+      ' - ' +
+      sube.subeAdi
+    );
+
+  }
+
 
   // SAYFALAMA
 
@@ -159,6 +398,7 @@ export class MusteriListesi
     );
   }
 
+
   get toplamSayfa(): number {
 
     return Math.ceil(
@@ -166,6 +406,7 @@ export class MusteriListesi
       this.sayfaBasinaKayit
     );
   }
+
 
   get ilkKayitNumarasi(): number {
 
@@ -179,6 +420,7 @@ export class MusteriListesi
     ) + 1;
   }
 
+
   get sonKayitNumarasi(): number {
 
     return Math.min(
@@ -188,6 +430,7 @@ export class MusteriListesi
     );
   }
 
+
   oncekiSayfa(): void {
 
     if (this.mevcutSayfa > 1) {
@@ -195,6 +438,7 @@ export class MusteriListesi
     }
 
   }
+
 
   sonrakiSayfa(): void {
 
@@ -206,6 +450,7 @@ export class MusteriListesi
     }
 
   }
+
 
   // MÜŞTERİ LİSTELEME
 
@@ -274,6 +519,7 @@ export class MusteriListesi
       });
   }
 
+
   private musteriTipiSecildiMi(
     kriterler: MusteriFiltre
   ): boolean {
@@ -284,10 +530,14 @@ export class MusteriListesi
     );
   }
 
+
   filtreleriTemizle(): void {
 
     this.aramaKriterleri = {};
     this.musteriler = [];
+
+    this.subeAramaMetni = '';
+    this.subeSecenekleriAcikMi = false;
 
     this.mevcutSayfa = 1;
     this.yukleniyorMu = false;
@@ -300,6 +550,7 @@ export class MusteriListesi
 
   }
 
+
   // MÜŞTERİ EKLEME VE DÜZENLEME
 
   musteriEklemeFormunuAc(): void {
@@ -309,7 +560,10 @@ export class MusteriListesi
 
   }
 
-  duzenle(musteri: Musteri): void {
+
+  duzenle(
+    musteri: Musteri
+  ): void {
 
     this.seciliMusteri = {
       ...musteri
@@ -319,6 +573,7 @@ export class MusteriListesi
 
   }
 
+
   musteriFormunuKapat(): void {
 
     this.musteriFormuAcikMi = false;
@@ -326,12 +581,14 @@ export class MusteriListesi
 
   }
 
+
   musteriKaydedildi(): void {
 
     this.musteriFormunuKapat();
     this.musterileriGetir();
 
   }
+
 
   // İLETİŞİM POPUP'I
 
@@ -347,12 +604,14 @@ export class MusteriListesi
 
   }
 
+
   iletisimPopupKapat(): void {
 
     this.iletisimPopupAcikMi = false;
     this.seciliMusteri = null;
 
   }
+
 
   // HESAP BİLGİLERİ SAYFASI
 
