@@ -45,6 +45,8 @@ INSERT INTO KB_SUBE (SUBEADI, SUBETELEFONNO, SUBEADRES, SUBEDURUMKODU, RECORDUSE
 
 insert into kb_musteriiletisim (musteribilgileriid, telefonno, eposta) values (44, '05376255784','aybey.nurcin@kocerbank.com');
 
+INSERT INTO KB_MUSTERIILETISIM (TELEFONNO, EVTELEFON, ISTELEFON, EVADRES, ISADRES, EPOSTA, MUSTERIBILGILERIID, RECORDUSER, RECORDDATE) VALUES ('05376255784', NULL, NULL, NULL, NULL, 'aybey.nurcin@kocerbank.com', 44, 'ADMIN', SYSDATE);
+
 select * from KB_musteriiletisim;
 select * from KB_MUSTERIBILGILERI;
 

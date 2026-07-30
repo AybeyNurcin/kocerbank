@@ -41,3 +41,14 @@ create TABLE KB_MUSTERIILETISIM(
     RECORDDATE DATE DEFAULT SYSDATE
 );
 /
+
+delete KB_MUSTERIBILGILERI;
+
+delete from KB_MUSTERIBILGILERI;
+
+select * from KB_MUSTERIBILGILERI;
+
+delete from KB_MUSTERIBILGILERI where id = 44;
+
+select * from KB_SUBE where subekodu = 'S0034';
+commit;
