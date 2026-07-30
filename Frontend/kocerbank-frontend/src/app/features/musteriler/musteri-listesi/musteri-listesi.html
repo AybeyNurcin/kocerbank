@@ -53,7 +53,7 @@
     </div>
 
 
-    <!-- ÖNCE MÜŞTERİ TİPİ SEÇİLİR -->
+    <!-- MÜŞTERİ TİPİ -->
     <div class="customer-type-selection">
 
       <div class="form-field">
@@ -86,7 +86,7 @@
     </div>
 
 
-    <!-- MÜŞTERİ TİPİ SEÇİLDİYSE FİLTRELERİ GÖSTER -->
+    <!-- MÜŞTERİ TİPİ SEÇİLDİYSE FİLTRELER -->
     @if (
     aramaKriterleri.musteriTipi === 1 ||
     aramaKriterleri.musteriTipi === 2
@@ -124,7 +124,6 @@
                name="ad"
                type="text"
                [(ngModel)]="aramaKriterleri.ad"
-               (ngModelChange)="filtreDegisti()"
                placeholder="Müşteri adı" />
 
       </div>
@@ -141,7 +140,6 @@
                name="soyad"
                type="text"
                [(ngModel)]="aramaKriterleri.soyad"
-               (ngModelChange)="filtreDegisti()"
                placeholder="Müşteri soyadı" />
 
       </div>
@@ -158,13 +156,13 @@
                name="eposta"
                type="text"
                [(ngModel)]="aramaKriterleri.eposta"
-               (ngModelChange)="filtreDegisti()"
                placeholder="E-posta adresi" />
 
       </div>
 
 
       <!-- ORTAK: TELEFON -->
+      <!-- YALNIZCA BU ALAN 400 MS SONRA OTOMATİK ARAR -->
       <div class="form-field">
 
         <label for="telefonNo">
@@ -175,26 +173,79 @@
                name="telefonNo"
                type="text"
                [(ngModel)]="aramaKriterleri.telefonNo"
-               (ngModelChange)="filtreDegisti()"
+               (ngModelChange)="telefonDegisti()"
                maxlength="13"
                placeholder="Telefon numarası" />
 
       </div>
 
 
-      <!-- ORTAK: ŞUBE KODU -->
-      <div class="form-field">
+      <!-- ORTAK: ŞUBE AUTOCOMPLETE -->
+      <div class="form-field branch-filter-field">
 
-        <label for="subeKodu">
-          Şube kodu
+        <label for="subeArama">
+          Şube
         </label>
 
-        <input id="subeKodu"
-               name="subeKodu"
-               type="text"
-               [(ngModel)]="aramaKriterleri.subeKodu"
-               (ngModelChange)="filtreDegisti()"
-               placeholder="Örnek: S0001" />
+        <div class="branch-autocomplete">
+
+          <input id="subeArama"
+                 name="subeArama"
+                 type="text"
+                 autocomplete="off"
+                 [(ngModel)]="subeAramaMetni"
+                 (ngModelChange)="subeAramasiDegisti()"
+                 (focus)="subeSecenekleriniAc()"
+                 (blur)="subeSecenekleriniKapat()"
+                 placeholder="Şube kodu veya adı yazınız" />
+
+
+          @if (subeSecenekleriAcikMi) {
+
+          <div class="branch-options">
+
+            @if (subelerYukleniyorMu) {
+
+            <div class="branch-option-message">
+              Şubeler yükleniyor...
+            </div>
+
+            } @else {
+
+            @for (
+            sube of filtrelenmisSubeler;
+            track sube.id
+            ) {
+
+            <button type="button"
+                    class="branch-option"
+                    (mousedown)="subeSec(sube)">
+
+              <span class="option-branch-code">
+                {{ sube.subeKodu }}
+              </span>
+
+              <span class="option-branch-name">
+                {{ sube.subeAdi }}
+              </span>
+
+            </button>
+
+            } @empty {
+
+            <div class="branch-option-message">
+              Uygun şube bulunamadı.
+            </div>
+
+            }
+
+            }
+
+          </div>
+
+          }
+
+        </div>
 
       </div>
 
@@ -212,8 +263,7 @@
         <input id="dogumTarihi"
                name="dogumTarihi"
                type="date"
-               [(ngModel)]="aramaKriterleri.dogumTarihi"
-               (ngModelChange)="filtreDegisti()" />
+               [(ngModel)]="aramaKriterleri.dogumTarihi" />
 
       </div>
 
@@ -231,7 +281,6 @@
                inputmode="numeric"
                maxlength="11"
                [(ngModel)]="aramaKriterleri.tckn"
-               (ngModelChange)="filtreDegisti()"
                placeholder="11 haneli TCKN" />
 
       </div>
@@ -246,8 +295,7 @@
 
         <select id="cinsiyet"
                 name="cinsiyet"
-                [(ngModel)]="aramaKriterleri.cinsiyet"
-                (ngModelChange)="filtreDegisti()">
+                [(ngModel)]="aramaKriterleri.cinsiyet">
 
           <option [ngValue]="undefined">
             Tümü
@@ -284,7 +332,6 @@
                inputmode="numeric"
                maxlength="10"
                [(ngModel)]="aramaKriterleri.vkn"
-               (ngModelChange)="filtreDegisti()"
                placeholder="10 haneli VKN" />
 
       </div>
@@ -302,7 +349,6 @@
                type="text"
                maxlength="50"
                [(ngModel)]="aramaKriterleri.unvan"
-               (ngModelChange)="filtreDegisti()"
                placeholder="Şirket unvanı" />
 
       </div>
@@ -319,8 +365,7 @@
 
         <select id="durumKodu"
                 name="durumKodu"
-                [(ngModel)]="aramaKriterleri.durumKodu"
-                (ngModelChange)="filtreDegisti()">
+                [(ngModel)]="aramaKriterleri.durumKodu">
 
           <option [ngValue]="undefined">
             Tümü
@@ -337,6 +382,29 @@
         </select>
 
       </div>
+
+    </div>
+
+
+    <!-- ARA BUTONU -->
+    <div class="filter-actions">
+
+      <button type="button"
+              class="search-button"
+              [disabled]="yukleniyorMu"
+              (click)="ara()">
+
+        @if (yukleniyorMu) {
+
+        Aranıyor...
+
+        } @else {
+
+        Ara
+
+        }
+
+      </button>
 
     </div>
 

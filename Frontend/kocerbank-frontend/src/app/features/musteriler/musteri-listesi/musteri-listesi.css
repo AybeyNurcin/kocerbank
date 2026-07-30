@@ -485,6 +485,120 @@ tbody tr:hover {
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
 }
 
+/* ARA BUTONU */
+
+.filter-actions {
+  width: 100%;
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.search-button {
+  min-width: 110px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 7px;
+  background-color: #d2a900;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+  .search-button:hover:not(:disabled) {
+    background-color: #b99200;
+  }
+
+  .search-button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .search-button:focus-visible {
+    outline: 3px solid rgba(210, 169, 0, 0.25);
+    outline-offset: 2px;
+  }
+
+  .search-button:disabled {
+    background-color: #d8d2b8;
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+
+
+/* ŞUBE AUTOCOMPLETE */
+
+.branch-filter-field {
+  grid-column: span 2;
+}
+
+.branch-autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.branch-options {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ccccd0;
+  border-radius: 7px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(40, 40, 45, 0.16);
+}
+
+.branch-option {
+  width: 100%;
+  padding: 11px 13px;
+  border: none;
+  border-bottom: 1px solid #eeeeef;
+  display: grid;
+  grid-template-columns: 85px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  background-color: #ffffff;
+  text-align: left;
+  cursor: pointer;
+}
+
+  .branch-option:last-child {
+    border-bottom: none;
+  }
+
+  .branch-option:hover,
+  .branch-option:focus {
+    outline: none;
+    background-color: #faf9f3;
+  }
+
+.option-branch-code {
+  color: #7351a3;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.option-branch-name {
+  overflow: hidden;
+  color: #34343a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branch-option-message {
+  padding: 15px;
+  color: #77777e;
+  text-align: center;
+  font-size: 12px;
+}
 
 /* ORTA BOY EKRANLAR */
 
@@ -535,6 +649,18 @@ tbody tr:hover {
   }
 
   .customer-type-selection {
+    width: 100%;
+  }
+
+  .branch-filter-field {
+    grid-column: span 1;
+  }
+
+  .filter-actions {
+    justify-content: stretch;
+  }
+
+  .search-button {
     width: 100%;
   }
 

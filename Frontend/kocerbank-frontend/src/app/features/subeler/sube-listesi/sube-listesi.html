@@ -89,6 +89,7 @@
                name="telefon"
                type="text"
                [(ngModel)]="aramaKriterleri.subeTelefonNo"
+               (ngModelChange)="otomatikFiltreDegisti()"
                placeholder="Telefon numarası" />
 
       </div>
@@ -105,7 +106,7 @@
                name="adres"
                type="text"
                [(ngModel)]="aramaKriterleri.subeAdres"
-               (ngModelChange)="adresDegisti()"
+               (ngModelChange)="otomatikFiltreDegisti()"
                placeholder="Adres bilgisi" />
 
       </div>

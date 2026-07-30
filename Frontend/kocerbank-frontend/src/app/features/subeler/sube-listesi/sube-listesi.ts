@@ -53,7 +53,7 @@ export class SubeListesi
 
   ngOnInit(): void {
 
-    // Kullanıcı adres alanında yazmayı bıraktıktan
+    // Kullanıcı adres veya telefon alanında
     // 400 ms sonra filtreleme yapar.
     this.filtreAboneligi =
       this.filtreDegisikligi
@@ -72,10 +72,10 @@ export class SubeListesi
 
   }
 
-  adresDegisti(): void {
+  otomatikFiltreDegisti(): void {
 
-    // Yalnızca adres alanındaki değişiklikler
-    // 400 ms gecikmeli otomatik arama başlatır.
+    // Adres veya telefon alanındaki değişikliklerden
+    // 400 ms sonra otomatik arama başlatır.
     this.filtreDegisikligi.next();
 
   }
