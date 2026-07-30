@@ -13,6 +13,11 @@ namespace kocerbank_backend.Services
         {
             _musteriIletisimRepository = musteriIletisimRepository;
         }
+
+        public MusteriIletisimDTO Ekle(MusteriIletisimDTO dto)
+        {
+            return _musteriIletisimRepository.Ekle(dto);
+        }
     
 
         public MusteriIletisimDTO? GetirById(long id)
@@ -34,5 +39,19 @@ namespace kocerbank_backend.Services
 
             return iletisim;
         }
+
+        public void Guncelle(MusteriIletisimAramaKriterleriDTO dto)
+        {
+            MusteriIletisimDTO? mevcutIletisim = _musteriIletisimRepository.GetirById(dto.MusteriBilgileriId);
+
+            if (mevcutIletisim is null)
+            {
+                throw new KeyNotFoundException(
+                    $"{dto.MusteriBilgileriId} ID'li iletisim bilgisi bulunamadı.");
+            }
+
+            _musteriIletisimRepository.Guncelle(dto);
+        }
+
     }
 }

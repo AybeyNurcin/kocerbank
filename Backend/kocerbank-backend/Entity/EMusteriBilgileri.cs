@@ -153,7 +153,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_MUSTERITIPI", OracleDbType.Byte).Value = (byte)dto.MusteriTipi;
                     KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
-                    KB.Parameters.Add("P_UNVAN", OracleDbType.Varchar2).Value = dto.Unvan;
+                    KB.Parameters.Add("P_UNVAN", OracleDbType.Varchar2).Value = (object?)dto.Unvan ?? DBNull.Value;
 
                     conn.Open();
                     KB.ExecuteNonQuery();

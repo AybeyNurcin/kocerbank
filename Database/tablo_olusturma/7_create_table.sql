@@ -36,3 +36,12 @@ COMMIT;
 ALTER TABLE KB_PERSONEL MODIFY EPOSTA VARCHAR2(50) NOT NULL;
 /* KB_PERSONEL tablosundaki SICIL alanı 'KB_' ile başlamalıdır. */
 /* KB'den sonra 4 haneli rakam gelmelidir. Örn: KB1234 */
+
+alter table kb_personel add constraint chk_telno_format check (REGEXP_LIKE(TELEFONNO, '^[0-9]{11}$'));
+alter table kb_musteribilgileri add constraint musteri_vkn_format check (REGEXP_LIKE(VKN, '^[0-9]{11}$'));
+
+alter table kb_musteribilgiler drop constraint musteri_tckn_format;
+alter table kb_personel add constraint chk_vkn_format check (REGEXP_LIKE(TELEFONNO, '^[0-9]{11}$'));
+
+select * from KB_MUSTERIBILGILERI;
+commit;

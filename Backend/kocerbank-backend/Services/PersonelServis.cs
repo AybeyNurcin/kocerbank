@@ -2,6 +2,8 @@ using kocerbank_backend.DataAccess;
 using kocerbank_backend.Enums;
 using kocerbank_backend.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
+using System.Text.RegularExpressions;
+
 
 namespace kocerbank_backend.Services
 {
@@ -153,10 +155,10 @@ namespace kocerbank_backend.Services
             }
 
             // TCKN kontrolü (Genelde 11 hane olmalıdır)
-            if (dto.TCKN.ToString().Length != 11)
+            if (!Regex.IsMatch(dto.TCKN, @"^[0-9]{11}$"))
             {
                 throw new ArgumentException(
-                    "TC Kimlik Numarası 11 haneli olmalıdır.");
+                    "Personel TC Kimlik No 11 haneli ve sadece rakamlardan oluşmalıdır.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.TelefonNo))
@@ -164,6 +166,13 @@ namespace kocerbank_backend.Services
                 throw new ArgumentException(
                     "Personel telefon numarası boş bırakılamaz.");
             }
+
+            if (!Regex.IsMatch(dto.TelefonNo, @"^[0-9]{11}$"))
+            {
+                throw new ArgumentException(
+                    "Personel telefon numarası 11 haneli ve sadece rakamlardan oluşmalıdır.");
+            }
+
 
             if (dto.DurumKodu == AktifPasifDurumlari.None)
             {
