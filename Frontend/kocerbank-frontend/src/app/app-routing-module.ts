@@ -16,6 +16,10 @@ import {
   authGuard
 } from './core/guards/auth-guard';
 
+import {
+  HesapListesi
+} from './features/hesaplar/hesap-listesi/hesap-listesi';
+
 const routes: Routes = [
 
   // Giriş sayfası koruma altında değildir.
@@ -50,6 +54,10 @@ const routes: Routes = [
       {
         path: 'musteriler',
         component: MusteriListesi
+      },
+      {
+        path: 'musteriler/:musteriId/hesaplar',
+        component: HesapListesi
       },
 
       // Ana adrese gidilirse Dashboard açılır.

@@ -440,7 +440,7 @@ export class MusteriListesi
     this.router.navigate([
       '/musteriler',
       musteri.id,
-      'hesap-bilgileri'
+      'hesaplar'
     ]);
 
   }
