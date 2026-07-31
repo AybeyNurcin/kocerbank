@@ -153,13 +153,6 @@
   white-space: nowrap;
 }
 
-/* Fareyi üstüne getirince açık sayfa rengiyle vurgulanır */
-.combo-menu:hover .combo-menu-toggle {
-  border-color: #7351a3;
-  background-color: #7351a3;
-  color: white;
-}
-
   .combo-menu:hover .combo-menu-toggle .menu-icon {
     color: white;
   }
