@@ -20,6 +20,10 @@ import {
   HesapListesi
 } from './features/hesaplar/hesap-listesi/hesap-listesi';
 
+import {
+  ParaCekYatir
+} from './features/hesaplar/para-cek-yatir/para-cek-yatir';
+
 const routes: Routes = [
 
   // Giriş sayfası koruma altında değildir.
@@ -58,6 +62,10 @@ const routes: Routes = [
       {
         path: 'musteriler/:musteriId/hesaplar',
         component: HesapListesi
+      },
+      {
+        path: 'para-cek-yatir',
+        component: ParaCekYatir
       },
 
       // Ana adrese gidilirse Dashboard açılır.

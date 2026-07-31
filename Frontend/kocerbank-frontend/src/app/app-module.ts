@@ -21,6 +21,7 @@ import { MusteriIletisim } from './features/musteriler/musteri-iletisim/musteri-
 
 import { provideHttpClient } from '@angular/common/http';
 import { HesapListesi } from './features/hesaplar/hesap-listesi/hesap-listesi';
+import { ParaCekYatir } from './features/hesaplar/para-cek-yatir/para-cek-yatir';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { HesapListesi } from './features/hesaplar/hesap-listesi/hesap-listesi';
     MusteriFormu,
     MusteriIletisim,
     HesapListesi,
+    ParaCekYatir,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideHttpClient()],
