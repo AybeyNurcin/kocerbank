@@ -1,0 +1,610 @@
+:host {
+  display: block;
+  width: 100%;
+  color: #34343a;
+  font-family: Arial, sans-serif;
+}
+
+.customer-form {
+  width: 100%;
+}
+
+
+/* BAŞLIK */
+
+.form-header {
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+  .form-header h2 {
+    margin: 0 0 7px;
+    color: #34343a;
+    font-size: 22px;
+  }
+
+  .form-header p {
+    margin: 0;
+    color: #77777e;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+.close-button {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid #dddddf;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #77777e;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+  .close-button:hover:not(:disabled) {
+    border-color: #c4c4c8;
+    background-color: #f4f4f5;
+    color: #34343a;
+  }
+
+  .close-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+
+/* ADIM GÖSTERGESİ */
+
+.step-indicator {
+  margin-bottom: 25px;
+  padding: 17px 20px;
+  border: 1px solid #e1e1e3;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  background-color: #fafafa;
+}
+
+.step-item {
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #99999f;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 31px;
+  height: 31px;
+  border: 2px solid #ccccd0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.step-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.step-item strong {
+  font-size: 13px;
+}
+
+.step-item small {
+  font-size: 11px;
+}
+
+.active-step {
+  color: #34343a;
+}
+
+  .active-step .step-number {
+    border-color: #d2a900;
+    background-color: #d2a900;
+    color: #ffffff;
+  }
+
+.completed-step {
+  color: #725c00;
+}
+
+  .completed-step .step-number {
+    border-color: #d2a900;
+    background-color: #fff6cf;
+    color: #725c00;
+  }
+
+.step-line {
+  height: 2px;
+  margin: 0 18px;
+  flex: 1;
+  background-color: #dddddf;
+}
+
+.completed-line {
+  background-color: #d2a900;
+}
+
+
+/* BİLGİ VE HATA MESAJLARI */
+
+.error-message,
+.information-message {
+  margin-bottom: 20px;
+  padding: 13px 15px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.error-message {
+  border: 1px solid #efc4c4;
+  background-color: #fbe4e4;
+  color: #a52f2f;
+}
+
+.information-message {
+  border: 1px solid #eadb9b;
+  background-color: #fff8db;
+  color: #725c00;
+}
+
+
+/* FORM İÇERİĞİ */
+
+.form-content {
+  min-height: 330px;
+}
+
+.section-heading {
+  margin-bottom: 16px;
+}
+
+  .section-heading h3 {
+    margin: 0 0 5px;
+    color: #34343a;
+    font-size: 16px;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: #7b7b82;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+
+/* MÜŞTERİ TİPİ SEKMELERİ */
+
+.customer-type-tabs {
+  margin-bottom: 23px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.customer-type-button {
+  min-height: 74px;
+  padding: 14px 17px;
+  border: 1px solid #d7d7da;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background-color: #ffffff;
+  color: #55555c;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+  .customer-type-button:hover {
+    border-color: #d2a900;
+    background-color: #fffdf5;
+  }
+
+  .customer-type-button.selected-type {
+    border-color: #d2a900;
+    background-color: #fff9de;
+    box-shadow: 0 0 0 3px rgba(210, 169, 0, 0.12);
+  }
+
+.type-icon {
+  flex-shrink: 0;
+  width: 39px;
+  height: 39px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #eee9f5;
+  color: #65428e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.selected-type .type-icon {
+  background-color: #d2a900;
+  color: #ffffff;
+}
+
+.customer-type-button > span:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.customer-type-button strong {
+  color: #34343a;
+  font-size: 14px;
+}
+
+.customer-type-button small {
+  color: #818188;
+  font-size: 11px;
+}
+
+
+/* SEÇİLİ TİP FORMU */
+
+.selected-form-area {
+  padding-top: 20px;
+  border-top: 1px solid #eeeeef;
+}
+
+.customer-heading {
+  margin-bottom: 18px;
+}
+
+.type-selection-message {
+  padding: 26px 18px;
+  border: 1px dashed #d8c77e;
+  border-radius: 8px;
+  background-color: #fffbed;
+  color: #725c00;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* FORM ALANLARI */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+  align-items: start;
+}
+
+.form-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+  .form-field label {
+    color: #55555c;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+    .form-field label span {
+      color: #b74545;
+    }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    width: 100%;
+    padding: 0 11px;
+    box-sizing: border-box;
+    border: 1px solid #ccccd0;
+    border-radius: 6px;
+    outline: none;
+    background-color: #fafafa;
+    color: #34343a;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  .form-field input,
+  .form-field select {
+    height: 40px;
+  }
+
+  .form-field textarea {
+    min-height: 96px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: #d2a900;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(210, 169, 0, 0.13);
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: #aaaab0;
+    }
+
+.wide-field {
+  grid-column: span 2;
+}
+
+
+/* ŞUBE AUTOCOMPLETE */
+
+.branch-field {
+  grid-column: span 2;
+}
+
+.branch-autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.branch-options {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  z-index: 200;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #ccccd0;
+  border-radius: 7px;
+  background-color: #ffffff;
+  box-shadow: 0 9px 25px rgba(40, 40, 45, 0.17);
+}
+
+.branch-option {
+  width: 100%;
+  padding: 11px 13px;
+  border: none;
+  border-bottom: 1px solid #eeeeef;
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  background-color: #ffffff;
+  text-align: left;
+  cursor: pointer;
+}
+
+  .branch-option:last-child {
+    border-bottom: none;
+  }
+
+  .branch-option:hover,
+  .branch-option:focus {
+    outline: none;
+    background-color: #faf9f3;
+  }
+
+.branch-code {
+  color: #7351a3;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.branch-name {
+  overflow: hidden;
+  color: #34343a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branch-option-message {
+  padding: 15px;
+  color: #77777e;
+  text-align: center;
+  font-size: 12px;
+}
+
+
+/* AKTARILAN TELEFON VE E-POSTA */
+
+.transferred-information {
+  margin-bottom: 22px;
+  padding: 16px;
+  border: 1px solid #e1d5ee;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  background-color: #faf7fd;
+}
+
+  .transferred-information > div {
+    min-width: 0;
+    padding: 11px 13px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: #ffffff;
+  }
+
+  .transferred-information span {
+    color: #7b7b82;
+    font-size: 11px;
+  }
+
+  .transferred-information strong {
+    overflow: hidden;
+    color: #53327f;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .transferred-information p {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #77777e;
+    font-size: 11px;
+  }
+
+
+/* İLETİŞİM FORMU */
+
+.contact-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.address-field {
+  position: relative;
+}
+
+.character-count {
+  align-self: flex-end;
+  color: #99999f;
+  font-size: 10px;
+}
+
+
+/* ALT BUTONLAR */
+
+.form-actions {
+  margin-top: 25px;
+  padding-top: 18px;
+  border-top: 1px solid #e7e7e9;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 11px;
+}
+
+.primary-button,
+.secondary-button {
+  min-width: 118px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid #d2a900;
+  background-color: #d2a900;
+  color: #ffffff;
+}
+
+  .primary-button:hover:not(:disabled) {
+    border-color: #b99200;
+    background-color: #b99200;
+  }
+
+.secondary-button {
+  border: 1px solid #ccccd0;
+  background-color: #ffffff;
+  color: #55555c;
+}
+
+  .secondary-button:hover:not(:disabled) {
+    border-color: #aaaab0;
+    background-color: #f5f5f6;
+  }
+
+  .primary-button:disabled,
+  .secondary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+
+/* TABLET */
+
+@media (max-width: 800px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .branch-field,
+  .wide-field {
+    grid-column: span 2;
+  }
+
+  .step-item {
+    min-width: 150px;
+  }
+}
+
+
+/* TELEFON */
+
+@media (max-width: 600px) {
+  .form-header h2 {
+    font-size: 19px;
+  }
+
+  .step-indicator {
+    padding: 14px;
+  }
+
+  .step-item {
+    min-width: 0;
+    flex: 1;
+  }
+
+    .step-item small {
+      display: none;
+    }
+
+  .step-line {
+    margin: 0 10px;
+  }
+
+  .customer-type-tabs,
+  .form-grid,
+  .contact-grid,
+  .transferred-information {
+    grid-template-columns: 1fr;
+  }
+
+  .branch-field,
+  .wide-field {
+    grid-column: span 1;
+  }
+
+  .transferred-information p {
+    grid-column: 1;
+  }
+
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+}

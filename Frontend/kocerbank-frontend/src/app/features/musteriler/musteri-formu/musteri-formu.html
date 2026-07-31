@@ -1,22 +1,714 @@
-<div class="form-header">
+<div class="customer-form">
 
-  <h2>
-    @if (musteri === null) {
-    Yeni Müşteri Ekle
+  <!-- BAŞLIK -->
+  <div class="form-header">
+
+    <div>
+
+      <h2>
+        @if (musteri === null) {
+        Yeni Müşteri Ekle
+        } @else {
+        Müşteri Düzenle
+        }
+      </h2>
+
+      @if (musteri === null) {
+
+      <p>
+        Müşteri ve iletişim bilgilerini
+        iki adımda tamamlayınız.
+      </p>
+
+      }
+
+    </div>
+
+    <button type="button"
+            class="close-button"
+            [disabled]="kaydediliyorMu"
+            (click)="formuKapat()">
+
+      ×
+
+    </button>
+
+  </div>
+
+
+  @if (musteri !== null) {
+
+  <!-- GÜNCELLEMEYİ DAHA SONRA AYRI KURACAĞIZ -->
+  <div class="information-message">
+
+    Müşteri güncelleme formu sonraki aşamada
+    hazırlanacaktır.
+
+  </div>
+
+  } @else {
+
+  <!-- ADIM GÖSTERGESİ -->
+  <div class="step-indicator">
+
+    <div class="step-item"
+         [class.active-step]="aktifAdim === 1"
+         [class.completed-step]="aktifAdim === 2">
+
+      <span class="step-number">
+        1
+      </span>
+
+      <div>
+
+        <strong>Müşteri Bilgileri</strong>
+
+        <small>
+          Temel müşteri bilgileri
+        </small>
+
+      </div>
+
+    </div>
+
+    <div class="step-line"
+         [class.completed-line]="aktifAdim === 2">
+    </div>
+
+    <div class="step-item"
+         [class.active-step]="aktifAdim === 2">
+
+      <span class="step-number">
+        2
+      </span>
+
+      <div>
+
+        <strong>İletişim Bilgileri</strong>
+
+        <small>
+          Telefon ve adres bilgileri
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- HATA MESAJI -->
+  @if (hataMesaji !== '') {
+
+  <div class="error-message">
+
+    {{ hataMesaji }}
+
+  </div>
+
+  }
+
+
+  <!-- BİRİNCİ ADIM -->
+  @if (aktifAdim === 1) {
+
+  <div class="form-content">
+
+    <div class="section-heading">
+
+      <h3>Müşteri Tipi</h3>
+
+      <p>
+        Eklemek istediğiniz müşteri tipini seçiniz.
+      </p>
+
+    </div>
+
+
+    <!-- BİREYSEL / KURUMSAL SEÇİMİ -->
+    <div class="customer-type-tabs">
+
+      <button type="button"
+              class="customer-type-button"
+              [class.selected-type]="
+                    seciliMusteriTipi ===
+                    musteriTipleri.Bireysel
+                  "
+              (click)="
+                    musteriTipiniSec(
+                      musteriTipleri.Bireysel
+                    )
+                  ">
+
+        <span class="type-icon">
+          B
+        </span>
+
+        <span>
+
+          <strong>Bireysel</strong>
+
+          <small>
+            Gerçek kişi müşterisi
+          </small>
+
+        </span>
+
+      </button>
+
+      <button type="button"
+              class="customer-type-button"
+              [class.selected-type]="
+                    seciliMusteriTipi ===
+                    musteriTipleri.Kurumsal
+                  "
+              (click)="
+                    musteriTipiniSec(
+                      musteriTipleri.Kurumsal
+                    )
+                  ">
+
+        <span class="type-icon">
+          K
+        </span>
+
+        <span>
+
+          <strong>Kurumsal</strong>
+
+          <small>
+            Şirket veya kurum müşterisi
+          </small>
+
+        </span>
+
+      </button>
+
+    </div>
+
+
+    @if (
+    seciliMusteriTipi !==
+    musteriTipleri.None
+    ) {
+
+    <div class="selected-form-area">
+
+      <div class="section-heading customer-heading">
+
+        @if (
+        seciliMusteriTipi ===
+        musteriTipleri.Bireysel
+        ) {
+
+        <h3>
+          Bireysel Müşteri Bilgileri
+        </h3>
+
+        } @else {
+
+        <h3>
+          Kurumsal Müşteri Bilgileri
+        </h3>
+
+        }
+
+        <p>
+          Yıldızlı alanların doldurulması zorunludur.
+        </p>
+
+      </div>
+
+
+      <div class="form-grid">
+
+        <!-- AD -->
+        <div class="form-field">
+
+          <label for="musteriAd">
+            Ad
+            <span>*</span>
+          </label>
+
+          <input id="musteriAd"
+                 name="musteriAd"
+                 type="text"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.ad"
+                 placeholder="Müşteri adı" />
+
+        </div>
+
+
+        <!-- SOYAD -->
+        <div class="form-field">
+
+          <label for="musteriSoyad">
+            Soyad
+            <span>*</span>
+          </label>
+
+          <input id="musteriSoyad"
+                 name="musteriSoyad"
+                 type="text"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.soyad"
+                 placeholder="Müşteri soyadı" />
+
+        </div>
+
+
+        <!-- E-POSTA -->
+        <div class="form-field">
+
+          <label for="musteriEposta">
+            E-posta
+            <span>*</span>
+          </label>
+
+          <input id="musteriEposta"
+                 name="musteriEposta"
+                 type="email"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.eposta"
+                 placeholder="ornek@eposta.com" />
+
+        </div>
+
+
+        <!-- TELEFON -->
+        <div class="form-field">
+
+          <label for="musteriTelefon">
+            Telefon
+            <span>*</span>
+          </label>
+
+          <input id="musteriTelefon"
+                 name="musteriTelefon"
+                 type="text"
+                 inputmode="tel"
+                 maxlength="13"
+                 [(ngModel)]="aktifMusteriFormu.telefonNo"
+                 placeholder="05XXXXXXXXX" />
+
+        </div>
+
+
+        <!-- ŞUBE AUTOCOMPLETE -->
+        <div class="form-field branch-field">
+
+          <label for="musteriSube">
+            Şube
+            <span>*</span>
+          </label>
+
+          <div class="branch-autocomplete">
+
+            <input id="musteriSube"
+                   name="musteriSube"
+                   type="text"
+                   autocomplete="off"
+                   [(ngModel)]="aktifSubeAramaMetni"
+                   (ngModelChange)="subeAramasiDegisti()"
+                   (focus)="subeSecenekleriniAc()"
+                   (blur)="subeSecenekleriniKapat()"
+                   placeholder="Şube kodu veya adı" />
+
+            @if (subeSecenekleriAcikMi) {
+
+            <div class="branch-options">
+
+              @if (subelerYukleniyorMu) {
+
+              <div class="branch-option-message">
+                Şubeler yükleniyor...
+              </div>
+
+              } @else {
+
+              @for (
+              sube of filtrelenmisSubeler;
+              track sube.id
+              ) {
+
+              <button type="button"
+                      class="branch-option"
+                      (mousedown)="subeSec(sube)">
+
+                <span class="branch-code">
+                  {{ sube.subeKodu }}
+                </span>
+
+                <span class="branch-name">
+                  {{ sube.subeAdi }}
+                </span>
+
+              </button>
+
+              } @empty {
+
+              <div class="branch-option-message">
+                Uygun şube bulunamadı.
+              </div>
+
+              }
+
+              }
+
+            </div>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- BİREYSEL ALANLAR -->
+        @if (
+        seciliMusteriTipi ===
+        musteriTipleri.Bireysel
+        ) {
+
+        <!-- DOĞUM TARİHİ -->
+        <div class="form-field">
+
+          <label for="dogumTarihi">
+            Doğum tarihi
+            <span>*</span>
+          </label>
+
+          <input id="dogumTarihi"
+                 name="dogumTarihi"
+                 type="date"
+                 [(ngModel)]="
+                           aktifMusteriFormu.dogumTarihi
+                         " />
+
+        </div>
+
+
+        <!-- TCKN -->
+        <div class="form-field">
+
+          <label for="tckn">
+            TCKN
+            <span>*</span>
+          </label>
+
+          <input id="tckn"
+                 name="tckn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="11"
+                 [(ngModel)]="aktifMusteriFormu.tckn"
+                 placeholder="11 haneli TCKN" />
+
+        </div>
+
+
+        <!-- CİNSİYET -->
+        <div class="form-field">
+
+          <label for="cinsiyet">
+            Cinsiyet
+            <span>*</span>
+          </label>
+
+          <select id="cinsiyet"
+                  name="cinsiyet"
+                  [(ngModel)]="
+                            aktifMusteriFormu.cinsiyet
+                          ">
+
+            <option [ngValue]="null">
+              Cinsiyet seçiniz
+            </option>
+
+            <option [ngValue]="cinsiyetler.Erkek">
+              Erkek
+            </option>
+
+            <option [ngValue]="cinsiyetler.Kadin">
+              Kadın
+            </option>
+
+          </select>
+
+        </div>
+
+        }
+
+
+        <!-- KURUMSAL ALANLAR -->
+        @if (
+        seciliMusteriTipi ===
+        musteriTipleri.Kurumsal
+        ) {
+
+        <!-- VKN -->
+        <div class="form-field">
+
+          <label for="vkn">
+            VKN
+            <span>*</span>
+          </label>
+
+          <input id="vkn"
+                 name="vkn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="10"
+                 [(ngModel)]="aktifMusteriFormu.vkn"
+                 placeholder="10 haneli VKN" />
+
+        </div>
+
+
+        <!-- UNVAN -->
+        <div class="form-field wide-field">
+
+          <label for="unvan">
+            Unvan
+            <span>*</span>
+          </label>
+
+          <input id="unvan"
+                 name="unvan"
+                 type="text"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.unvan"
+                 placeholder="Şirket veya kurum unvanı" />
+
+        </div>
+
+        }
+
+      </div>
+
+    </div>
+
     } @else {
-    Müşteri Düzenle
+
+    <div class="type-selection-message">
+
+      Form alanlarını görüntülemek için
+      bireysel veya kurumsal müşteri tipini
+      seçiniz.
+
+    </div>
+
     }
-  </h2>
 
-  <button type="button"
-          (click)="formuKapat()">
+  </div>
 
-    ×
 
-  </button>
+  <!-- BİRİNCİ ADIM BUTONLARI -->
+  <div class="form-actions">
+
+    <button type="button"
+            class="secondary-button"
+            (click)="formuKapat()">
+
+      İptal
+
+    </button>
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="
+                  seciliMusteriTipi ===
+                  musteriTipleri.None
+                "
+            (click)="sonrakiAdimaGec()">
+
+      Sonraki
+      <span>→</span>
+
+    </button>
+
+  </div>
+
+  }
+
+
+  <!-- İKİNCİ ADIM -->
+  @if (aktifAdim === 2) {
+
+  <div class="form-content">
+
+    <div class="section-heading">
+
+      <h3>İletişim Bilgileri</h3>
+
+      <p>
+        Müşterinin ek iletişim ve adres
+        bilgilerini giriniz.
+      </p>
+
+    </div>
+
+
+    <!-- BİRİNCİ ADIMDAN GELEN BİLGİLER -->
+    <div class="transferred-information">
+
+      <div>
+
+        <span>Cep telefonu</span>
+
+        <strong>
+          {{ aktifMusteriFormu.telefonNo }}
+        </strong>
+
+      </div>
+
+      <div>
+
+        <span>E-posta</span>
+
+        <strong>
+          {{ aktifMusteriFormu.eposta }}
+        </strong>
+
+      </div>
+
+      <p>
+        Bu bilgiler müşteri bilgilerinden
+        otomatik aktarılacaktır.
+      </p>
+
+    </div>
+
+
+    <div class="form-grid contact-grid">
+
+      <!-- EV TELEFONU -->
+      <div class="form-field">
+
+        <label for="evTelefonNo">
+          Ev telefonu
+        </label>
+
+        <input id="evTelefonNo"
+               name="evTelefonNo"
+               type="text"
+               inputmode="tel"
+               maxlength="13"
+               [(ngModel)]="
+                     iletisimFormu.evTelefonNo
+                   "
+               placeholder="0212XXXXXXX" />
+
+      </div>
+
+
+      <!-- İŞ TELEFONU -->
+      <div class="form-field">
+
+        <label for="isTelefonNo">
+          İş telefonu
+        </label>
+
+        <input id="isTelefonNo"
+               name="isTelefonNo"
+               type="text"
+               inputmode="tel"
+               maxlength="13"
+               [(ngModel)]="
+                     iletisimFormu.isTelefonNo
+                   "
+               placeholder="0212XXXXXXX" />
+
+      </div>
+
+
+      <!-- EV ADRESİ -->
+      <div class="form-field address-field">
+
+        <label for="evAdres">
+          Ev adresi
+        </label>
+
+        <textarea id="evAdres"
+                  name="evAdres"
+                  rows="4"
+                  maxlength="100"
+                  [(ngModel)]="
+                        iletisimFormu.evAdres
+                      "
+                  placeholder="Müşterinin ev adresi">
+            </textarea>
+
+        <small class="character-count">
+          {{
+                iletisimFormu.evAdres?.length || 0
+          }}/100
+        </small>
+
+      </div>
+
+
+      <!-- İŞ ADRESİ -->
+      <div class="form-field address-field">
+
+        <label for="isAdres">
+          İş adresi
+        </label>
+
+        <textarea id="isAdres"
+                  name="isAdres"
+                  rows="4"
+                  maxlength="100"
+                  [(ngModel)]="
+                        iletisimFormu.isAdres
+                      "
+                  placeholder="Müşterinin iş adresi">
+            </textarea>
+
+        <small class="character-count">
+          {{
+                iletisimFormu.isAdres?.length || 0
+          }}/100
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- İKİNCİ ADIM BUTONLARI -->
+  <div class="form-actions">
+
+    <button type="button"
+            class="secondary-button"
+            [disabled]="kaydediliyorMu"
+            (click)="oncekiAdimaDon()">
+
+      <span>←</span>
+      Geri
+
+    </button>
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="kaydediliyorMu"
+            (click)="kaydet()">
+
+      @if (kaydediliyorMu) {
+      Kaydediliyor...
+      } @else {
+      Müşteriyi Ekle
+      }
+
+    </button>
+
+  </div>
+
+  }
+
+  }
 
 </div>
-
-<p>
-  Müşteri formu hazırlanıyor.
-</p>

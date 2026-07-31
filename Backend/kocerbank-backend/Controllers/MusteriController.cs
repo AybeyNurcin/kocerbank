@@ -30,6 +30,38 @@ namespace kocerbank_backend.Controllers
             }
         }
 
+    [HttpPost("TamKaydet")]
+    public IActionResult TamKaydet(
+        [FromBody] MusteriTamKaydetDTO dto
+    )
+    {
+        try
+        {
+            MusteriTamKaydetSonucDTO sonuc =
+                _musteriService.TamKaydet(
+                    dto
+                );
+
+            return CreatedAtAction(
+                nameof(GetirById),
+                new
+                {
+                    id = sonuc.MusteriId
+                },
+                sonuc
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(
+                new
+                {
+                    mesaj = ex.Message
+                }
+            );
+        }
+    }
+
         [HttpPost("GetirById/{id:long}")]
         public IActionResult GetirById(long id)
         {
