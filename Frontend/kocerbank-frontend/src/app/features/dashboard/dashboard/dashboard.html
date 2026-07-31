@@ -1,1 +1,256 @@
-<p>dashboard works!</p>
+<section class="dashboard-page">
+
+  <!-- SAYFA BAŞLIĞI -->
+  <div class="page-heading">
+
+    <div>
+
+      <h1>Dashboard</h1>
+
+      <p>
+        Bankanın genel durumuna ait özet bilgiler.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="dashboard-grid">
+
+    <!-- MÜŞTERİLER -->
+    <div class="dashboard-card card-color card-blue">
+
+      <div class="card-heading">
+
+        <h2>Müşteriler</h2>
+
+      </div>
+
+      @if (musteriYukleniyorMu) {
+
+      <div class="card-information-message">
+        Yükleniyor...
+      </div>
+
+      } @else if (musteriHataMesaji !== '') {
+
+      <div class="card-error-message">
+        {{ musteriHataMesaji }}
+      </div>
+
+      } @else if (musteriOzet !== null) {
+
+      <div class="stat-list">
+
+        <div class="stat-row-item">
+          <span class="stat-label">Bireysel</span>
+          <span class="stat-value">{{ musteriOzet.bireyselSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Kurumsal</span>
+          <span class="stat-value">{{ musteriOzet.kurumsalSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Aktif</span>
+          <span class="stat-value stat-value-accent">{{ musteriOzet.aktifSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Pasif</span>
+          <span class="stat-value">{{ musteriOzet.pasifSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Toplam</span>
+          <span class="stat-value">{{ musteriOzet.toplamMusteri }}</span>
+        </div>
+
+      </div>
+
+      }
+
+    </div>
+
+
+    <!-- ŞUBELER -->
+    <div class="dashboard-card card-color card-teal">
+
+      <div class="card-heading">
+
+        <h2>Şubeler</h2>
+
+      </div>
+
+      @if (subeYukleniyorMu) {
+
+      <div class="card-information-message">
+        Yükleniyor...
+      </div>
+
+      } @else if (subeHataMesaji !== '') {
+
+      <div class="card-error-message">
+        {{ subeHataMesaji }}
+      </div>
+
+      } @else if (subeOzet !== null) {
+
+      <div class="stat-list">
+
+        <div class="stat-row-item">
+          <span class="stat-label">Aktif</span>
+          <span class="stat-value stat-value-accent">{{ subeOzet.aktifSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Pasif</span>
+          <span class="stat-value">{{ subeOzet.pasifSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Toplam</span>
+          <span class="stat-value">{{ subeOzet.toplamSube }}</span>
+        </div>
+
+      </div>
+
+      }
+
+    </div>
+
+
+    <!-- KULLANICILAR -->
+    <div class="dashboard-card card-color card-purple">
+
+      <div class="card-heading">
+
+        <h2>Kullanıcılar</h2>
+
+        <span class="data-source sample-source">
+          Örnek veri
+        </span>
+
+      </div>
+
+      <div class="stat-list">
+
+        <div class="stat-row-item">
+          <span class="stat-label">Aktif</span>
+          <span class="stat-value stat-value-accent">{{ kullaniciOzet.aktif }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Pasif</span>
+          <span class="stat-value">{{ kullaniciOzet.pasif }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Toplam</span>
+          <span class="stat-value">{{ kullaniciOzet.toplam }}</span>
+        </div>
+
+      </div>
+
+      <div class="last-user-information">
+        <span class="last-user-label">Son Kullanıcı</span>
+        <span class="last-user-name">{{ kullaniciOzet.sonKullaniciAdi }}</span>
+      </div>
+
+    </div>
+
+
+    <!-- HESAPLAR -->
+    <div class="dashboard-card card-color card-green">
+
+      <div class="card-heading">
+
+        <h2>Hesaplar</h2>
+
+        <span class="data-source sample-source">
+          Örnek veri
+        </span>
+
+      </div>
+
+      <div class="stat-list">
+
+        <div class="stat-row-item">
+          <span class="stat-label">Aktif</span>
+          <span class="stat-value stat-value-accent">{{ hesapOzet.aktif }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Pasif</span>
+          <span class="stat-value">{{ hesapOzet.pasif }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Toplam</span>
+          <span class="stat-value">{{ hesapOzet.toplam }}</span>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- DÖVİZ KURU -->
+    <div class="dashboard-card exchange-rate-card card-color card-navy">
+
+      <div class="card-heading">
+
+        <h2>Döviz Kuru</h2>
+
+        <span class="data-source sample-source">
+          Örnek veri
+        </span>
+
+      </div>
+
+      <table class="exchange-rate-table">
+
+        <thead>
+
+          <tr>
+            <th>Kur</th>
+            <th>Alış</th>
+            <th>Satış</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+          kur of dovizKurlari;
+          track kur.kod
+          ) {
+
+          <tr>
+
+            <td>
+
+              <span class="currency-code">{{ kur.kod }}</span>
+              <span class="currency-name">{{ kur.ad }}</span>
+
+            </td>
+
+            <td>{{ kur.alis | number:'1.2-2' }}</td>
+            <td>{{ kur.satis | number:'1.2-2' }}</td>
+
+          </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>

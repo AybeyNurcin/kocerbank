@@ -7,8 +7,8 @@ import {
 } from '../../../shared/enums/doviz-cinsi-enum';
 
 import {
-  HesapDurumu
-} from '../../../shared/enums/hesap-durumu-enum';
+  AktifPasifDurumlari
+} from '../../../shared/enums/aktif-pasif-durumlari-enum';
 
 export interface Hesap {
   id: number;
@@ -24,7 +24,7 @@ export interface Hesap {
 
   dovizCinsi: DovizCinsi;
   hesapAcilisTarihi: string;
-  hesapDurumKodu: HesapDurumu;
+  hesapDurumKodu: AktifPasifDurumlari;
 
   musteriBilgileriId: number;
   hesapTipi: HesapTipi;

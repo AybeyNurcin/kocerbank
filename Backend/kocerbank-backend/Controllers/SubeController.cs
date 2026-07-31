@@ -120,5 +120,19 @@ namespace kocerbank_backend.Controllers
                     + ex.Message);
             }
         }
+        
+        [HttpGet("DashboardOzet")]
+        public IActionResult GetirDashboardOzet()
+        {
+            try
+            {
+                SubeDashboardDTO ozet = _subeService.GetirDashboardOzet();
+                return Ok(ozet);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = ex.Message });
+            }
+        }
     }
 }

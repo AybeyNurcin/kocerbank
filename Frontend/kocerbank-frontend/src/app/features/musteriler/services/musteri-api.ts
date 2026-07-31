@@ -22,6 +22,10 @@ import {
   MusteriKaydet
 } from '../models/musteri-kaydet-model';
 
+import {
+  MusteriDashboard
+} from '../models/musteri-dashboard-model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -72,6 +76,13 @@ export class MusteriApi {
     return this.http.put<void>(
       `${this.apiUrl}/${id}`,
       musteri
+    );
+  }
+
+  dashboardOzet(): Observable<MusteriDashboard> {
+
+    return this.http.get<MusteriDashboard>(
+      `${this.apiUrl}/DashboardOzet`
     );
   }
 }

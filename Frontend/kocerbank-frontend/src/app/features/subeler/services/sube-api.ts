@@ -9,6 +9,7 @@ import {
 
 import { Sube } from '../models/sube-model';
 import { SubeFiltre } from '../models/sube-filtre-model';
+import { SubeDashboard } from '../models/sube-dashboard-model';
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +58,13 @@ export class SubeApi {
     return this.http.put<void>(
       `${this.apiUrl}/${id}`,
       sube
+    );
+  }
+
+  dashboardOzet(): Observable<SubeDashboard> {
+
+    return this.http.get<SubeDashboard>(
+      `${this.apiUrl}/DashboardOzet`
     );
   }
 }
