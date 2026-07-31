@@ -38,11 +38,349 @@
 
   @if (musteri !== null) {
 
-  <!-- GÜNCELLEMEYİ DAHA SONRA AYRI KURACAĞIZ -->
-  <div class="information-message">
+  <!-- GÜNCELLEME HATA MESAJI -->
+  @if (hataMesaji !== '') {
 
-    Müşteri güncelleme formu sonraki aşamada
-    hazırlanacaktır.
+  <div class="error-message">
+
+    {{ hataMesaji }}
+
+  </div>
+
+  }
+
+
+  <!-- GÜNCELLEME FORMU -->
+  <div class="form-content">
+
+    <div class="section-heading">
+
+      @if (
+      seciliMusteriTipi ===
+      musteriTipleri.Bireysel
+      ) {
+
+      <h3>Bireysel Müşteri Bilgileri</h3>
+
+      <p>
+        Bireysel müşterinin bilgilerini
+        güncelleyebilirsiniz. Müşteri tipi
+        değiştirilemez.
+      </p>
+
+      } @else {
+
+      <h3>Kurumsal Müşteri Bilgileri</h3>
+
+      <p>
+        Kurumsal müşterinin bilgilerini
+        güncelleyebilirsiniz. Müşteri tipi
+        değiştirilemez.
+      </p>
+
+      }
+
+    </div>
+
+
+    <div class="selected-form-area">
+
+      <div class="form-grid">
+
+        <!-- AD -->
+        <div class="form-field">
+
+          <label for="guncellemeAd">
+            Ad
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeAd"
+                 name="guncellemeAd"
+                 type="text"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.ad"
+                 placeholder="Müşteri adı" />
+
+        </div>
+
+
+        <!-- SOYAD -->
+        <div class="form-field">
+
+          <label for="guncellemeSoyad">
+            Soyad
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeSoyad"
+                 name="guncellemeSoyad"
+                 type="text"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.soyad"
+                 placeholder="Müşteri soyadı" />
+
+        </div>
+
+
+        <!-- E-POSTA -->
+        <div class="form-field">
+
+          <label for="guncellemeEposta">
+            E-posta
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeEposta"
+                 name="guncellemeEposta"
+                 type="email"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.eposta"
+                 placeholder="ornek@eposta.com" />
+
+        </div>
+
+
+        <!-- TELEFON -->
+        <div class="form-field">
+
+          <label for="guncellemeTelefon">
+            Telefon
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeTelefon"
+                 name="guncellemeTelefon"
+                 type="text"
+                 inputmode="tel"
+                 maxlength="13"
+                 [(ngModel)]="aktifMusteriFormu.telefonNo"
+                 placeholder="05XXXXXXXXX" />
+
+        </div>
+
+
+        <!-- ŞUBE -->
+        <div class="form-field branch-field">
+
+          <label for="guncellemeSube">
+            Şube
+            <span>*</span>
+          </label>
+
+          <div class="branch-autocomplete">
+
+            <input id="guncellemeSube"
+                   name="guncellemeSube"
+                   type="text"
+                   autocomplete="off"
+                   [(ngModel)]="aktifSubeAramaMetni"
+                   (ngModelChange)="subeAramasiDegisti()"
+                   (focus)="subeSecenekleriniAc()"
+                   (blur)="subeSecenekleriniKapat()"
+                   placeholder="Şube kodu veya adı" />
+
+            @if (subeSecenekleriAcikMi) {
+
+            <div class="branch-options">
+
+              @if (subelerYukleniyorMu) {
+
+              <div class="branch-option-message">
+                Şubeler yükleniyor...
+              </div>
+
+              } @else {
+
+              @for (
+              sube of filtrelenmisSubeler;
+              track sube.id
+              ) {
+
+              <button type="button"
+                      class="branch-option"
+                      (mousedown)="subeSec(sube)">
+
+                <span class="branch-code">
+                  {{ sube.subeKodu }}
+                </span>
+
+                <span class="branch-name">
+                  {{ sube.subeAdi }}
+                </span>
+
+              </button>
+
+              } @empty {
+
+              <div class="branch-option-message">
+                Uygun şube bulunamadı.
+              </div>
+
+              }
+
+              }
+
+            </div>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- BİREYSEL ALANLAR -->
+        @if (
+        seciliMusteriTipi ===
+        musteriTipleri.Bireysel
+        ) {
+
+        <!-- DOĞUM TARİHİ -->
+        <div class="form-field">
+
+          <label for="guncellemeDogumTarihi">
+            Doğum tarihi
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeDogumTarihi"
+                 name="guncellemeDogumTarihi"
+                 type="date"
+                 [(ngModel)]="
+                 aktifMusteriFormu.dogumTarihi
+               " />
+
+        </div>
+
+
+        <!-- TCKN -->
+        <div class="form-field">
+
+          <label for="guncellemeTckn">
+            TCKN
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeTckn"
+                 name="guncellemeTckn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="11"
+                 [(ngModel)]="aktifMusteriFormu.tckn"
+                 placeholder="11 haneli TCKN" />
+
+        </div>
+
+
+        <!-- CİNSİYET -->
+        <div class="form-field">
+
+          <label for="guncellemeCinsiyet">
+            Cinsiyet
+            <span>*</span>
+          </label>
+
+          <select id="guncellemeCinsiyet"
+                  name="guncellemeCinsiyet"
+                  [(ngModel)]="
+                  aktifMusteriFormu.cinsiyet
+                ">
+
+            <option [ngValue]="null">
+              Cinsiyet seçiniz
+            </option>
+
+            <option [ngValue]="cinsiyetler.Erkek">
+              Erkek
+            </option>
+
+            <option [ngValue]="cinsiyetler.Kadin">
+              Kadın
+            </option>
+
+          </select>
+
+        </div>
+
+        }
+
+
+        <!-- KURUMSAL ALANLAR -->
+        @if (
+        seciliMusteriTipi ===
+        musteriTipleri.Kurumsal
+        ) {
+
+        <!-- VKN -->
+        <div class="form-field">
+
+          <label for="guncellemeVkn">
+            VKN
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeVkn"
+                 name="guncellemeVkn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="10"
+                 [(ngModel)]="aktifMusteriFormu.vkn"
+                 placeholder="10 haneli VKN" />
+
+        </div>
+
+
+        <!-- UNVAN -->
+        <div class="form-field wide-field">
+
+          <label for="guncellemeUnvan">
+            Unvan
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeUnvan"
+                 name="guncellemeUnvan"
+                 type="text"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.unvan"
+                 placeholder="Şirket veya kurum unvanı" />
+
+        </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- GÜNCELLEME BUTONLARI -->
+  <div class="form-actions">
+
+    <button type="button"
+            class="secondary-button"
+            [disabled]="kaydediliyorMu"
+            (click)="formuKapat()">
+
+      İptal
+
+    </button>
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="kaydediliyorMu"
+            (click)="guncelle()">
+
+      @if (kaydediliyorMu) {
+      Güncelleniyor...
+      } @else {
+      Güncelle
+      }
+
+    </button>
 
   </div>
 

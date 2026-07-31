@@ -85,8 +85,15 @@ export class MusteriApi {
   ): Observable<void> {
 
     return this.http.put<void>(
-      `${this.apiUrl}/${id}`,
+      `${this.apiUrl}/Guncelle/${id}`,
       musteri
+    );
+  }
+
+  dashboardOzet(): Observable<MusteriDashboard> {
+
+    return this.http.get<MusteriDashboard>(
+      `${this.apiUrl}/DashboardOzet`
     );
   }
 }
