@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component
+} from '@angular/core';
 
 import {
   ActivatedRoute,
@@ -24,7 +27,8 @@ export class PersonelGiris {
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private changeDetector: ChangeDetectorRef
   ) {
   }
 
@@ -44,42 +48,42 @@ export class PersonelGiris {
       return;
     }
 
-    if (
-      this.sicilNo === 'KB0001' &&
-      this.sifre === '1234'
-    ) {
-      this.hataMesaji = '';
+    this.authService.login(
+      this.sicilNo,
+      this.sifre
+    ).subscribe({
+      next: () => {
+        this.hataMesaji = '';
 
-      // Personelin oturumunu açar.
-      this.authService.oturumAc(
-        this.sicilNo
-      );
+        // Guard tarafından saklanan adresi alır.
+        const returnUrl =
+          this.activatedRoute.snapshot
+            .queryParamMap
+            .get('returnUrl');
 
-      // Guard tarafından saklanan adresi alır.
-      const returnUrl =
-        this.activatedRoute.snapshot
-          .queryParamMap
-          .get('returnUrl');
+        // Kullanıcı doğrudan korumalı bir sayfaya
+        // gitmek istemişse o sayfaya yönlendirilir.
+        if (returnUrl !== null) {
+          this.router.navigateByUrl(
+            returnUrl
+          );
 
-      // Kullanıcı doğrudan korumalı bir sayfaya
-      // gitmek istemişse o sayfaya yönlendirilir.
-      if (returnUrl !== null) {
-        this.router.navigateByUrl(
-          returnUrl
-        );
+          return;
+        }
 
-        return;
+        // Normal girişte Dashboard açılır.
+        this.router.navigate([
+          '/dashboard'
+        ]);
+      },
+      error: (hata) => {
+        this.hataMesaji =
+          hata.status === 401
+            ? 'Sicil numarası veya şifre hatalıdır.'
+            : 'Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.';
+
+        this.changeDetector.markForCheck();
       }
-
-      // Normal girişte Dashboard açılır.
-      this.router.navigate([
-        '/dashboard'
-      ]);
-
-      return;
-    }
-
-    this.hataMesaji =
-      'Sicil numarası veya şifre hatalıdır.';
+    });
   }
 }

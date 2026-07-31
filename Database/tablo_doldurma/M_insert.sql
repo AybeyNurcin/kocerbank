@@ -7,7 +7,7 @@ INSERT INTO KB_PERSONEL (AD, SOYAD, ROL, SIFRE, TCKN, TELEFONNO, ADRES, EPOSTA, 
 INSERT INTO KB_PERSONEL (AD, SOYAD, ROL, SIFRE, TCKN, TELEFONNO, ADRES, EPOSTA, SUBESUBEKODU, DURUMKODU) VALUES ('Ayşegül', 'Kara', 'Admin', 'admin123', 12345678903, '05551234569', 'İstanbul, Türkiye', 'aysegul.kara@kocerbank.com', 'S0035', 1);
 insert into KB_PERSONEL (AD, SOYAD, ROL, SIFRE, TCKN, TELEFONNO, ADRES, EPOSTA, SUBESUBEKODU, DURUMKODU) values ('Ayşegül', 'Kara', 'Admin', 'admin123', 12345678903, '05551234569', 'İstanbul, Türkiye', 'aysegul.kara@kocerbank.com', 'S0035', 1);
 insert into KB_PERSONEL (AD, SOYAD, ROL, SIFRE, TCKN, TELEFONNO, ADRES, EPOSTA, SUBESUBEKODU, DURUMKODU) values ('Ayşe', 'Kar', 'Admin', 'admin123', 12345678905, '05551234560', 'İstanbul, Türkiye', 'ayşe.kar@kocerbank.com', 'S0037', 1);
-
+INSERT INTO KB_PERSONEL (AD, SOYAD, ROL, SIFRE, TCKN, TELEFONNO, ADRES, EPOSTA, SUBESUBEKODU, DURUMKODU) VALUES ('Kral', 'Şakir', 'Admin', '123456', 12345678908, '05551234561', 'İstanbul, Türkiye', 'kral.sakir@kocerbank.com', 'S0038', 1);
 
 
 
@@ -21,4 +21,4 @@ SELECT * FROM KB_SUBE;
 
 
 
-DELETE FROM KB_SUBE;
+DELETE FROM KB_personel where id=32;
