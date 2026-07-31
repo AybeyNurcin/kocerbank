@@ -93,6 +93,34 @@ namespace kocerbank_backend.DataAccess
             return hesap;
         }
 
+        public HesapDTO? GetirByIBAN(string iban)
+        {
+            HesapDTO? hesap = null;
+
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand KB = new OracleCommand("KB_HESAPBILGILERI_GETIRBYIBAN", conn))
+                {
+                    KB.CommandType = CommandType.StoredProcedure;
+
+                    KB.Parameters.Add("P_IBAN", OracleDbType.Varchar2).Value = iban;
+                    KB.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    conn.Open();
+
+            using (OracleDataReader reader = KB.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    hesap = MapReaderToDTO(reader);
+                }
+            }
+        }
+    }
+
+    return hesap;
+}
+
         // 3. KRİTERE GÖRE LİSTELE
         public List<HesapDTO> Listele(HesapAramaKriterleriDTO aramaKriterleri)
         {
