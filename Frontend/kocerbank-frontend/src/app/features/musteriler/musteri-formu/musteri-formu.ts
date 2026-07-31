@@ -53,8 +53,7 @@ import {
   templateUrl: './musteri-formu.html',
   styleUrl: './musteri-formu.css'
 })
-export class MusteriFormu
-  implements OnInit {
+export class MusteriFormu implements OnInit {
 
   @Input()
   musteri: Musteri | null = null;
@@ -139,7 +138,7 @@ export class MusteriFormu
   };
 
 
-  // İKİNCİ ADIM İLETİŞİM BİLGİLERİ
+  // İLETİŞİM FORMU
 
   iletisimFormu: MusteriIletisimForm = {
     evTelefonNo: null,
@@ -172,6 +171,106 @@ export class MusteriFormu
   ngOnInit(): void {
 
     this.subeSecenekleriniGetir();
+
+    if (this.musteri !== null) {
+      this.guncellemeFormunuHazirla();
+    }
+
+  }
+
+
+  // GÜNCELLEME FORMUNU HAZIRLAMA
+
+  private guncellemeFormunuHazirla(): void {
+
+    if (this.musteri === null) {
+      return;
+    }
+
+    this.seciliMusteriTipi =
+      this.musteri.musteriTipi;
+
+    const guncellenecekMusteri: MusteriKaydet = {
+      ad: this.musteri.ad,
+      soyad: this.musteri.soyad,
+      eposta: this.musteri.eposta,
+      telefonNo: this.musteri.telefonNo,
+
+      dogumTarihi:
+        this.musteri.dogumTarihi === null
+          ? null
+          : this.musteri.dogumTarihi.substring(
+            0,
+            10
+          ),
+
+      tckn: this.musteri.tckn,
+      vkn: this.musteri.vkn,
+
+      cinsiyet: this.musteri.cinsiyet,
+      musteriTipi: this.musteri.musteriTipi,
+
+      subeSubeKodu:
+        this.musteri.subeSubeKodu,
+
+      unvan: this.musteri.unvan,
+
+      durumKodu:
+        this.musteri.durumKodu
+    };
+
+    const subeGorunumMetni =
+      this.subeGorunumMetniniOlustur(
+        this.musteri.subeSubeKodu,
+        this.musteri.subeAdi
+      );
+
+    if (
+      this.musteri.musteriTipi ===
+      MusteriTipi.Bireysel
+    ) {
+
+      this.bireyselMusteriFormu =
+        guncellenecekMusteri;
+
+      this.bireyselSubeAramaMetni =
+        subeGorunumMetni;
+
+    }
+
+    if (
+      this.musteri.musteriTipi ===
+      MusteriTipi.Kurumsal
+    ) {
+
+      this.kurumsalMusteriFormu =
+        guncellenecekMusteri;
+
+      this.kurumsalSubeAramaMetni =
+        subeGorunumMetni;
+
+    }
+
+  }
+
+
+  private subeGorunumMetniniOlustur(
+    subeKodu: string,
+    subeAdi: string | null | undefined
+  ): string {
+
+    if (
+      !subeAdi ||
+      subeAdi.trim() === ''
+    ) {
+      return subeKodu;
+    }
+
+    return (
+      subeKodu +
+      ' - ' +
+      subeAdi
+    );
 
   }
 
@@ -216,10 +315,12 @@ export class MusteriFormu
       this.seciliMusteriTipi ===
       MusteriTipi.Kurumsal
     ) {
+
       this.kurumsalSubeAramaMetni =
         deger;
 
       return;
+
     }
 
     this.bireyselSubeAramaMetni =
@@ -233,6 +334,11 @@ export class MusteriFormu
   musteriTipiniSec(
     musteriTipi: MusteriTipi
   ): void {
+
+    // Güncellemede müşteri tipi değiştirilemez.
+    if (this.musteri !== null) {
+      return;
+    }
 
     this.seciliMusteriTipi =
       musteriTipi;
@@ -253,10 +359,12 @@ export class MusteriFormu
       this.seciliMusteriTipi ===
       MusteriTipi.None
     ) {
+
       this.hataMesaji =
         'Lütfen müşteri tipini seçiniz.';
 
       return;
+
     }
 
     if (!this.ilkAdimGecerliMi()) {
@@ -276,6 +384,8 @@ export class MusteriFormu
   }
 
 
+  // MÜŞTERİ FORMU KONTROLÜ
+
   private ilkAdimGecerliMi(): boolean {
 
     const form =
@@ -288,20 +398,24 @@ export class MusteriFormu
       form.telefonNo.trim() === '' ||
       form.subeSubeKodu.trim() === ''
     ) {
+
       this.hataMesaji =
         'Lütfen zorunlu müşteri bilgilerini doldurunuz.';
 
       return false;
+
     }
 
     if (
       form.durumKodu ===
       AktifPasifDurumlari.None
     ) {
+
       this.hataMesaji =
         'Lütfen müşteri durumunu seçiniz.';
 
       return false;
+
     }
 
     if (
@@ -316,10 +430,12 @@ export class MusteriFormu
         form.cinsiyet === null ||
         form.cinsiyet === Cinsiyet.None
       ) {
+
         this.hataMesaji =
           'Lütfen bireysel müşteri bilgilerini eksiksiz doldurunuz.';
 
         return false;
+
       }
 
     }
@@ -335,10 +451,12 @@ export class MusteriFormu
         form.unvan === null ||
         form.unvan.trim() === ''
       ) {
+
         this.hataMesaji =
           'Lütfen kurumsal müşteri bilgilerini eksiksiz doldurunuz.';
 
         return false;
+
       }
 
     }
@@ -348,7 +466,7 @@ export class MusteriFormu
   }
 
 
-  // ŞUBE SEÇENEKLERİ
+  // ŞUBE SEÇENEKLERİNİ GETİRME
 
   private subeSecenekleriniGetir(): void {
 
@@ -433,7 +551,8 @@ export class MusteriFormu
 
   subeAramasiDegisti(): void {
 
-    this.subeSecenekleriAcikMi = true;
+    this.subeSecenekleriAcikMi =
+      true;
 
     const tamEslesenSube =
       this.tumSubeler.find(
@@ -451,7 +570,8 @@ export class MusteriFormu
 
   subeSecenekleriniAc(): void {
 
-    this.subeSecenekleriAcikMi = true;
+    this.subeSecenekleriAcikMi =
+      true;
 
   }
 
@@ -503,11 +623,75 @@ export class MusteriFormu
   }
 
 
-  // TAM KAYIT
+  // MÜŞTERİ GÜNCELLEME
+
+  guncelle(): void {
+
+    if (
+      this.musteri === null ||
+      this.kaydediliyorMu
+    ) {
+      return;
+    }
+
+    this.hataMesaji = '';
+
+    if (!this.ilkAdimGecerliMi()) {
+      return;
+    }
+
+    this.kaydediliyorMu = true;
+
+    this.musteriApi
+      .guncelle(
+        this.musteri.id,
+        {
+          ...this.aktifMusteriFormu
+        }
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.kaydediliyorMu =
+            false;
+
+          this.kaydedildi.emit();
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Müşteri güncelleme hatası:',
+            hata
+          );
+
+          this.kaydediliyorMu =
+            false;
+
+          this.hataMesaji =
+            hata?.error?.mesaj ??
+            'Müşteri güncellenirken bir hata oluştu.';
+
+          this.changeDetector
+            .markForCheck();
+
+        }
+
+      });
+
+  }
+
+
+  // MÜŞTERİ VE İLETİŞİM TAM KAYIT
 
   kaydet(): void {
 
-    if (this.kaydediliyorMu) {
+    if (
+      this.musteri !== null ||
+      this.kaydediliyorMu
+    ) {
       return;
     }
 
@@ -515,16 +699,19 @@ export class MusteriFormu
       this.seciliMusteriTipi ===
       MusteriTipi.None
     ) {
+
       this.hataMesaji =
         'Müşteri tipi seçilmelidir.';
 
       return;
+
     }
 
     const kayit: MusteriTamKaydet = {
       musteri: {
         ...this.aktifMusteriFormu
       },
+
       iletisim: {
         ...this.iletisimFormu
       }
