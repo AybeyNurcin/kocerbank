@@ -103,3 +103,198 @@ BEGIN
     WHERE ID = P_ID;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE KB_MUSTERI_TAM_EKLE
+(
+    /* MÜŞTERİ BİLGİLERİ */
+
+    P_AD                   IN KB_MUSTERIBILGILERI.AD%TYPE,
+    P_SOYAD                IN KB_MUSTERIBILGILERI.SOYAD%TYPE,
+    P_EPOSTA               IN KB_MUSTERIBILGILERI.EPOSTA%TYPE,
+    P_DOGUMTARIHI          IN KB_MUSTERIBILGILERI.DOGUMTARIHI%TYPE,
+    P_TELEFONNO            IN KB_MUSTERIBILGILERI.TELEFONNO%TYPE,
+    P_TCKN                 IN KB_MUSTERIBILGILERI.TCKN%TYPE,
+    P_CINSIYET             IN KB_MUSTERIBILGILERI.CINSIYET%TYPE,
+    P_VKN                  IN KB_MUSTERIBILGILERI.VKN%TYPE,
+    P_MUSTERITIPI          IN KB_MUSTERIBILGILERI.MUSTERITIPI%TYPE,
+    P_SUBESUBEKODU         IN KB_MUSTERIBILGILERI.SUBESUBEKODU%TYPE,
+    P_DURUMKODU            IN KB_MUSTERIBILGILERI.DURUMKODU%TYPE,
+    P_UNVAN                IN KB_MUSTERIBILGILERI.UNVAN%TYPE,
+
+    /* İLETİŞİM BİLGİLERİ */
+
+    P_EVTELEFON            IN KB_MUSTERIILETISIM.EVTELEFON%TYPE,
+    P_ISTELEFON            IN KB_MUSTERIILETISIM.ISTELEFON%TYPE,
+    P_EVADRES              IN KB_MUSTERIILETISIM.EVADRES%TYPE,
+    P_ISADRES              IN KB_MUSTERIILETISIM.ISADRES%TYPE,
+
+    /* OLUŞAN DEĞERLER */
+
+    P_MUSTERI_ID           OUT KB_MUSTERIBILGILERI.ID%TYPE,
+    P_ILETISIM_ID          OUT KB_MUSTERIILETISIM.ID%TYPE,
+    P_KAYITOLUSTURMATARIHI OUT KB_MUSTERIBILGILERI.KAYITOLUSTURMATARIHI%TYPE
+)
+AS
+BEGIN
+
+    /* 1. MÜŞTERİYİ EKLE */
+
+    KB_MUSTERIBILGILERI_EKLE
+    (
+        P_AD                   => P_AD,
+        P_SOYAD                => P_SOYAD,
+        P_EPOSTA               => P_EPOSTA,
+        P_DOGUMTARIHI          => P_DOGUMTARIHI,
+        P_TELEFONNO            => P_TELEFONNO,
+        P_TCKN                 => P_TCKN,
+        P_CINSIYET             => P_CINSIYET,
+        P_VKN                  => P_VKN,
+        P_MUSTERITIPI          => P_MUSTERITIPI,
+        P_SUBESUBEKODU         => P_SUBESUBEKODU,
+        P_DURUMKODU            => P_DURUMKODU,
+        P_UNVAN                => P_UNVAN,
+
+        P_ID                   => P_MUSTERI_ID,
+        P_KAYITOLUSTURMATARIHI => P_KAYITOLUSTURMATARIHI
+    );
+
+    /* 2. AYNI MÜŞTERİNİN İLETİŞİM KAYDINI EKLE */
+
+    KB_MUSTERIILETISIM_EKLE
+    (
+        P_MUSTERIBILGILERIID => P_MUSTERI_ID,
+
+        /* Birinci ekrandan otomatik aktarılır. */
+        P_TELEFONNO          => P_TELEFONNO,
+        P_EPOSTA             => P_EPOSTA,
+
+        P_EVTELEFON          => P_EVTELEFON,
+        P_ISTELEFON          => P_ISTELEFON,
+        P_EVADRES            => P_EVADRES,
+        P_ISADRES            => P_ISADRES,
+
+        P_ID                 => P_ILETISIM_ID
+    );
+
+END KB_MUSTERI_TAM_EKLE;
+/
+
+ALTER TABLE KB_MUSTERIILETISIM
+ADD CONSTRAINT UK_KB_MUSTERIILETISIM_MID
+UNIQUE (MUSTERIBILGILERIID);
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+    V_MUSTERI_ID
+        KB_MUSTERIBILGILERI.ID%TYPE;
+
+    V_ILETISIM_ID
+        KB_MUSTERIILETISIM.ID%TYPE;
+
+    V_KAYIT_TARIHI
+        KB_MUSTERIBILGILERI.KAYITOLUSTURMATARIHI%TYPE;
+BEGIN
+
+    KB_MUSTERI_TAM_EKLE
+    (
+        P_AD                   => 'Test',
+        P_SOYAD                => 'Musteri',
+        P_EPOSTA               => 'tam.test.001@example.com',
+        P_DOGUMTARIHI          => TO_DATE(
+            '15.05.1995',
+            'DD.MM.YYYY'
+        ),
+        P_TELEFONNO            => '05321234567',
+        P_TCKN                 => '12345678901',
+        P_CINSIYET             => 1,
+        P_VKN                  => NULL,
+        P_MUSTERITIPI          => 1,
+        P_SUBESUBEKODU         => 'S0041',
+        P_DURUMKODU            => 1,
+        P_UNVAN                => NULL,
+
+        P_EVTELEFON            => '02121234567',
+        P_ISTELEFON            => '02129876543',
+        P_EVADRES              => 'İstanbul Kadıköy',
+        P_ISADRES              => 'İstanbul Şişli',
+
+        P_MUSTERI_ID           => V_MUSTERI_ID,
+        P_ILETISIM_ID          => V_ILETISIM_ID,
+        P_KAYITOLUSTURMATARIHI => V_KAYIT_TARIHI
+    );
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Müşteri ID: ' || V_MUSTERI_ID
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        'İletişim ID: ' || V_ILETISIM_ID
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Kayıt tarihi: ' ||
+        TO_CHAR(
+            V_KAYIT_TARIHI,
+            'DD.MM.YYYY HH24:MI:SS'
+        )
+    );
+
+END;
+/
+
+SELECT
+    ID,
+    AD,
+    SOYAD,
+    EPOSTA,
+    TELEFONNO,
+    TCKN,
+    MUSTERITIPI,
+    SUBESUBEKODU,
+    DURUMKODU
+FROM KB_MUSTERIBILGILERI
+WHERE EPOSTA = 'tam.test.001@example.com';
+
+SELECT
+    I.ID,
+    I.MUSTERIBILGILERIID,
+    I.TELEFONNO,
+    I.EPOSTA,
+    I.EVTELEFON,
+    I.ISTELEFON,
+    I.EVADRES,
+    I.ISADRES
+FROM KB_MUSTERIILETISIM I
+WHERE I.MUSTERIBILGILERIID =
+(
+    SELECT M.ID
+    FROM KB_MUSTERIBILGILERI M
+    WHERE M.EPOSTA =
+        'tam.test.001@example.com'
+);
+
+SELECT
+    M.ID AS MUSTERI_ID,
+    M.AD,
+    M.SOYAD,
+    M.EPOSTA AS MUSTERI_EPOSTA,
+    M.TELEFONNO AS MUSTERI_TELEFON,
+
+    I.ID AS ILETISIM_ID,
+    I.EPOSTA AS ILETISIM_EPOSTA,
+    I.TELEFONNO AS ILETISIM_TELEFON,
+    I.EVTELEFON,
+    I.ISTELEFON,
+    I.EVADRES,
+    I.ISADRES
+
+FROM KB_MUSTERIBILGILERI M
+
+LEFT JOIN KB_MUSTERIILETISIM I
+    ON I.MUSTERIBILGILERIID = M.ID
+
+WHERE M.EPOSTA =
+    'tam.test.001@example.com';

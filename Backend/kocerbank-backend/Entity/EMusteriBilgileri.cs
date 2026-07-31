@@ -87,6 +87,224 @@ namespace kocerbank_backend.DataAccess
             return musteri;
         }
 
+            public MusteriTamKaydetSonucDTO TamKaydet(
+        MusteriTamKaydetDTO dto
+    )
+    {
+        using (
+            OracleConnection conn =
+                new OracleConnection(
+                    _connectionString
+                )
+        )
+        {
+            using (
+                OracleCommand command =
+                    new OracleCommand(
+                        "KB_MUSTERI_TAM_EKLE",
+                        conn
+                    )
+            )
+            {
+                command.CommandType =
+                    CommandType.StoredProcedure;
+
+                command.BindByName = true;
+
+
+                // MÜŞTERİ BİLGİLERİ
+
+                command.Parameters.Add(
+                    "P_AD",
+                    OracleDbType.Varchar2
+                ).Value =
+                    dto.Musteri.Ad;
+
+                command.Parameters.Add(
+                    "P_SOYAD",
+                    OracleDbType.Varchar2
+                ).Value =
+                    dto.Musteri.Soyad;
+
+                command.Parameters.Add(
+                    "P_EPOSTA",
+                    OracleDbType.Varchar2
+                ).Value =
+                    dto.Musteri.Eposta;
+
+                command.Parameters.Add(
+                    "P_DOGUMTARIHI",
+                    OracleDbType.Date
+                ).Value =
+                    dto.Musteri.DogumTarihi.HasValue
+                        ? dto.Musteri.DogumTarihi.Value
+                        : DBNull.Value;
+
+                command.Parameters.Add(
+                    "P_TELEFONNO",
+                    OracleDbType.Varchar2
+                ).Value =
+                    dto.Musteri.TelefonNo;
+
+                command.Parameters.Add(
+                    "P_TCKN",
+                    OracleDbType.Varchar2
+                ).Value =
+                    (object?)dto.Musteri.TCKN ??
+                    DBNull.Value;
+
+                command.Parameters.Add(
+                    "P_CINSIYET",
+                    OracleDbType.Byte
+                ).Value =
+                    dto.Musteri.Cinsiyet.HasValue
+                        ? (object)(byte)
+                            dto.Musteri.Cinsiyet.Value
+                        : DBNull.Value;
+
+                command.Parameters.Add(
+                    "P_VKN",
+                    OracleDbType.Varchar2
+                ).Value =
+                    (object?)dto.Musteri.VKN ??
+                    DBNull.Value;
+
+                command.Parameters.Add(
+                    "P_MUSTERITIPI",
+                    OracleDbType.Byte
+                ).Value =
+                    (byte)dto.Musteri.MusteriTipi;
+
+                command.Parameters.Add(
+                    "P_SUBESUBEKODU",
+                    OracleDbType.Varchar2
+                ).Value =
+                    dto.Musteri.SubeSubeKodu;
+
+                command.Parameters.Add(
+                    "P_DURUMKODU",
+                    OracleDbType.Byte
+                ).Value =
+                    (byte)dto.Musteri.DurumKodu;
+
+                command.Parameters.Add(
+                    "P_UNVAN",
+                    OracleDbType.Varchar2
+                ).Value =
+                    (object?)dto.Musteri.Unvan ??
+                    DBNull.Value;
+
+
+                // İLETİŞİM BİLGİLERİ
+
+                command.Parameters.Add(
+                    "P_EVTELEFON",
+                    OracleDbType.Varchar2
+                ).Value =
+                    (object?)
+                        dto.Iletisim.EvTelefonNo ??
+                    DBNull.Value;
+
+                command.Parameters.Add(
+                    "P_ISTELEFON",
+                    OracleDbType.Varchar2
+                ).Value =
+                    (object?)
+                        dto.Iletisim.IsTelefonNo ??
+                    DBNull.Value;
+
+                command.Parameters.Add(
+                    "P_EVADRES",
+                    OracleDbType.Varchar2
+                ).Value =
+                    (object?)
+                        dto.Iletisim.EvAdres ??
+                    DBNull.Value;
+
+                command.Parameters.Add(
+                    "P_ISADRES",
+                    OracleDbType.Varchar2
+                ).Value =
+                    (object?)
+                        dto.Iletisim.IsAdres ??
+                    DBNull.Value;
+
+
+                // OUT PARAMETRELERİ
+
+                OracleParameter musteriId =
+                    new OracleParameter(
+                        "P_MUSTERI_ID",
+                        OracleDbType.Int64
+                    )
+                    {
+                        Direction =
+                            ParameterDirection.Output
+                    };
+
+                OracleParameter iletisimId =
+                    new OracleParameter(
+                        "P_ILETISIM_ID",
+                        OracleDbType.Int64
+                    )
+                    {
+                        Direction =
+                            ParameterDirection.Output
+                    };
+
+                OracleParameter kayitTarihi =
+                    new OracleParameter(
+                        "P_KAYITOLUSTURMATARIHI",
+                        OracleDbType.Date
+                    )
+                    {
+                        Direction =
+                            ParameterDirection.Output
+                    };
+
+                command.Parameters.Add(
+                    musteriId
+                );
+
+                command.Parameters.Add(
+                    iletisimId
+                );
+
+                command.Parameters.Add(
+                    kayitTarihi
+                );
+
+
+                // PROSEDÜRÜ ÇALIŞTIR
+
+                conn.Open();
+
+                command.ExecuteNonQuery();
+
+
+                // SONUCU DTO'YA DÖNÜŞTÜR
+
+                return new MusteriTamKaydetSonucDTO
+                {
+                    MusteriId =
+                        ((OracleDecimal)
+                            musteriId.Value)
+                        .ToInt64(),
+
+                    IletisimId =
+                        ((OracleDecimal)
+                            iletisimId.Value)
+                        .ToInt64(),
+
+                    KayitOlusturmaTarihi =
+                        ((OracleDate)
+                            kayitTarihi.Value)
+                        .Value
+                };
+            }
+        }
+    }
+
         // 3. KRİTERE GÖRE LİSTELE
         public List<MusteriDTO> Listele(MusteriAramaKriterleriDTO aramaKriterleri)
         {

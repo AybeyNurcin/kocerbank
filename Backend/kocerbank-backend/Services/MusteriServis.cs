@@ -8,7 +8,9 @@ namespace kocerbank_backend.Services
     {
         private readonly MusteriRepository _musteriRepository;
 
-        public MusteriService(MusteriRepository musteriRepository)
+        public MusteriService(
+            MusteriRepository musteriRepository
+        )
         {
             _musteriRepository = musteriRepository;
         }
@@ -19,6 +21,48 @@ namespace kocerbank_backend.Services
             RealityCheck(dto);
 
             return _musteriRepository.Ekle(dto);
+        }
+
+        // MÜŞTERİ VE İLETİŞİM BİLGİLERİNİ BİRLİKTE EKLEME
+        public MusteriTamKaydetSonucDTO TamKaydet(
+            MusteriTamKaydetDTO dto
+        )
+        {
+            if (dto is null)
+            {
+                throw new ArgumentNullException(
+                    nameof(dto),
+                    "Müşteri bilgileri gönderilmelidir."
+                );
+            }
+
+            if (dto.Musteri is null)
+            {
+                throw new ArgumentException(
+                    "Müşteri bilgileri gönderilmelidir."
+                );
+            }
+
+            if (dto.Iletisim is null)
+            {
+                throw new ArgumentException(
+                    "İletişim bilgileri gönderilmelidir."
+                );
+            }
+
+            // Mevcut müşteri kontrollerini kullanır.
+            RealityCheck(
+                dto.Musteri
+            );
+
+            // İkinci adımdaki iletişim alanlarını kontrol eder.
+            IletisimBilgileriniKontrolEt(
+                dto.Iletisim
+            );
+
+            return _musteriRepository.TamKaydet(
+                dto
+            );
         }
 
         // 2. ID'YE GÖRE GETİR
@@ -43,10 +87,15 @@ namespace kocerbank_backend.Services
         }
 
         // 3. LİSTELEME
-        public List<MusteriDTO> Listele(MusteriAramaKriterleriDTO aramaKriterleri)
+        public List<MusteriDTO> Listele(
+            MusteriAramaKriterleriDTO aramaKriterleri
+        )
         {
-            // Burada zorunlu doğrulama yok çünkü kriterler opsiyonel (None/boş olabilir)
-            return _musteriRepository.Listele(aramaKriterleri);
+            // Burada zorunlu doğrulama yok çünkü
+            // kriterler opsiyonel (None/boş olabilir).
+            return _musteriRepository.Listele(
+                aramaKriterleri
+            );
         }
 
         // 4. GÜNCELLEME
@@ -54,7 +103,8 @@ namespace kocerbank_backend.Services
         {
             RealityCheck(dto);
 
-            MusteriDTO? mevcutMusteri = _musteriRepository.GetirById(dto.Id);
+            MusteriDTO? mevcutMusteri =
+                _musteriRepository.GetirById(dto.Id);
 
             if (mevcutMusteri is null)
             {
@@ -70,10 +120,12 @@ namespace kocerbank_backend.Services
         {
             if (id <= 0)
             {
-                throw new ArgumentException("Geçersiz müşteri ID'si.");
+                throw new ArgumentException(
+                    "Geçersiz müşteri ID'si.");
             }
 
-            MusteriDTO? mevcutMusteri = _musteriRepository.GetirById(id);
+            MusteriDTO? mevcutMusteri =
+                _musteriRepository.GetirById(id);
 
             if (mevcutMusteri is null)
             {
@@ -317,6 +369,85 @@ namespace kocerbank_backend.Services
                 dto.DogumTarihi = null;
                 dto.Cinsiyet = null;
             }
+        }
+
+        // TAM KAYIT İÇİN İLETİŞİM BİLGİLERİ KONTROLÜ
+        private void IletisimBilgileriniKontrolEt(
+            MusteriIletisimFormDTO iletisim
+        )
+        {
+            iletisim.EvTelefonNo =
+                MetniTemizle(
+                    iletisim.EvTelefonNo
+                );
+
+            iletisim.IsTelefonNo =
+                MetniTemizle(
+                    iletisim.IsTelefonNo
+                );
+
+            iletisim.EvAdres =
+                MetniTemizle(
+                    iletisim.EvAdres
+                );
+
+            iletisim.IsAdres =
+                MetniTemizle(
+                    iletisim.IsAdres
+                );
+
+            if (
+                iletisim.EvTelefonNo is not null &&
+                iletisim.EvTelefonNo.Length > 13
+            )
+            {
+                throw new ArgumentException(
+                    "Ev telefonu en fazla 13 karakter olabilir."
+                );
+            }
+
+            if (
+                iletisim.IsTelefonNo is not null &&
+                iletisim.IsTelefonNo.Length > 13
+            )
+            {
+                throw new ArgumentException(
+                    "İş telefonu en fazla 13 karakter olabilir."
+                );
+            }
+
+            if (
+                iletisim.EvAdres is not null &&
+                iletisim.EvAdres.Length > 100
+            )
+            {
+                throw new ArgumentException(
+                    "Ev adresi en fazla 100 karakter olabilir."
+                );
+            }
+
+            if (
+                iletisim.IsAdres is not null &&
+                iletisim.IsAdres.Length > 100
+            )
+            {
+                throw new ArgumentException(
+                    "İş adresi en fazla 100 karakter olabilir."
+                );
+            }
+        }
+
+        // TAM KAYITTA BOŞ İLETİŞİM ALANLARINI NULL YAPAR
+        private string? MetniTemizle(
+            string? metin
+        )
+        {
+            if (string.IsNullOrWhiteSpace(metin))
+            {
+                return null;
+            }
+
+            return metin.Trim();
         }
 
         public void idCheck(long id)

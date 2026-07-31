@@ -22,6 +22,11 @@ import {
   MusteriKaydet
 } from '../models/musteri-kaydet-model';
 
+import {
+  MusteriTamKaydet,
+  MusteriTamKaydetSonuc
+} from '../models/musteri-tam-kaydet-model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -61,6 +66,16 @@ export class MusteriApi {
     return this.http.post<Musteri>(
       `${this.apiUrl}/Ekle`,
       musteri
+    );
+  }
+
+  tamKaydet(
+    kayit: MusteriTamKaydet
+  ): Observable<MusteriTamKaydetSonuc> {
+
+    return this.http.post<MusteriTamKaydetSonuc>(
+      `${this.apiUrl}/TamKaydet`,
+      kayit
     );
   }
 
