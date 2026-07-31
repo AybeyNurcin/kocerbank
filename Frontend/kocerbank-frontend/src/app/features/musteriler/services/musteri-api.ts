@@ -27,6 +27,10 @@ import {
   MusteriTamKaydetSonuc
 } from '../models/musteri-tam-kaydet-model';
 
+import {
+  MusteriDashboard
+} from '../models/musteri-dashboard-model';
+
 @Injectable({
   providedIn: 'root'
 })
