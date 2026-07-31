@@ -133,6 +133,12 @@ namespace kocerbank_backend.Services
         _subeRepository.Sil(id);
     }
 
+
+         public SubeDashboardDTO GetirDashboardOzet()
+        {
+            return _subeRepository.GetirDashboardOzet();
+        }
+
         // EKLEME VE GÜNCELLEMEDE ORTAK KONTROLLER
         private static void SubeBilgileriniKontrolEt(
             SubeDTO dto)

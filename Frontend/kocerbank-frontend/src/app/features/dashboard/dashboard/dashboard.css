@@ -1,0 +1,321 @@
+.dashboard-page {
+  width: 100%;
+  color: #070707;
+  font-family: Arial, sans-serif;
+}
+
+
+/* SAYFA BAŞLIĞI */
+
+.page-heading {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+  .page-heading h1 {
+    margin: 0 0 7px;
+    font-size: 29px;
+    font-weight: 700;
+    color: #000000;
+  }
+
+  .page-heading p {
+    margin: 0;
+    color: #86868f;
+    font-size: 14px;
+  }
+
+
+/* KART IZGARASI */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.dashboard-card {
+  padding: 26px 28px;
+  background-color: #ffffff;
+  border: 1px solid #ebebee;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(40, 40, 55, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+/* RENKLİ KARTLAR */
+
+.card-color {
+  border: none;
+  box-shadow: 0 6px 18px rgba(20, 20, 40, 0.14);
+}
+
+  .card-color .card-heading h2,
+  .card-color .stat-label,
+  .card-color .stat-value,
+  .card-color .stat-value-accent,
+  .card-color .last-user-name,
+  .card-color .currency-code {
+    color: #ffffff;
+  }
+
+  .card-color .stat-row-item {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .card-color .data-source.sample-source {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  .card-color .last-user-information {
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+
+  .card-color .last-user-label,
+  .card-color .currency-name,
+  .card-color .exchange-rate-table th {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .card-color .exchange-rate-table th,
+  .card-color .exchange-rate-table td {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .card-color .exchange-rate-table td:not(:first-child) {
+    color: #ffffff;
+  }
+
+  .card-color .card-information-message,
+  .card-color .card-error-message {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+.card-blue {
+  background-color: #2563ec;
+}
+
+.card-teal {
+  background-color: #0891b5;
+}
+
+.card-purple {
+  background-color: #7d3aec;
+}
+
+.card-green {
+  background-color: #17a34a;
+}
+
+.card-navy {
+  background-color: #1f41af;
+}
+
+
+.card-heading {
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+  .card-heading h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+
+/* VERİ KAYNAĞI ROZETİ */
+
+.data-source {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.sample-source {
+  background-color: #f1f1f4;
+  color: #9a9aa2;
+}
+
+
+/* İSTATİSTİK SATIRLARI */
+
+.stat-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-row-item {
+  padding: 14px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #eeeef1;
+}
+
+  .stat-row-item:first-child {
+    padding-top: 0;
+  }
+
+  .stat-row-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+.stat-label {
+  color: #77777e;
+  font-size: 14px;
+}
+
+.stat-value {
+  color: #23232a;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.stat-value-accent {
+  color: #12879a;
+}
+
+
+/* SON KULLANICI */
+
+.last-user-information {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background-color: #f6f6f8;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.last-user-label {
+  color: #9a9aa2;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.last-user-name {
+  color: #23232a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
+/* KART İÇİ MESAJLAR */
+
+.card-information-message,
+.card-error-message {
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.card-information-message {
+  background-color: #fff6cf;
+  color: #725c00;
+}
+
+.card-error-message {
+  background-color: #fbe4e4;
+  color: #a52f2f;
+}
+
+
+/* DÖVİZ KURU TABLOSU */
+
+.exchange-rate-card {
+  grid-column: span 2;
+}
+
+.exchange-rate-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+  .exchange-rate-table th,
+  .exchange-rate-table td {
+    padding: 14px 8px;
+    border-bottom: 1px solid #eeeef1;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .exchange-rate-table th {
+    color: #9a9aa2;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .exchange-rate-table th:not(:first-child),
+  .exchange-rate-table td:not(:first-child) {
+    text-align: center;
+  }
+
+  .exchange-rate-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+.currency-code {
+  display: block;
+  color: #23232a;
+  font-weight: 700;
+}
+
+.currency-name {
+  display: block;
+  color: #9a9aa2;
+  font-size: 12px;
+}
+
+
+/* ORTA BOY EKRANLAR */
+
+@media (max-width: 1000px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+
+  .exchange-rate-card {
+    grid-column: span 2;
+  }
+}
+
+
+/* TELEFON */
+
+@media (max-width: 650px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exchange-rate-card {
+    grid-column: span 1;
+  }
+
+  .dashboard-card {
+    padding: 20px;
+  }
+}

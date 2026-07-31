@@ -20,4 +20,11 @@ namespace kocerbank_backend.Models.DTOs
         public string? SubeAdres { get; set; }
         public AktifPasifDurumlari? SubeDurumKodu { get; set; }
     }
+
+    public class SubeDashboardDTO
+    {
+        public long ToplamSube { get; set; }
+        public long AktifSayi { get; set; }
+        public long PasifSayi { get; set; }
+    }
 }
