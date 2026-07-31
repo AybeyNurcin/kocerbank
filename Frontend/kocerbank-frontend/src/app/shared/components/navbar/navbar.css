@@ -90,16 +90,18 @@
 
 /* Menü alanı */
 .navigation {
-  width: min(800px, 100%);
+  width: min(950px, 100%);
   margin: 16px auto 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 35px;
   align-items: center;
 }
 
   /* Menü butonları */
-  .navigation a {
+  .navigation a,
+  .combo-menu-toggle {
+    width: 100%;
     padding: 9px 18px;
     display: flex;
     justify-content: center;
@@ -114,16 +116,19 @@
     font-weight: 600;
     text-decoration: none;
     box-shadow: 0 2px 5px rgba(50, 50, 50, 0.1);
+    cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
   }
 
-    .navigation a:hover {
+    .navigation a:hover,
+    .combo-menu-toggle:hover {
       transform: translateY(-2px);
       background-color: #ece8f3;
     }
 
     /* Açık olan sayfanın butonu */
-    .navigation a.active {
+    .navigation a.active,
+    .combo-menu-toggle.active {
       border-color: #7351a3;
       background-color: #7351a3;
       color: white;
@@ -134,8 +139,82 @@
   font-size: 9px;
 }
 
-.navigation a.active .menu-icon {
+.navigation a.active .menu-icon,
+.combo-menu-toggle.active .menu-icon {
   color: white;
 }
 
+/* Hesap İşlemleri combo box menüsü */
+.combo-menu {
+  position: relative;
+}
+
+.combo-menu-toggle {
+  white-space: nowrap;
+}
+
+/* Fareyi üstüne getirince açık sayfa rengiyle vurgulanır */
+.combo-menu:hover .combo-menu-toggle {
+  border-color: #7351a3;
+  background-color: #7351a3;
+  color: white;
+}
+
+  .combo-menu:hover .combo-menu-toggle .menu-icon {
+    color: white;
+  }
+
+/* Alt menü paneli: arka plan/kutu yok, üst menüyle aynı genişlik ve hizada */
+.combo-menu-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+  .combo-menu:hover .combo-menu-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .combo-menu-option {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 9px 18px;
+    border: 1px solid #c6c5ca;
+    border-radius: 22px;
+    display: block;
+    background-color: #f5f5f6;
+    color: #55515d;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(50, 50, 50, 0.1);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+    .combo-menu-option:hover {
+      transform: translateY(-2px);
+      background-color: #ece8f3;
+    }
+
+    .combo-menu-option.active {
+      border-color: #7351a3;
+      background-color: #7351a3;
+      color: white;
+    }
 
