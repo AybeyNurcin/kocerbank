@@ -36,21 +36,21 @@
   }
 
     .page-heading p strong {
-      color: #53327f;
+      color: #d99b00;
     }
 
 .back-button {
   padding: 0;
   border: none;
   background: none;
-  color: #674292;
+  color: #fbba0c;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 
   .back-button:hover {
-    color: #3f235f;
+    color: #b77f00;
     text-decoration: underline;
   }
 
@@ -126,8 +126,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f3edf9;
-  color: #674292;
+  background-color: #fff8df;
+  color: #fbba0c;
   font-size: 21px;
   font-weight: 700;
 }
@@ -138,13 +138,13 @@
 .accounts-summary {
   margin-bottom: 18px;
   padding: 17px 20px;
-  border: 1px solid #e3d9ec;
+  border: 1px solid #f5dfa0;
   border-radius: 11px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 25px;
-  background: linear-gradient( 135deg, #faf7fd 0%, #ffffff 100% );
+  background: linear-gradient( 135deg, #fffcf2 0%, #ffffff 100% );
 }
 
   .accounts-summary > div {
@@ -154,7 +154,7 @@
   }
 
 .summary-label {
-  color: #674292;
+  color: #fbba0c;
   font-size: 17px;
   font-weight: 700;
 }
@@ -162,8 +162,8 @@
 .accounts-summary strong {
   padding: 5px 10px;
   border-radius: 20px;
-  background-color: #eee5f5;
-  color: #53327f;
+  background-color: #fff1bf;
+  color: #d99b00;
   font-size: 12px;
 }
 
@@ -202,15 +202,15 @@
 
   .account-type-card:hover {
     transform: translateY(-2px);
-    border-color: #cdbbdd;
-    box-shadow: 0 8px 24px rgba(63, 35, 95, 0.09);
+    border-color: #e9c55b;
+    box-shadow: 0 8px 24px rgba(217, 155, 0, 0.09);
   }
 
   .account-type-card.selected-type {
-    border-color: #674292;
-    background: linear-gradient( 135deg, #674292 0%, #4b286d 100% );
+    border-color: #fbba0c;
+    background: linear-gradient( 135deg, #fbba0c 0%, #d99b00 100% );
     color: #ffffff;
-    box-shadow: 0 10px 27px rgba(83, 50, 127, 0.22);
+    box-shadow: 0 10px 27px rgba(217, 155, 0, 0.22);
   }
 
 .type-card-heading {
@@ -228,8 +228,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f1ebf6;
-  color: #674292;
+  background-color: #fff4cc;
+  color: #fbba0c;
   font-size: 12px;
   font-weight: 700;
 }
@@ -361,7 +361,7 @@
   }
 
 .panel-label {
-  color: #8466a4;
+  color: #c78d00;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -377,8 +377,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0e9f6;
-  color: #674292;
+  background-color: #fff4cc;
+  color: #fbba0c;
   font-size: 12px;
   font-weight: 700;
 }
@@ -413,14 +413,14 @@
 
   .account-list-item:hover {
     transform: translateX(2px);
-    border-color: #cdbbdd;
-    background-color: #fbf9fd;
+    border-color: #e9c55b;
+    background-color: #fffcf2;
   }
 
   .account-list-item.selected-account {
-    border-color: #674292;
-    background-color: #f6f1fa;
-    box-shadow: inset 4px 0 0 #674292;
+    border-color: #fbba0c;
+    background-color: #fff7dc;
+    box-shadow: inset 4px 0 0 #fbba0c;
   }
 
 .account-item-main {
@@ -438,14 +438,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ede5f4;
-  color: #674292;
+  background-color: #fff1bf;
+  color: #fbba0c;
   font-size: 15px;
   font-weight: 700;
 }
 
 .selected-account .account-item-icon {
-  background-color: #674292;
+  background-color: #fbba0c;
   color: #ffffff;
 }
 
@@ -547,7 +547,7 @@
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient( 135deg, #53327f 0%, #75509c 100% );
+  background: linear-gradient( 135deg, #d99b00 0%, #ffc83d 100% );
   color: #ffffff;
 }
 
@@ -676,13 +676,13 @@
   min-height: 82px;
   padding: 15px 17px;
   box-sizing: border-box;
-  border: 1px solid #ded7e5;
+  border: 1px solid #f1dda0;
   border-radius: 10px;
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr) 20px;
   align-items: center;
   gap: 13px;
-  background-color: #fbf9fd;
+  background-color: #fffcf2;
   color: #34343a;
   text-align: left;
   cursor: pointer;
@@ -691,8 +691,8 @@
 
   .operation-card:hover:not(:disabled) {
     transform: translateY(-2px);
-    border-color: #a98fc0;
-    box-shadow: 0 7px 20px rgba(83, 50, 127, 0.09);
+    border-color: #dfaa17;
+    box-shadow: 0 7px 20px rgba(217, 155, 0, 0.09);
   }
 
   .operation-card:disabled {
@@ -707,7 +707,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #674292;
+  background-color: #fbba0c;
   color: #ffffff;
   font-size: 19px;
   font-weight: 700;
@@ -733,7 +733,7 @@
 }
 
 .operation-arrow {
-  color: #8466a4;
+  color: #c78d00;
   font-size: 19px;
 }
 

@@ -125,7 +125,7 @@
     /* Açık olan sayfanın butonu */
     .navigation a.active {
       border-color: #7351a3;
-      background-color: #7351a3;
+      background-color: #fbba0c;
       color: white;
     }
 
