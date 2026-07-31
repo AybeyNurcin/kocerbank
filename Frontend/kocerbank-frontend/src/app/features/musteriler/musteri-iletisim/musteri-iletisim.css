@@ -1,0 +1,376 @@
+:host {
+  display: block;
+  width: 100%;
+  color: #34343a;
+  font-family: Arial, sans-serif;
+}
+
+.contact-popup {
+  width: 100%;
+}
+
+
+/* BAŞLIK */
+
+.form-header {
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+  .form-header h2 {
+    margin: 0 0 7px;
+    color: #34343a;
+    font-size: 22px;
+  }
+
+  .form-header p {
+    margin: 0;
+    color: #77777e;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+    .form-header p span {
+      color: #99999f;
+    }
+
+.close-button {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid #dddddf;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #77777e;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+  .close-button:hover:not(:disabled) {
+    border-color: #c4c4c8;
+    background-color: #f4f4f5;
+    color: #34343a;
+  }
+
+  .close-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+
+/* YÜKLENİYOR */
+
+.loading-message {
+  min-height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 11px;
+  color: #77777e;
+  font-size: 13px;
+}
+
+.loading-spinner {
+  width: 19px;
+  height: 19px;
+  border: 3px solid #e1e1e3;
+  border-top-color: #d2a900;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* MESAJLAR */
+
+.error-message,
+.success-message {
+  margin-bottom: 20px;
+  padding: 13px 15px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.error-message {
+  border: 1px solid #efc4c4;
+  background-color: #fbe4e4;
+  color: #a52f2f;
+}
+
+.success-message {
+  border: 1px solid #b8dfc6;
+  background-color: #e8f6ed;
+  color: #237a46;
+}
+
+
+/* BÖLÜM BAŞLIKLARI */
+
+.section-heading {
+  margin-bottom: 15px;
+}
+
+  .section-heading h3 {
+    margin: 0 0 5px;
+    color: #34343a;
+    font-size: 16px;
+  }
+
+  .section-heading p {
+    margin: 0;
+    color: #7b7b82;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+
+/* TEMEL İLETİŞİM KARTI */
+
+.primary-contact-card {
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid #e1d5ee;
+  border-radius: 9px;
+  background-color: #faf7fd;
+}
+
+.primary-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.contact-information-item {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #eee8f5;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background-color: #ffffff;
+}
+
+.information-label {
+  color: #77777e;
+  font-size: 11px;
+}
+
+.contact-information-item strong {
+  overflow: hidden;
+  color: #53327f;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* EK İLETİŞİM KARTI */
+
+.additional-contact-card,
+.edit-contact-card {
+  padding: 18px;
+  border: 1px solid #e1e1e3;
+  border-radius: 9px;
+  background-color: #ffffff;
+}
+
+.contact-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.contact-detail-item {
+  min-width: 0;
+  min-height: 66px;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  border: 1px solid #e6e6e8;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background-color: #fafafa;
+}
+
+  .contact-detail-item span {
+    color: #77777e;
+    font-size: 11px;
+  }
+
+  .contact-detail-item strong {
+    color: #34343a;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+.address-item {
+  min-height: 92px;
+}
+
+
+/* DÜZENLEME FORMU */
+
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+  align-items: start;
+}
+
+.form-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+  .form-field label {
+    color: #55555c;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .form-field label span {
+  color: #b74545;
+  }
+
+  .form-field input,
+  .form-field textarea {
+    width: 100%;
+    padding: 0 11px;
+    box-sizing: border-box;
+    border: 1px solid #ccccd0;
+    border-radius: 6px;
+    outline: none;
+    background-color: #fafafa;
+    color: #34343a;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  .form-field input {
+    height: 40px;
+  }
+
+  .form-field textarea {
+    min-height: 96px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+    .form-field input:focus,
+    .form-field textarea:focus {
+      border-color: #d2a900;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(210, 169, 0, 0.13);
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: #aaaab0;
+    }
+
+.address-field {
+  position: relative;
+}
+
+.character-count {
+  align-self: flex-end;
+  color: #99999f;
+  font-size: 10px;
+}
+
+
+/* ALT BUTONLAR */
+
+.form-actions {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e7e7e9;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 11px;
+}
+
+.primary-button,
+.secondary-button {
+  min-width: 115px;
+  min-height: 40px;
+  padding: 9px 18px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid #d2a900;
+  background-color: #d2a900;
+  color: #ffffff;
+}
+
+  .primary-button:hover:not(:disabled) {
+    border-color: #b99200;
+    background-color: #b99200;
+  }
+
+.secondary-button {
+  border: 1px solid #ccccd0;
+  background-color: #ffffff;
+  color: #55555c;
+}
+
+  .secondary-button:hover:not(:disabled) {
+    border-color: #aaaab0;
+    background-color: #f5f5f6;
+  }
+
+  .primary-button:disabled,
+  .secondary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+
+/* TELEFON */
+
+@media (max-width: 600px) {
+  .form-header h2 {
+    font-size: 19px;
+  }
+
+  .primary-contact-grid,
+  .contact-detail-grid,
+  .edit-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+}

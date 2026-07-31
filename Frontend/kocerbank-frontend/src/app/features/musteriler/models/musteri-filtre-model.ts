@@ -24,7 +24,7 @@ export interface MusteriFiltre {
   cinsiyet?: Cinsiyet;
   musteriTipi?: MusteriTipi;
 
-  subeKodu?: string;
+  subeSubeKodu?: string;
   unvan?: string;
 
   durumKodu?: AktifPasifDurumlari;

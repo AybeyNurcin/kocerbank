@@ -363,7 +363,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.Ad;
                     KB.Parameters.Add("P_SOYAD", OracleDbType.Varchar2).Value = dto.Soyad;
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Eposta;
-                    KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi;
+                    KB.Parameters.Add("P_DOGUMTARIHI", OracleDbType.Date).Value = dto.DogumTarihi.HasValue ? (object)dto.DogumTarihi.Value : DBNull.Value;                    
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
                     KB.Parameters.Add("P_TCKN", OracleDbType.Varchar2).Value = (object?)dto.TCKN ?? DBNull.Value;
                     KB.Parameters.Add("P_CINSIYET", OracleDbType.Byte).Value = dto.Cinsiyet.HasValue ? (object)(byte)dto.Cinsiyet.Value : DBNull.Value;

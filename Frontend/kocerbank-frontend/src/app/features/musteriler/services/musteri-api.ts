@@ -54,12 +54,10 @@ export class MusteriApi {
     );
   }
 
-  getirById(
-    id: number
-  ): Observable<Musteri> {
-
-    return this.http.get<Musteri>(
-      `${this.apiUrl}/${id}`
+  getirById(id: number): Observable<Musteri> {
+    return this.http.post<Musteri>(
+      `${this.apiUrl}/GetirById/${id}`,
+      null
     );
   }
 

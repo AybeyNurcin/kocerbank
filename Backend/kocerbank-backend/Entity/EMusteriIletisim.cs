@@ -78,18 +78,19 @@ namespace kocerbank_backend.DataAccess
         {
             using (OracleConnection conn = new OracleConnection(_connectionString))
             {
-                using (OracleCommand KB = new OracleCommand("KB_MUSTERIILETISIM_GUNCELLE", conn))
+                using (OracleCommand KB = new OracleCommand("KB_MUSTERI_ILETISIM_TAM_GUNCELLE", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
-
+                    KB.BindByName = true;
 
                     KB.Parameters.Add("P_MUSTERIBILGILERIID", OracleDbType.Int64).Value = dto.MusteriBilgileriId;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = (object?)dto.TelefonNo ?? DBNull.Value;
+                    KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = (object?)dto.Eposta ?? DBNull.Value;
                     KB.Parameters.Add("P_EVTELEFON", OracleDbType.Varchar2).Value = (object?)dto.EvTelefonNo ?? DBNull.Value;
                     KB.Parameters.Add("P_ISTELEFON", OracleDbType.Varchar2).Value = (object?)dto.IsTelefonNo ?? DBNull.Value;
-                    KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = (object?)dto.Eposta ?? DBNull.Value;
                     KB.Parameters.Add("P_EVADRES", OracleDbType.Varchar2).Value = (object?)dto.EvAdres ?? DBNull.Value;
                     KB.Parameters.Add("P_ISADRES", OracleDbType.Varchar2).Value = (object?)dto.IsAdres ?? DBNull.Value;
+
                     conn.Open();
                     KB.ExecuteNonQuery();
                 }

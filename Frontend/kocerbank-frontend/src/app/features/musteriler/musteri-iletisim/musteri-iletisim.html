@@ -1,29 +1,403 @@
-<div class="form-header">
+<div class="contact-popup">
 
-  <div>
+  <!-- BAŞLIK -->
+  <div class="form-header">
 
-    <h2>İletişim Bilgileri</h2>
+    <div>
 
-    @if (musteri !== null) {
+      <h2>İletişim Bilgileri</h2>
 
-    <p>
-      {{ musteri.ad }}
-      {{ musteri.soyad }}
-    </p>
+      @if (musteri !== null) {
 
-    }
+      <p>
+        {{ musteri.ad }}
+        {{ musteri.soyad }}
+
+        <span>
+          • Müşteri No: {{ musteri.id }}
+        </span>
+      </p>
+
+      }
+
+    </div>
+
+    <button type="button"
+            class="close-button"
+            [disabled]="kaydediliyorMu"
+            (click)="popupKapat()">
+
+      ×
+
+    </button>
 
   </div>
 
-  <button type="button"
-          (click)="popupKapat()">
 
-    ×
+  <!-- YÜKLENİYOR -->
+  @if (yukleniyorMu) {
 
-  </button>
+  <div class="loading-message">
+
+    <span class="loading-spinner"></span>
+
+    İletişim bilgileri yükleniyor...
+
+  </div>
+
+  }
+
+
+  <!-- HATA MESAJI -->
+  @if (
+  !yukleniyorMu &&
+  hataMesaji !== ''
+  ) {
+
+  <div class="error-message">
+
+    {{ hataMesaji }}
+
+  </div>
+
+  }
+
+
+  <!-- BAŞARI MESAJI -->
+  @if (
+  !yukleniyorMu &&
+  basariMesaji !== ''
+  ) {
+
+  <div class="success-message">
+
+    {{ basariMesaji }}
+
+  </div>
+
+  }
+
+
+  @if (
+  !yukleniyorMu &&
+  iletisimBilgisi !== null
+  ) {
+
+
+  <!-- GÖRÜNTÜLEME MODU -->
+  @if (!duzenlemeModuMu) {
+
+  <!-- TEMEL İLETİŞİM BİLGİLERİ -->
+  <div class="primary-contact-card">
+
+    <div class="section-heading">
+
+      <h3>Temel İletişim Bilgileri</h3>
+
+      <p>
+        Müşterinin cep telefonu ve e-posta bilgileri.
+      </p>
+
+    </div>
+
+
+    <div class="primary-contact-grid">
+
+      <!-- CEP TELEFONU -->
+      <div class="contact-information-item">
+
+        <span class="information-label">
+          Cep telefonu
+        </span>
+
+        <strong>
+          {{ iletisimBilgisi.telefonNo || '-' }}
+        </strong>
+
+      </div>
+
+
+      <!-- E-POSTA -->
+      <div class="contact-information-item">
+
+        <span class="information-label">
+          E-posta
+        </span>
+
+        <strong>
+          {{ iletisimBilgisi.eposta || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- EK İLETİŞİM BİLGİLERİ -->
+  <div class="additional-contact-card">
+
+    <div class="section-heading">
+
+      <h3>Ek İletişim Bilgileri</h3>
+
+      <p>
+        Müşterinin diğer telefon ve adres bilgileri.
+      </p>
+
+    </div>
+
+
+    <div class="contact-detail-grid">
+
+      <!-- EV TELEFONU -->
+      <div class="contact-detail-item">
+
+        <span>Ev telefonu</span>
+
+        <strong>
+          {{ iletisimBilgisi.evTelefonNo || '-' }}
+        </strong>
+
+      </div>
+
+
+      <!-- İŞ TELEFONU -->
+      <div class="contact-detail-item">
+
+        <span>İş telefonu</span>
+
+        <strong>
+          {{ iletisimBilgisi.isTelefonNo || '-' }}
+        </strong>
+
+      </div>
+
+
+      <!-- EV ADRESİ -->
+      <div class="contact-detail-item address-item">
+
+        <span>Ev adresi</span>
+
+        <strong>
+          {{ iletisimBilgisi.evAdres || '-' }}
+        </strong>
+
+      </div>
+
+
+      <!-- İŞ ADRESİ -->
+      <div class="contact-detail-item address-item">
+
+        <span>İş adresi</span>
+
+        <strong>
+          {{ iletisimBilgisi.isAdres || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- GÖRÜNTÜLEME BUTONLARI -->
+  <div class="form-actions">
+
+    <button type="button"
+            class="secondary-button"
+            (click)="popupKapat()">
+
+      Kapat
+
+    </button>
+
+    <button type="button"
+            class="primary-button"
+            (click)="duzenlemeyiBaslat()">
+
+      İletişim Bilgilerini Düzenle
+
+    </button>
+
+  </div>
+
+  } @else {
+
+
+  <!-- DÜZENLEME MODU -->
+  <div class="edit-contact-card">
+
+    <div class="section-heading">
+
+      <h3>İletişim Bilgilerini Düzenle</h3>
+
+      <p>
+        Müşterinin iletişim bilgilerini düzenleyiniz.
+        Yıldızlı alanların doldurulması zorunludur.
+      </p>
+
+    </div>
+
+
+    <div class="edit-form-grid">
+
+      <!-- CEP TELEFONU -->
+      <div class="form-field">
+
+        <label for="iletisimCepTelefon">
+          Cep telefonu
+          <span>*</span>
+        </label>
+
+        <input id="iletisimCepTelefon"
+               name="iletisimCepTelefon"
+               type="text"
+               inputmode="tel"
+               maxlength="13"
+               [(ngModel)]="duzenlemeFormu.telefonNo"
+               placeholder="05XXXXXXXXX" />
+
+      </div>
+
+
+      <!-- E-POSTA -->
+      <div class="form-field">
+
+        <label for="iletisimEposta">
+          E-posta
+          <span>*</span>
+        </label>
+
+        <input id="iletisimEposta"
+               name="iletisimEposta"
+               type="email"
+               maxlength="50"
+               [(ngModel)]="duzenlemeFormu.eposta"
+               placeholder="ornek@eposta.com" />
+
+      </div>
+
+
+      <!-- EV TELEFONU -->
+      <div class="form-field">
+
+        <label for="iletisimEvTelefon">
+          Ev telefonu
+        </label>
+
+        <input id="iletisimEvTelefon"
+               name="iletisimEvTelefon"
+               type="text"
+               inputmode="tel"
+               maxlength="13"
+               [(ngModel)]="duzenlemeFormu.evTelefonNo"
+               placeholder="0212XXXXXXX" />
+
+      </div>
+
+
+      <!-- İŞ TELEFONU -->
+      <div class="form-field">
+
+        <label for="iletisimIsTelefon">
+          İş telefonu
+        </label>
+
+        <input id="iletisimIsTelefon"
+               name="iletisimIsTelefon"
+               type="text"
+               inputmode="tel"
+               maxlength="13"
+               [(ngModel)]="duzenlemeFormu.isTelefonNo"
+               placeholder="0212XXXXXXX" />
+
+      </div>
+
+
+      <!-- EV ADRESİ -->
+      <div class="form-field address-field">
+
+        <label for="iletisimEvAdres">
+          Ev adresi
+        </label>
+
+        <textarea id="iletisimEvAdres"
+                  name="iletisimEvAdres"
+                  rows="4"
+                  maxlength="100"
+                  [(ngModel)]="duzenlemeFormu.evAdres"
+                  placeholder="Müşterinin ev adresi">
+        </textarea>
+
+        <small class="character-count">
+          {{ duzenlemeFormu.evAdres?.length || 0 }}/100
+        </small>
+
+      </div>
+
+
+      <!-- İŞ ADRESİ -->
+      <div class="form-field address-field">
+
+        <label for="iletisimIsAdres">
+          İş adresi
+        </label>
+
+        <textarea id="iletisimIsAdres"
+                  name="iletisimIsAdres"
+                  rows="4"
+                  maxlength="100"
+                  [(ngModel)]="duzenlemeFormu.isAdres"
+                  placeholder="Müşterinin iş adresi">
+        </textarea>
+
+        <small class="character-count">
+          {{ duzenlemeFormu.isAdres?.length || 0 }}/100
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- DÜZENLEME BUTONLARI -->
+  <div class="form-actions">
+
+    <button type="button"
+            class="secondary-button"
+            [disabled]="kaydediliyorMu"
+            (click)="duzenlemeyiIptalEt()">
+
+      İptal
+
+    </button>
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="kaydediliyorMu"
+            (click)="degisiklikleriKaydet()">
+
+      @if (kaydediliyorMu) {
+
+      Kaydediliyor...
+
+      } @else {
+
+      Değişiklikleri Kaydet
+
+      }
+
+    </button>
+
+  </div>
+
+  }
+
+  }
 
 </div>
-
-<p>
-  Müşteri iletişim bilgileri hazırlanıyor.
-</p>

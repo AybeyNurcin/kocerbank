@@ -4,7 +4,6 @@
   <div class="form-header">
 
     <div>
-
       <h2>
         @if (musteri === null) {
         Yeni Müşteri Ekle
@@ -14,70 +13,47 @@
       </h2>
 
       @if (musteri === null) {
-
-      <p>
-        Müşteri ve iletişim bilgilerini
-        iki adımda tamamlayınız.
-      </p>
-
+      <p>Müşteri ve iletişim bilgilerini iki adımda tamamlayınız.</p>
       }
-
     </div>
 
     <button type="button"
             class="close-button"
             [disabled]="kaydediliyorMu"
             (click)="formuKapat()">
-
       ×
-
     </button>
 
   </div>
 
 
-  @if (musteri !== null) {
-
-  <!-- GÜNCELLEME HATA MESAJI -->
+  <!-- HATA MESAJI -->
   @if (hataMesaji !== '') {
-
   <div class="error-message">
-
     {{ hataMesaji }}
-
   </div>
-
   }
 
 
-  <!-- GÜNCELLEME FORMU -->
+  <!-- GÜNCELLEME MODU -->
+  @if (musteri !== null) {
+
   <div class="form-content">
 
     <div class="section-heading">
 
-      @if (
-      seciliMusteriTipi ===
-      musteriTipleri.Bireysel
-      ) {
-
+      @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
       <h3>Bireysel Müşteri Bilgileri</h3>
-
       <p>
-        Bireysel müşterinin bilgilerini
-        güncelleyebilirsiniz. Müşteri tipi
-        değiştirilemez.
+        Bireysel müşterinin bilgilerini güncelleyebilirsiniz.
+        Müşteri tipi değiştirilemez.
       </p>
-
       } @else {
-
       <h3>Kurumsal Müşteri Bilgileri</h3>
-
       <p>
-        Kurumsal müşterinin bilgilerini
-        güncelleyebilirsiniz. Müşteri tipi
-        değiştirilemez.
+        Kurumsal müşterinin bilgilerini güncelleyebilirsiniz.
+        Müşteri tipi değiştirilemez.
       </p>
-
       }
 
     </div>
@@ -123,43 +99,6 @@
         </div>
 
 
-        <!-- E-POSTA -->
-        <div class="form-field">
-
-          <label for="guncellemeEposta">
-            E-posta
-            <span>*</span>
-          </label>
-
-          <input id="guncellemeEposta"
-                 name="guncellemeEposta"
-                 type="email"
-                 maxlength="50"
-                 [(ngModel)]="aktifMusteriFormu.eposta"
-                 placeholder="ornek@eposta.com" />
-
-        </div>
-
-
-        <!-- TELEFON -->
-        <div class="form-field">
-
-          <label for="guncellemeTelefon">
-            Telefon
-            <span>*</span>
-          </label>
-
-          <input id="guncellemeTelefon"
-                 name="guncellemeTelefon"
-                 type="text"
-                 inputmode="tel"
-                 maxlength="13"
-                 [(ngModel)]="aktifMusteriFormu.telefonNo"
-                 placeholder="05XXXXXXXXX" />
-
-        </div>
-
-
         <!-- ŞUBE -->
         <div class="form-field branch-field">
 
@@ -192,10 +131,7 @@
 
               } @else {
 
-              @for (
-              sube of filtrelenmisSubeler;
-              track sube.id
-              ) {
+              @for (sube of filtrelenmisSubeler; track sube.id) {
 
               <button type="button"
                       class="branch-option"
@@ -230,13 +166,9 @@
         </div>
 
 
-        <!-- BİREYSEL ALANLAR -->
-        @if (
-        seciliMusteriTipi ===
-        musteriTipleri.Bireysel
-        ) {
+        <!-- BİREYSEL GÜNCELLEME ALANLARI -->
+        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
 
-        <!-- DOĞUM TARİHİ -->
         <div class="form-field">
 
           <label for="guncellemeDogumTarihi">
@@ -247,14 +179,11 @@
           <input id="guncellemeDogumTarihi"
                  name="guncellemeDogumTarihi"
                  type="date"
-                 [(ngModel)]="
-                 aktifMusteriFormu.dogumTarihi
-               " />
+                 [(ngModel)]="aktifMusteriFormu.dogumTarihi" />
 
         </div>
 
 
-        <!-- TCKN -->
         <div class="form-field">
 
           <label for="guncellemeTckn">
@@ -273,7 +202,6 @@
         </div>
 
 
-        <!-- CİNSİYET -->
         <div class="form-field">
 
           <label for="guncellemeCinsiyet">
@@ -283,9 +211,7 @@
 
           <select id="guncellemeCinsiyet"
                   name="guncellemeCinsiyet"
-                  [(ngModel)]="
-                  aktifMusteriFormu.cinsiyet
-                ">
+                  [(ngModel)]="aktifMusteriFormu.cinsiyet">
 
             <option [ngValue]="null">
               Cinsiyet seçiniz
@@ -306,13 +232,9 @@
         }
 
 
-        <!-- KURUMSAL ALANLAR -->
-        @if (
-        seciliMusteriTipi ===
-        musteriTipleri.Kurumsal
-        ) {
+        <!-- KURUMSAL GÜNCELLEME ALANLARI -->
+        @if (seciliMusteriTipi === musteriTipleri.Kurumsal) {
 
-        <!-- VKN -->
         <div class="form-field">
 
           <label for="guncellemeVkn">
@@ -331,7 +253,6 @@
         </div>
 
 
-        <!-- UNVAN -->
         <div class="form-field wide-field">
 
           <label for="guncellemeUnvan">
@@ -364,9 +285,7 @@
             class="secondary-button"
             [disabled]="kaydediliyorMu"
             (click)="formuKapat()">
-
       İptal
-
     </button>
 
     <button type="button"
@@ -386,25 +305,19 @@
 
   } @else {
 
-  <!-- ADIM GÖSTERGESİ -->
+
+  <!-- EKLEME MODU ADIM GÖSTERGESİ -->
   <div class="step-indicator">
 
     <div class="step-item"
          [class.active-step]="aktifAdim === 1"
          [class.completed-step]="aktifAdim === 2">
 
-      <span class="step-number">
-        1
-      </span>
+      <span class="step-number">1</span>
 
       <div>
-
         <strong>Müşteri Bilgileri</strong>
-
-        <small>
-          Temel müşteri bilgileri
-        </small>
-
+        <small>Temel müşteri bilgileri</small>
       </div>
 
     </div>
@@ -416,18 +329,11 @@
     <div class="step-item"
          [class.active-step]="aktifAdim === 2">
 
-      <span class="step-number">
-        2
-      </span>
+      <span class="step-number">2</span>
 
       <div>
-
         <strong>İletişim Bilgileri</strong>
-
-        <small>
-          Telefon ve adres bilgileri
-        </small>
-
+        <small>Telefon ve adres bilgileri</small>
       </div>
 
     </div>
@@ -435,89 +341,44 @@
   </div>
 
 
-  <!-- HATA MESAJI -->
-  @if (hataMesaji !== '') {
-
-  <div class="error-message">
-
-    {{ hataMesaji }}
-
-  </div>
-
-  }
-
-
-  <!-- BİRİNCİ ADIM -->
+  <!-- EKLEME BİRİNCİ ADIM -->
   @if (aktifAdim === 1) {
 
   <div class="form-content">
 
     <div class="section-heading">
-
       <h3>Müşteri Tipi</h3>
-
-      <p>
-        Eklemek istediğiniz müşteri tipini seçiniz.
-      </p>
-
+      <p>Eklemek istediğiniz müşteri tipini seçiniz.</p>
     </div>
 
 
-    <!-- BİREYSEL / KURUMSAL SEÇİMİ -->
+    <!-- BİREYSEL / KURUMSAL -->
     <div class="customer-type-tabs">
 
       <button type="button"
               class="customer-type-button"
-              [class.selected-type]="
-                    seciliMusteriTipi ===
-                    musteriTipleri.Bireysel
-                  "
-              (click)="
-                    musteriTipiniSec(
-                      musteriTipleri.Bireysel
-                    )
-                  ">
+              [class.selected-type]="seciliMusteriTipi === musteriTipleri.Bireysel"
+              (click)="musteriTipiniSec(musteriTipleri.Bireysel)">
 
-        <span class="type-icon">
-          B
-        </span>
+        <span class="type-icon">B</span>
 
         <span>
-
           <strong>Bireysel</strong>
-
-          <small>
-            Gerçek kişi müşterisi
-          </small>
-
+          <small>Gerçek kişi müşterisi</small>
         </span>
 
       </button>
 
       <button type="button"
               class="customer-type-button"
-              [class.selected-type]="
-                    seciliMusteriTipi ===
-                    musteriTipleri.Kurumsal
-                  "
-              (click)="
-                    musteriTipiniSec(
-                      musteriTipleri.Kurumsal
-                    )
-                  ">
+              [class.selected-type]="seciliMusteriTipi === musteriTipleri.Kurumsal"
+              (click)="musteriTipiniSec(musteriTipleri.Kurumsal)">
 
-        <span class="type-icon">
-          K
-        </span>
+        <span class="type-icon">K</span>
 
         <span>
-
           <strong>Kurumsal</strong>
-
-          <small>
-            Şirket veya kurum müşterisi
-          </small>
-
+          <small>Şirket veya kurum müşterisi</small>
         </span>
 
       </button>
@@ -525,35 +386,19 @@
     </div>
 
 
-    @if (
-    seciliMusteriTipi !==
-    musteriTipleri.None
-    ) {
+    @if (seciliMusteriTipi !== musteriTipleri.None) {
 
     <div class="selected-form-area">
 
       <div class="section-heading customer-heading">
 
-        @if (
-        seciliMusteriTipi ===
-        musteriTipleri.Bireysel
-        ) {
-
-        <h3>
-          Bireysel Müşteri Bilgileri
-        </h3>
-
+        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
+        <h3>Bireysel Müşteri Bilgileri</h3>
         } @else {
-
-        <h3>
-          Kurumsal Müşteri Bilgileri
-        </h3>
-
+        <h3>Kurumsal Müşteri Bilgileri</h3>
         }
 
-        <p>
-          Yıldızlı alanların doldurulması zorunludur.
-        </p>
+        <p>Yıldızlı alanların doldurulması zorunludur.</p>
 
       </div>
 
@@ -633,7 +478,7 @@
         </div>
 
 
-        <!-- ŞUBE AUTOCOMPLETE -->
+        <!-- ŞUBE -->
         <div class="form-field branch-field">
 
           <label for="musteriSube">
@@ -665,10 +510,7 @@
 
               } @else {
 
-              @for (
-              sube of filtrelenmisSubeler;
-              track sube.id
-              ) {
+              @for (sube of filtrelenmisSubeler; track sube.id) {
 
               <button type="button"
                       class="branch-option"
@@ -703,13 +545,9 @@
         </div>
 
 
-        <!-- BİREYSEL ALANLAR -->
-        @if (
-        seciliMusteriTipi ===
-        musteriTipleri.Bireysel
-        ) {
+        <!-- BİREYSEL EKLEME ALANLARI -->
+        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
 
-        <!-- DOĞUM TARİHİ -->
         <div class="form-field">
 
           <label for="dogumTarihi">
@@ -720,14 +558,11 @@
           <input id="dogumTarihi"
                  name="dogumTarihi"
                  type="date"
-                 [(ngModel)]="
-                           aktifMusteriFormu.dogumTarihi
-                         " />
+                 [(ngModel)]="aktifMusteriFormu.dogumTarihi" />
 
         </div>
 
 
-        <!-- TCKN -->
         <div class="form-field">
 
           <label for="tckn">
@@ -746,7 +581,6 @@
         </div>
 
 
-        <!-- CİNSİYET -->
         <div class="form-field">
 
           <label for="cinsiyet">
@@ -756,9 +590,7 @@
 
           <select id="cinsiyet"
                   name="cinsiyet"
-                  [(ngModel)]="
-                            aktifMusteriFormu.cinsiyet
-                          ">
+                  [(ngModel)]="aktifMusteriFormu.cinsiyet">
 
             <option [ngValue]="null">
               Cinsiyet seçiniz
@@ -779,13 +611,9 @@
         }
 
 
-        <!-- KURUMSAL ALANLAR -->
-        @if (
-        seciliMusteriTipi ===
-        musteriTipleri.Kurumsal
-        ) {
+        <!-- KURUMSAL EKLEME ALANLARI -->
+        @if (seciliMusteriTipi === musteriTipleri.Kurumsal) {
 
-        <!-- VKN -->
         <div class="form-field">
 
           <label for="vkn">
@@ -804,7 +632,6 @@
         </div>
 
 
-        <!-- UNVAN -->
         <div class="form-field wide-field">
 
           <label for="unvan">
@@ -830,11 +657,8 @@
     } @else {
 
     <div class="type-selection-message">
-
-      Form alanlarını görüntülemek için
-      bireysel veya kurumsal müşteri tipini
-      seçiniz.
-
+      Form alanlarını görüntülemek için bireysel veya
+      kurumsal müşteri tipini seçiniz.
     </div>
 
     }
@@ -848,22 +672,15 @@
     <button type="button"
             class="secondary-button"
             (click)="formuKapat()">
-
       İptal
-
     </button>
 
     <button type="button"
             class="primary-button"
-            [disabled]="
-                  seciliMusteriTipi ===
-                  musteriTipleri.None
-                "
+            [disabled]="seciliMusteriTipi === musteriTipleri.None"
             (click)="sonrakiAdimaGec()">
-
       Sonraki
       <span>→</span>
-
     </button>
 
   </div>
@@ -871,49 +688,32 @@
   }
 
 
-  <!-- İKİNCİ ADIM -->
+  <!-- EKLEME İKİNCİ ADIM -->
   @if (aktifAdim === 2) {
 
   <div class="form-content">
 
     <div class="section-heading">
-
       <h3>İletişim Bilgileri</h3>
-
-      <p>
-        Müşterinin ek iletişim ve adres
-        bilgilerini giriniz.
-      </p>
-
+      <p>Müşterinin ek iletişim ve adres bilgilerini giriniz.</p>
     </div>
 
 
-    <!-- BİRİNCİ ADIMDAN GELEN BİLGİLER -->
+    <!-- OTOMATİK AKTARILAN BİLGİLER -->
     <div class="transferred-information">
 
       <div>
-
         <span>Cep telefonu</span>
-
-        <strong>
-          {{ aktifMusteriFormu.telefonNo }}
-        </strong>
-
+        <strong>{{ aktifMusteriFormu.telefonNo }}</strong>
       </div>
 
       <div>
-
         <span>E-posta</span>
-
-        <strong>
-          {{ aktifMusteriFormu.eposta }}
-        </strong>
-
+        <strong>{{ aktifMusteriFormu.eposta }}</strong>
       </div>
 
       <p>
-        Bu bilgiler müşteri bilgilerinden
-        otomatik aktarılacaktır.
+        Bu bilgiler müşteri bilgilerinden otomatik aktarılacaktır.
       </p>
 
     </div>
@@ -933,9 +733,7 @@
                type="text"
                inputmode="tel"
                maxlength="13"
-               [(ngModel)]="
-                     iletisimFormu.evTelefonNo
-                   "
+               [(ngModel)]="iletisimFormu.evTelefonNo"
                placeholder="0212XXXXXXX" />
 
       </div>
@@ -953,9 +751,7 @@
                type="text"
                inputmode="tel"
                maxlength="13"
-               [(ngModel)]="
-                     iletisimFormu.isTelefonNo
-                   "
+               [(ngModel)]="iletisimFormu.isTelefonNo"
                placeholder="0212XXXXXXX" />
 
       </div>
@@ -972,16 +768,11 @@
                   name="evAdres"
                   rows="4"
                   maxlength="100"
-                  [(ngModel)]="
-                        iletisimFormu.evAdres
-                      "
-                  placeholder="Müşterinin ev adresi">
-            </textarea>
+                  [(ngModel)]="iletisimFormu.evAdres"
+                  placeholder="Müşterinin ev adresi"></textarea>
 
         <small class="character-count">
-          {{
-                iletisimFormu.evAdres?.length || 0
-          }}/100
+          {{ iletisimFormu.evAdres?.length || 0 }}/100
         </small>
 
       </div>
@@ -998,16 +789,11 @@
                   name="isAdres"
                   rows="4"
                   maxlength="100"
-                  [(ngModel)]="
-                        iletisimFormu.isAdres
-                      "
-                  placeholder="Müşterinin iş adresi">
-            </textarea>
+                  [(ngModel)]="iletisimFormu.isAdres"
+                  placeholder="Müşterinin iş adresi"></textarea>
 
         <small class="character-count">
-          {{
-                iletisimFormu.isAdres?.length || 0
-          }}/100
+          {{ iletisimFormu.isAdres?.length || 0 }}/100
         </small>
 
       </div>
@@ -1024,10 +810,8 @@
             class="secondary-button"
             [disabled]="kaydediliyorMu"
             (click)="oncekiAdimaDon()">
-
       <span>←</span>
       Geri
-
     </button>
 
     <button type="button"

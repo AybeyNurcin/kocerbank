@@ -187,8 +187,7 @@
           Şube
         </label>
 
-        <app-sube-secici
-          [(seciliSubeKodu)]="aramaKriterleri.subeKodu">
+        <app-sube-secici [(seciliSubeKodu)]="aramaKriterleri.subeSubeKodu">
         </app-sube-secici>
 
       </div>
@@ -246,11 +245,11 @@
           </option>
 
           <option [ngValue]="1">
-            Kadın
+            Erkek
           </option>
 
           <option [ngValue]="2">
-            Erkek
+            Kadın
           </option>
 
         </select>
@@ -523,13 +522,13 @@
 
               @if (musteri.cinsiyet === 1) {
 
-              Kadın
+              Erkek
 
               } @else if (
               musteri.cinsiyet === 2
               ) {
 
-              Erkek
+              Kadın
 
               } @else {
 
@@ -798,7 +797,8 @@
     <div class="musteri-iletisim-modal">
 
       <app-musteri-iletisim [musteri]="seciliMusteri"
-                            (kapat)="iletisimPopupKapat()">
+                            (kapat)="iletisimPopupKapat()"
+                            (guncellendi)="iletisimBilgileriGuncellendi()">
       </app-musteri-iletisim>
 
     </div>

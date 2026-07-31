@@ -444,4 +444,8 @@ export class MusteriListesi
     ]);
 
   }
+
+  iletisimBilgileriGuncellendi(): void {
+    this.musterileriGetir();
+  }
 }
