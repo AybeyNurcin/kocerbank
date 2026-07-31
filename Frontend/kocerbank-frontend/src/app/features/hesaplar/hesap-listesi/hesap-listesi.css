@@ -1,0 +1,826 @@
+:host {
+  display: block;
+  width: 100%;
+  color: #34343a;
+  font-family: Arial, sans-serif;
+}
+
+.accounts-page {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+
+/* SAYFA BAŞLIĞI */
+
+.page-heading {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+  .page-heading h1 {
+    margin: 12px 0 7px;
+    color: #34343a;
+    font-size: 29px;
+  }
+
+  .page-heading p {
+    margin: 0;
+    color: #77777e;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+    .page-heading p strong {
+      color: #53327f;
+    }
+
+.back-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #674292;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+  .back-button:hover {
+    color: #3f235f;
+    text-decoration: underline;
+  }
+
+
+/* DURUM KARTLARI */
+
+.state-card {
+  min-height: 190px;
+  padding: 32px;
+  box-sizing: border-box;
+  border: 1px solid #dddddf;
+  border-radius: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+  .state-card strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #34343a;
+    font-size: 16px;
+  }
+
+  .state-card p {
+    margin: 0;
+    color: #77777e;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+.loading-state {
+  text-align: left;
+}
+
+.loading-spinner {
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  border: 3px solid #e3e3e5;
+  border-top-color: #d2a900;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-state {
+  border-color: #efc4c4;
+  background-color: #fbe4e4;
+}
+
+  .error-state strong,
+  .error-state p {
+    color: #a52f2f;
+  }
+
+.empty-state {
+  flex-direction: column;
+}
+
+.state-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3edf9;
+  color: #674292;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+
+/* HESAPLARIM ÖZETİ */
+
+.accounts-summary {
+  margin-bottom: 18px;
+  padding: 17px 20px;
+  border: 1px solid #e3d9ec;
+  border-radius: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  background: linear-gradient( 135deg, #faf7fd 0%, #ffffff 100% );
+}
+
+  .accounts-summary > div {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+
+.summary-label {
+  color: #674292;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.accounts-summary strong {
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: #eee5f5;
+  color: #53327f;
+  font-size: 12px;
+}
+
+.accounts-summary p {
+  margin: 0;
+  color: #77777e;
+  font-size: 12px;
+}
+
+
+/* HESAP TÜRÜ KARTLARI */
+
+.account-type-grid {
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.account-type-card {
+  min-width: 0;
+  min-height: 142px;
+  padding: 18px;
+  box-sizing: border-box;
+  border: 1px solid #dddddf;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  background-color: #ffffff;
+  color: #34343a;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+  .account-type-card:hover {
+    transform: translateY(-2px);
+    border-color: #cdbbdd;
+    box-shadow: 0 8px 24px rgba(63, 35, 95, 0.09);
+  }
+
+  .account-type-card.selected-type {
+    border-color: #674292;
+    background: linear-gradient( 135deg, #674292 0%, #4b286d 100% );
+    color: #ffffff;
+    box-shadow: 0 10px 27px rgba(83, 50, 127, 0.22);
+  }
+
+.type-card-heading {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.type-icon {
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1ebf6;
+  color: #674292;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.selected-type .type-icon {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.type-card-heading > div:nth-child(2) {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.type-card-heading strong {
+  overflow: hidden;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.type-card-heading span:not(.type-arrow) {
+  color: #85858c;
+  font-size: 11px;
+}
+
+.selected-type .type-card-heading span:not(.type-arrow) {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.type-arrow {
+  color: #aaaab0;
+  font-size: 20px;
+}
+
+.selected-type .type-arrow {
+  color: #ffffff;
+}
+
+.type-totals {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.type-total-item {
+  min-width: 0;
+  padding: 7px 9px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background-color: #f7f7f8;
+}
+
+  .type-total-item span {
+    color: #77777e;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .type-total-item strong {
+    color: #34343a;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+.selected-type .type-total-item {
+  background-color: rgba(255, 255, 255, 0.13);
+}
+
+  .selected-type .type-total-item span,
+  .selected-type .type-total-item strong {
+    color: #ffffff;
+  }
+
+.no-account-type {
+  color: #99999f;
+  font-size: 11px;
+}
+
+.selected-type .no-account-type {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* ANA ÇALIŞMA ALANI */
+
+.accounts-workspace {
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: minmax(350px, 0.92fr) minmax(410px, 1.08fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.account-list-panel,
+.account-detail-panel {
+  min-width: 0;
+  padding: 21px;
+  box-sizing: border-box;
+  border: 1px solid #dddddf;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 5px 18px rgba(35, 35, 40, 0.04);
+}
+
+.panel-heading,
+.detail-heading {
+  margin-bottom: 17px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e8e8ea;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+  .panel-heading h2,
+  .detail-heading h2,
+  .operations-heading h2 {
+    margin: 4px 0 0;
+    color: #34343a;
+    font-size: 18px;
+  }
+
+.panel-label {
+  color: #8466a4;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-count-badge {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0e9f6;
+  color: #674292;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* HESAP LİSTESİ */
+
+.account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-list-item {
+  width: 100%;
+  min-width: 0;
+  min-height: 78px;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  border: 1px solid #e4e4e6;
+  border-radius: 9px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 18px;
+  align-items: center;
+  gap: 13px;
+  background-color: #fafafa;
+  color: #34343a;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+  .account-list-item:hover {
+    transform: translateX(2px);
+    border-color: #cdbbdd;
+    background-color: #fbf9fd;
+  }
+
+  .account-list-item.selected-account {
+    border-color: #674292;
+    background-color: #f6f1fa;
+    box-shadow: inset 4px 0 0 #674292;
+  }
+
+.account-item-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.account-item-icon {
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ede5f4;
+  color: #674292;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.selected-account .account-item-icon {
+  background-color: #674292;
+  color: #ffffff;
+}
+
+.account-item-information {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+  .account-item-information strong {
+    overflow: hidden;
+    color: #34343a;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .account-item-information span {
+    color: #88888f;
+    font-size: 10px;
+  }
+
+.account-item-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+  .account-item-balance strong {
+    color: #34343a;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .account-item-balance span {
+    color: #99999f;
+    font-size: 9px;
+  }
+
+.account-item-arrow {
+  color: #99999f;
+  font-size: 22px;
+}
+
+.panel-empty-state,
+.detail-empty-state {
+  min-height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+  .panel-empty-state strong,
+  .detail-empty-state strong {
+    margin-bottom: 7px;
+    color: #55555c;
+    font-size: 14px;
+  }
+
+  .panel-empty-state p,
+  .detail-empty-state p {
+    margin: 0;
+    color: #99999f;
+    font-size: 12px;
+  }
+
+
+/* HESAP DETAYI */
+
+.status-badge {
+  padding: 6px 10px;
+  border-radius: 16px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.active-status {
+  background-color: #e5f5eb;
+  color: #237a46;
+}
+
+.passive-status {
+  background-color: #fff2d9;
+  color: #9a6814;
+}
+
+.closed-status {
+  background-color: #f4e3e3;
+  color: #a13c3c;
+}
+
+.detail-balance-card {
+  margin-bottom: 17px;
+  padding: 18px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient( 135deg, #53327f 0%, #75509c 100% );
+  color: #ffffff;
+}
+
+  .detail-balance-card span {
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 11px;
+  }
+
+  .detail-balance-card strong {
+    margin-bottom: 6px;
+    font-size: 27px;
+  }
+
+  .detail-balance-card small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 10px;
+  }
+
+.detail-information-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.detail-information-item {
+  min-width: 0;
+  min-height: 62px;
+  padding: 11px 12px;
+  box-sizing: border-box;
+  border: 1px solid #e6e6e8;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background-color: #fafafa;
+}
+
+  .detail-information-item span {
+    color: #88888f;
+    font-size: 10px;
+  }
+
+  .detail-information-item strong {
+    color: #34343a;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+.iban-value {
+  font-family: Consolas, monospace;
+  letter-spacing: 0.02em;
+}
+
+.detail-actions {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e7e7e9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 39px;
+  padding: 9px 16px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid #d2a900;
+  background-color: #d2a900;
+  color: #ffffff;
+}
+
+  .primary-button:hover {
+    border-color: #b99200;
+    background-color: #b99200;
+  }
+
+.secondary-button {
+  border: 1px solid #ccccd0;
+  background-color: #ffffff;
+  color: #55555c;
+}
+
+  .secondary-button:hover {
+    border-color: #aaaab0;
+    background-color: #f5f5f6;
+  }
+
+
+/* HESAP İŞLEMLERİ */
+
+.account-operations {
+  padding: 21px;
+  border: 1px solid #dddddf;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 5px 18px rgba(35, 35, 40, 0.04);
+}
+
+.operations-heading {
+  margin-bottom: 17px;
+}
+
+  .operations-heading p {
+    margin: 6px 0 0;
+    color: #88888f;
+    font-size: 12px;
+  }
+
+.operation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.operation-card {
+  min-width: 0;
+  min-height: 82px;
+  padding: 15px 17px;
+  box-sizing: border-box;
+  border: 1px solid #ded7e5;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 13px;
+  background-color: #fbf9fd;
+  color: #34343a;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+  .operation-card:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: #a98fc0;
+    box-shadow: 0 7px 20px rgba(83, 50, 127, 0.09);
+  }
+
+  .operation-card:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+.operation-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #674292;
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.operation-card > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.operation-card strong {
+  font-size: 13px;
+}
+
+.operation-card div span {
+  overflow: hidden;
+  color: #88888f;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.operation-arrow {
+  color: #8466a4;
+  font-size: 19px;
+}
+
+
+/* TABLET */
+
+@media (max-width: 1050px) {
+  .account-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-type-card {
+    min-height: auto;
+  }
+
+  .accounts-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* KÜÇÜK TABLET */
+
+@media (max-width: 750px) {
+  .accounts-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detail-information-list,
+  .operation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* TELEFON */
+
+@media (max-width: 600px) {
+  .page-heading h1 {
+    font-size: 23px;
+  }
+
+  .page-heading p {
+    font-size: 12px;
+  }
+
+  .account-list-panel,
+  .account-detail-panel,
+  .account-operations {
+    padding: 15px;
+  }
+
+  .account-list-item {
+    grid-template-columns: minmax(0, 1fr) 16px;
+  }
+
+  .account-item-balance {
+    grid-column: 1 / -1;
+    padding-top: 10px;
+    border-top: 1px solid #e6e6e8;
+    align-items: flex-start;
+  }
+
+  .account-item-arrow {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .detail-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .operation-card {
+    grid-template-columns: 38px minmax(0, 1fr) 18px;
+    padding: 13px;
+  }
+
+  .operation-icon {
+    width: 38px;
+    height: 38px;
+  }
+}

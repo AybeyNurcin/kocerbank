@@ -19,6 +19,8 @@ builder.Services.AddScoped<PersonelRepository>();
 builder.Services.AddScoped<PersonelService>();
 builder.Services.AddScoped<MusteriIletisimRepository>();
 builder.Services.AddScoped<MusteriIletisimService>();
+builder.Services.AddScoped<HesapRepository>();
+builder.Services.AddScoped<HesapService>();
 
 builder.Services.AddCors(options =>
 {

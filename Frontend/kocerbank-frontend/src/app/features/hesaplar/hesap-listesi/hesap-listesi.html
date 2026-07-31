@@ -1,19 +1,628 @@
-<section class="hesap-page">
+<section class="accounts-page">
 
+  <!-- SAYFA BAŞLIĞI -->
   <div class="page-heading">
 
     <div>
 
+      <button type="button"
+              class="back-button"
+              (click)="musteriListesineDon()">
+
+        ← Müşteri listesine dön
+
+      </button>
+
       <h1>Müşteri Hesapları</h1>
 
       <p>
-        {{ musteriId }} numaralı müşterinin
-        banka hesaplarını görüntüleyebilir ve
-        yönetebilirsiniz.
+        Müşteri No:
+        <strong>{{ musteriId }}</strong>
+        • Hesapları görüntüleyebilir ve yönetebilirsiniz.
       </p>
 
     </div>
 
   </div>
+
+
+  <!-- YÜKLENİYOR -->
+  @if (yukleniyorMu) {
+
+  <div class="state-card loading-state">
+
+    <span class="loading-spinner"></span>
+
+    <div>
+
+      <strong>Hesaplar yükleniyor</strong>
+
+      <p>
+        Müşteriye ait hesap bilgileri getiriliyor.
+      </p>
+
+    </div>
+
+  </div>
+
+  }
+
+
+  <!-- HATA -->
+  @if (
+  !yukleniyorMu &&
+  hataMesaji !== ''
+  ) {
+
+  <div class="state-card error-state">
+
+    <strong>Hesaplar getirilemedi</strong>
+
+    <p>
+      {{ hataMesaji }}
+    </p>
+
+  </div>
+
+  }
+
+
+  <!-- HESAP YOK -->
+  @if (
+  !yukleniyorMu &&
+  hataMesaji === '' &&
+  hesaplar.length === 0
+  ) {
+
+  <div class="state-card empty-state">
+
+    <div class="state-icon">
+      ₺
+    </div>
+
+    <strong>
+      Müşteriye ait hesap bulunamadı
+    </strong>
+
+    <p>
+      Bu müşteri için henüz bir hesap kaydı oluşturulmamış.
+    </p>
+
+  </div>
+
+  }
+
+
+  <!-- HESAPLAR -->
+  @if (
+  !yukleniyorMu &&
+  hataMesaji === '' &&
+  hesaplar.length > 0
+  ) {
+
+  <!-- ÖZET -->
+  <div class="accounts-summary">
+
+    <div>
+
+      <span class="summary-label">
+        Hesaplarım
+      </span>
+
+      <strong>
+        {{ hesaplar.length }} hesap
+      </strong>
+
+    </div>
+
+    <p>
+      Hesap türünü seçerek hesapları ve detaylarını görüntüleyebilirsiniz.
+    </p>
+
+  </div>
+
+
+  <!-- HESAP TÜRÜ KARTLARI -->
+  <div class="account-type-grid">
+
+    @for (
+    secenek of hesapTipleri;
+    track secenek.tip
+    ) {
+
+    <button type="button"
+            class="account-type-card"
+            [class.selected-type]="seciliHesapTipi === secenek.tip"
+            (click)="hesapTipiniSec(secenek.tip)">
+
+      <div class="type-card-heading">
+
+        <div class="type-icon">
+
+          @if (secenek.tip === 1) {
+          V
+          } @else if (secenek.tip === 2) {
+          VD
+          } @else {
+          Y
+          }
+
+        </div>
+
+        <div>
+
+          <strong>
+            {{ secenek.ad }}
+          </strong>
+
+          <span>
+            {{
+              hesapTipindekiHesapSayisi(
+                secenek.tip
+              )
+            }}
+            hesap
+          </span>
+
+        </div>
+
+        <span class="type-arrow">
+          →
+        </span>
+
+      </div>
+
+
+      <div class="type-totals">
+
+        @for (
+        toplam of hesapTipiToplamlariniGetir(
+        secenek.tip
+        );
+        track toplam.dovizCinsi
+        ) {
+
+        <div class="type-total-item">
+
+          <span>
+            {{
+              dovizKodunuGetir(
+                toplam.dovizCinsi
+              )
+            }}
+          </span>
+
+          <strong>
+            {{
+              toplam.toplam
+                | number:'1.2-2'
+            }}
+            {{
+              dovizSembolunuGetir(
+                toplam.dovizCinsi
+              )
+            }}
+          </strong>
+
+        </div>
+
+        }
+
+        @if (
+        hesapTipindekiHesapSayisi(
+        secenek.tip
+        ) === 0
+        ) {
+
+        <span class="no-account-type">
+          Bu türde hesap bulunmuyor
+        </span>
+
+        }
+
+      </div>
+
+    </button>
+
+    }
+
+  </div>
+
+
+  <!-- ANA HESAP ALANI -->
+  <div class="accounts-workspace">
+
+    <!-- HESAP LİSTESİ -->
+    <div class="account-list-panel">
+
+      <div class="panel-heading">
+
+        <div>
+
+          <span class="panel-label">
+            Hesap listesi
+          </span>
+
+          <h2>
+            {{
+              hesapTipiAdiniGetir(
+                seciliHesapTipi
+              )
+            }}
+            Hesaplar
+          </h2>
+
+        </div>
+
+        <span class="account-count-badge">
+          {{ seciliTiptekiHesaplar.length }}
+        </span>
+
+      </div>
+
+
+      @if (
+      seciliTiptekiHesaplar.length === 0
+      ) {
+
+      <div class="panel-empty-state">
+
+        <strong>
+          Bu türde hesap bulunmuyor
+        </strong>
+
+        <p>
+          Farklı bir hesap türü seçebilirsiniz.
+        </p>
+
+      </div>
+
+      } @else {
+
+      <div class="account-list">
+
+        @for (
+        hesap of seciliTiptekiHesaplar;
+        track hesap.id
+        ) {
+
+        <button type="button"
+                class="account-list-item"
+                [class.selected-account]="seciliHesap?.id === hesap.id"
+                (click)="hesapSec(hesap)">
+
+          <div class="account-item-main">
+
+            <div class="account-item-icon">
+
+              {{
+                dovizSembolunuGetir(
+                  hesap.dovizCinsi
+                )
+              }}
+
+            </div>
+
+            <div class="account-item-information">
+
+              <strong>
+                {{ hesap.hesapAdi }}
+              </strong>
+
+              <span>
+                ••••
+                {{
+                  hesap.iban.slice(
+                    -4
+                  )
+                }}
+                ·
+                {{
+                  dovizKodunuGetir(
+                    hesap.dovizCinsi
+                  )
+                }}
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="account-item-balance">
+
+            <strong>
+              {{
+                hesap.bakiye
+                  | number:'1.2-2'
+              }}
+              {{
+                dovizSembolunuGetir(
+                  hesap.dovizCinsi
+                )
+              }}
+            </strong>
+
+            <span>
+              Kullanılabilir bakiye
+            </span>
+
+          </div>
+
+          <span class="account-item-arrow">
+            ›
+          </span>
+
+        </button>
+
+        }
+
+      </div>
+
+      }
+
+    </div>
+
+
+    <!-- HESAP DETAYI -->
+    <div class="account-detail-panel">
+
+      @if (seciliHesap !== null) {
+
+      <div class="detail-heading">
+
+        <div>
+
+          <span class="panel-label">
+            Hesap bilgileri
+          </span>
+
+          <h2>
+            {{ seciliHesap.hesapAdi }}
+          </h2>
+
+        </div>
+
+        <span class="status-badge"
+              [class.active-status]="seciliHesap.hesapDurumKodu === 1"
+              [class.passive-status]="seciliHesap.hesapDurumKodu === 2"
+              [class.closed-status]="seciliHesap.hesapDurumKodu === 3">
+
+          {{
+            hesapDurumuAdiniGetir(
+              seciliHesap.hesapDurumKodu
+            )
+          }}
+
+        </span>
+
+      </div>
+
+
+      <!-- BAKİYE -->
+      <div class="detail-balance-card">
+
+        <span>
+          Güncel bakiye
+        </span>
+
+        <strong>
+          {{
+            seciliHesap.bakiye
+              | number:'1.2-2'
+          }}
+          {{
+            dovizSembolunuGetir(
+              seciliHesap.dovizCinsi
+            )
+          }}
+        </strong>
+
+        <small>
+          {{
+            dovizKodunuGetir(
+              seciliHesap.dovizCinsi
+            )
+          }}
+          hesabı
+        </small>
+
+      </div>
+
+
+      <!-- DETAY SATIRLARI -->
+      <div class="detail-information-list">
+
+        <div class="detail-information-item">
+
+          <span>IBAN</span>
+
+          <strong class="iban-value">
+            {{ seciliHesap.iban }}
+          </strong>
+
+        </div>
+
+        <div class="detail-information-item">
+
+          <span>Hesap numarası</span>
+
+          <strong>
+            {{ seciliHesap.hesapNo }}
+          </strong>
+
+        </div>
+
+        <div class="detail-information-item">
+
+          <span>Hesap türü</span>
+
+          <strong>
+            {{
+              hesapTipiAdiniGetir(
+                seciliHesap.hesapTipi
+              )
+            }}
+          </strong>
+
+        </div>
+
+        <div class="detail-information-item">
+
+          <span>Şube kodu</span>
+
+          <strong>
+            {{ seciliHesap.subeSubeKodu }}
+          </strong>
+
+        </div>
+
+        <div class="detail-information-item">
+
+          <span>Açılış tarihi</span>
+
+          <strong>
+            {{
+              seciliHesap.hesapAcilisTarihi
+                | date:'dd.MM.yyyy'
+            }}
+          </strong>
+
+        </div>
+
+        <div class="detail-information-item">
+
+          <span>Döviz cinsi</span>
+
+          <strong>
+            {{
+              dovizKodunuGetir(
+                seciliHesap.dovizCinsi
+              )
+            }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- DETAY BUTONLARI -->
+      <div class="detail-actions">
+
+        <button type="button"
+                class="secondary-button">
+
+          Düzenle
+
+        </button>
+
+        <button type="button"
+                class="primary-button">
+
+          Hesap Hareketleri
+
+        </button>
+
+      </div>
+
+      } @else {
+
+      <div class="detail-empty-state">
+
+        <strong>
+          Hesap seçiniz
+        </strong>
+
+        <p>
+          Bilgilerini görüntülemek için listeden bir hesap seçiniz.
+        </p>
+
+      </div>
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- HESAP İŞLEMLERİ -->
+  <div class="account-operations">
+
+    <div class="operations-heading">
+
+      <span class="panel-label">
+        Hesap işlemleri
+      </span>
+
+      <h2>Yapmak istediğiniz işlemi seçiniz</h2>
+
+      <p>
+        İşlem seçildiğinde seçili hesap üzerinden devam edilir.
+      </p>
+
+    </div>
+
+
+    <div class="operation-grid">
+
+      <button type="button"
+              class="operation-card"
+              [disabled]="seciliHesap === null">
+
+        <span class="operation-icon">
+          ⇄
+        </span>
+
+        <div>
+
+          <strong>
+            Para Transferleri
+          </strong>
+
+          <span>
+            Havale, EFT ve diğer transfer işlemleri
+          </span>
+
+        </div>
+
+        <span class="operation-arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <button type="button"
+              class="operation-card"
+              [disabled]="seciliHesap === null">
+
+        <span class="operation-icon">
+          ₺
+        </span>
+
+        <div>
+
+          <strong>
+            Para Çek / Yatır
+          </strong>
+
+          <span>
+            Hesaba para yatırma ve hesaptan para çekme
+          </span>
+
+        </div>
+
+        <span class="operation-arrow">
+          →
+        </span>
+
+      </button>
+
+    </div>
+
+  </div>
+
+  }
 
 </section>
