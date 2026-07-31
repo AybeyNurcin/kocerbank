@@ -122,42 +122,49 @@
     </div>
 
 
-    <!-- KULLANICILAR -->
+    <!-- PERSONELLER -->
     <div class="dashboard-card card-color card-purple">
 
       <div class="card-heading">
 
-        <h2>Kullanıcılar</h2>
-
-        <span class="data-source sample-source">
-          Örnek veri
-        </span>
+        <h2>Personeller</h2>
 
       </div>
+
+      @if (personelYukleniyorMu) {
+
+      <div class="card-information-message">
+        Yükleniyor...
+      </div>
+
+      } @else if (personelHataMesaji !== '') {
+
+      <div class="card-error-message">
+        {{ personelHataMesaji }}
+      </div>
+
+      } @else if (personelOzet !== null) {
 
       <div class="stat-list">
 
         <div class="stat-row-item">
           <span class="stat-label">Aktif</span>
-          <span class="stat-value stat-value-accent">{{ kullaniciOzet.aktif }}</span>
+          <span class="stat-value stat-value-accent">{{ personelOzet.aktifSayi }}</span>
         </div>
 
         <div class="stat-row-item">
           <span class="stat-label">Pasif</span>
-          <span class="stat-value">{{ kullaniciOzet.pasif }}</span>
+          <span class="stat-value">{{ personelOzet.pasifSayi }}</span>
         </div>
 
         <div class="stat-row-item">
           <span class="stat-label">Toplam</span>
-          <span class="stat-value">{{ kullaniciOzet.toplam }}</span>
+          <span class="stat-value">{{ personelOzet.toplamPersonel }}</span>
         </div>
 
       </div>
 
-      <div class="last-user-information">
-        <span class="last-user-label">Son Kullanıcı</span>
-        <span class="last-user-name">{{ kullaniciOzet.sonKullaniciAdi }}</span>
-      </div>
+      }
 
     </div>
 

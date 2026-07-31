@@ -3,6 +3,8 @@ using Oracle.ManagedDataAccess.Client;
 using kocerbank_backend.Models.DTOs;
 using kocerbank_backend.Enums;
 
+//güzel mi güzel bir yorum satırı
+
 namespace kocerbank_backend.DataAccess
 {
     public class SubeRepository
