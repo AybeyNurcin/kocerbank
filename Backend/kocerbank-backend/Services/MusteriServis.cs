@@ -136,6 +136,11 @@ namespace kocerbank_backend.Services
             _musteriRepository.Sil(id);
         }
 
+        public MusteriDashboardDTO GetirDashboardOzet()
+        {
+            return _musteriRepository.GetirDashboardOzet();
+        }
+
         // ORTAK DOĞRULAMA METODU
         private void RealityCheck(MusteriDTO dto)
         {

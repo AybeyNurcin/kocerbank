@@ -18,6 +18,7 @@ namespace kocerbank_backend.Models.DTOs
         public string? Unvan { get; set; }
         public DateTime KayitOlusturmaTarihi { get; set; }
     }
+    
     public class MusteriAramaKriterleriDTO
     {
         public long? Id { get; set; }
@@ -34,6 +35,15 @@ namespace kocerbank_backend.Models.DTOs
         public AktifPasifDurumlari? DurumKodu { get; set; }
         public string? Unvan { get; set; }
         public DateTime? KayitOlusturmaTarihi { get; set; }
+    }
+
+    public class MusteriDashboardDTO
+    {
+        public long ToplamMusteri { get; set; }
+        public long AktifSayi { get; set; }
+        public long PasifSayi { get; set; }
+        public long BireyselSayi { get; set; }
+        public long KurumsalSayi { get; set; }
     }
 }
 
