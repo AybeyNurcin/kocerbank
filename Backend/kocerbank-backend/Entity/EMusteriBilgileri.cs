@@ -413,7 +413,7 @@ namespace kocerbank_backend.DataAccess
                     {
                         if (reader.Read())
                         {
-                            ozet.ToplamMusteri = Convert.ToInt32(reader["TOPLAMMUSTERI"]);
+                            ozet.ToplamMusteri = Convert.ToInt32(reader["MUSTERI_SAYISI"]);
                             ozet.AktifSayi     = Convert.ToInt32(reader["AKTIFSAYI"]);
                             ozet.PasifSayi     = Convert.ToInt32(reader["PASIFSAYI"]);
                             ozet.BireyselSayi  = Convert.ToInt32(reader["BIREYSELSAYI"]);

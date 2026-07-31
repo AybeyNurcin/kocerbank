@@ -89,4 +89,11 @@ export class MusteriApi {
       musteri
     );
   }
+
+  dashboardOzet(): Observable<MusteriDashboard> {
+
+    return this.http.get<MusteriDashboard>(
+      `${this.apiUrl}/DashboardOzet`
+    );
+  }
 }
