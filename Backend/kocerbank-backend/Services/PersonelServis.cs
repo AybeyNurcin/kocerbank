@@ -128,6 +128,11 @@ namespace kocerbank_backend.Services
             _personelRepository.Sil(id);
         }
 
+        public PersonelDashboardDTO GetirDashboardOzet()
+    {
+        return _personelRepository.GetirDashboardOzet();
+    }
+
         // EKLEME VE GÜNCELLEMEDE ORTAK KONTROLLER
         private static void PersonelBilgileriniKontrolEt(
             PersonelDTO dto)

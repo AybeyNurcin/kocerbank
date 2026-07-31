@@ -30,4 +30,11 @@ namespace kocerbank_backend.Models.DTOs
         public string? TelefonNo { get; set; }
         public AktifPasifDurumlari? DurumKodu { get; set; }
     }
+
+    public class PersonelDashboardDTO
+    {
+        public long ToplamPersonel { get; set; }
+        public long AktifSayi { get; set; }
+        public long PasifSayi { get; set; }
+    }
 }

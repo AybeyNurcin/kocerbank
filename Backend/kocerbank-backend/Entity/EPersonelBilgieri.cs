@@ -200,6 +200,36 @@ namespace kocerbank_backend.DataAccess
             }
         }
 
+        public PersonelDashboardDTO GetirDashboardOzet()
+        {
+            PersonelDashboardDTO ozet = new PersonelDashboardDTO();
+
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand KB = new OracleCommand("KB_PERSONELDASHBOARD", conn))
+                {
+                    KB.CommandType = CommandType.StoredProcedure;
+
+                    KB.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    conn.Open();
+
+                    using (OracleDataReader reader = KB.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            ozet.ToplamPersonel = Convert.ToInt32(reader["PERSONEL_SAYISI"]);
+                            ozet.AktifSayi     = Convert.ToInt32(reader["AKTIFSAYI"]);
+                            ozet.PasifSayi     = Convert.ToInt32(reader["PASIFSAYI"]);
+                        }
+                    }
+                }
+            }
+
+            return ozet;
+        }
+
+
         // YARDIMCI METOT: Veritabanı satırını DTO nesnesine dönüştürür (Kod tekrarını önler)
         private PersonelDTO MapReaderToDTO(OracleDataReader reader)
         {

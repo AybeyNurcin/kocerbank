@@ -20,6 +20,14 @@ import {
   SubeDashboard
 } from '../../subeler/models/sube-dashboard-model';
 
+import {
+  PersonelApi
+} from '../../personeller/services/personel-api';
+
+import {
+  PersonelDashboard
+} from '../../personeller/models/personel-dashboard-model';
+
 @Component({
   selector: 'app-dashboard',
   standalone: false,
@@ -45,16 +53,17 @@ export class Dashboard
   subeHataMesaji: string = '';
 
 
-  // KULLANICILAR, HESAPLAR VE DÖVİZ KURU
+  // PERSONELLER (CANLI VERİ)
+
+  personelOzet: PersonelDashboard | null = null;
+
+  personelYukleniyorMu: boolean = false;
+  personelHataMesaji: string = '';
+
+
+  // HESAPLAR VE DÖVİZ KURU
   // Backend ve veritabanı bu bölümler için henüz hazır olmadığından
   // örnek/sabit verilerle gösterilir.
-
-  kullaniciOzet = {
-    toplam: 42,
-    aktif: 37,
-    pasif: 5,
-    sonKullaniciAdi: 'Ahmet Yılmaz'
-  };
 
   hesapOzet = {
     toplam: 1284,
@@ -72,6 +81,7 @@ export class Dashboard
   constructor(
     private musteriApi: MusteriApi,
     private subeApi: SubeApi,
+    private personelApi: PersonelApi,
     private changeDetector: ChangeDetectorRef
   ) {
   }
@@ -81,6 +91,7 @@ export class Dashboard
 
     this.musteriOzetGetir();
     this.subeOzetGetir();
+    this.personelOzetGetir();
 
   }
 
@@ -160,6 +171,48 @@ export class Dashboard
             'Şube özet bilgileri getirilirken bir hata oluştu.';
 
           this.subeYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        }
+
+      });
+  }
+
+
+  personelOzetGetir(): void {
+
+    this.personelYukleniyorMu = true;
+    this.personelHataMesaji = '';
+
+    this.personelApi
+      .dashboardOzet()
+      .subscribe({
+
+        next: (
+          ozet: PersonelDashboard
+        ) => {
+
+          this.personelOzet = ozet;
+          this.personelYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Personel dashboard özeti getirilirken hata:',
+            hata
+          );
+
+          this.personelOzet = null;
+
+          this.personelHataMesaji =
+            'Personel özet bilgileri getirilirken bir hata oluştu.';
+
+          this.personelYukleniyorMu = false;
 
           this.changeDetector.markForCheck();
 

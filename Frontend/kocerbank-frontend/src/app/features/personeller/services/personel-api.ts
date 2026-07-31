@@ -9,6 +9,7 @@ import {
 
 import { Personel } from '../models/personel-model';
 import { PersonelFiltre } from '../models/personel-filtre-model';
+import { PersonelDashboard } from '../models/personel-dashboard-model';
 
 @Injectable({
   providedIn: 'root'
@@ -69,6 +70,13 @@ export class PersonelApi {
     return this.http.put<void>(
       `${this.apiUrl}/Güncelle/${id}`,
       personel
+    );
+  }
+
+  dashboardOzet(): Observable<PersonelDashboard> {
+
+    return this.http.get<PersonelDashboard>(
+      `${this.apiUrl}/DashboardOzet`
     );
   }
 }

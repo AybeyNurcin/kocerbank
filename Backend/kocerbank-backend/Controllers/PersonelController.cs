@@ -129,5 +129,19 @@ namespace kocerbank_backend.Controllers
                 return BadRequest(new{mesaj = ex.Message});
             }
         }
+
+        [HttpGet("DashboardOzet")]
+        public IActionResult GetirDashboardOzet()
+        {
+            try
+            {
+                PersonelDashboardDTO ozet = _personelService.GetirDashboardOzet();
+                return Ok(ozet);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = ex.Message });
+            }
+        }
     }
 }
