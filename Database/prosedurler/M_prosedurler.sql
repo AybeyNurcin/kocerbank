@@ -453,113 +453,146 @@ WHERE M.ID = 69;
 
 CREATE OR REPLACE PROCEDURE KB_HESAP_CEK_YATIR
 (
-    P_HESAPID          IN  KB_HESAPBILGILERI.ID%TYPE,
-    P_ISLEMTIPI        IN  KB_HESAPHAREKETLERI.HAREKETTIPI%TYPE,
-    P_MIKTAR           IN  KB_HESAPHAREKETLERI.MIKTAR%TYPE,
-    P_RECORDUSER       IN  KB_HESAPHAREKETLERI.RECORDUSER%TYPE,
-
-    P_HAREKETID        OUT KB_HESAPHAREKETLERI.ID%TYPE,
-    P_YENIBAKIYE       OUT KB_HESAPBILGILERI.BAKIYE%TYPE
+    P_HESAPID IN NUMBER,
+    P_ISLEMTIPI IN NUMBER,
+    P_MIKTAR IN NUMBER,
+    P_RECORDUSER IN VARCHAR2,
+    P_HAREKETID OUT NUMBER,
+    P_YENIBAKIYE OUT NUMBER
 )
 AS
-    V_ONCEKIBAKIYE       KB_HESAPBILGILERI.BAKIYE%TYPE;
-    V_DOVIZCINSI         KB_HESAPBILGILERI.DOVIZCINSI%TYPE;
-    V_HESAPDURUMKODU     KB_HESAPBILGILERI.HESAPDURUMKODU%TYPE;
+    V_ONCEKIBAKIYE KB_HESAPBILGILERI.BAKIYE%TYPE;
+    V_SONRAKIBAKIYE KB_HESAPBILGILERI.BAKIYE%TYPE;
+    V_DOVIZCINSI KB_HESAPBILGILERI.DOVIZCINSI%TYPE;
+    V_HESAPDURUMKODU KB_HESAPBILGILERI.HESAPDURUMKODU%TYPE;
 BEGIN
     IF P_HESAPID IS NULL OR P_HESAPID <= 0 THEN
-        RAISE_APPLICATION_ERROR(
-            -20001,
-            'Geçersiz hesap ID bilgisi.'
-        );
+        RAISE_APPLICATION_ERROR(-20001, 'Geçersiz hesap ID.');
     END IF;
 
-    IF P_ISLEMTIPI NOT IN (1,2) THEN
-        RAISE_APPLICATION_ERROR(
-            -20002,
-            'İşlem tipi para yatırma veya para çekme olmalıdır.'
-        );
+    IF P_ISLEMTIPI IS NULL OR P_ISLEMTIPI NOT IN (1,2) THEN
+        RAISE_APPLICATION_ERROR(-20002, 'İşlem tipi para yatırma veya para çekme olmalıdır.');
     END IF;
 
     IF P_MIKTAR IS NULL OR P_MIKTAR <= 0 THEN
-        RAISE_APPLICATION_ERROR(
-            -20003,
-            'İşlem miktarı sıfırdan büyük olmalıdır.'
-        );
+        RAISE_APPLICATION_ERROR(-20003, 'İşlem miktarı sıfırdan büyük olmalıdır.');
+    END IF;
+
+    IF P_RECORDUSER IS NOT NULL AND LENGTH(P_RECORDUSER) > 10 THEN
+        RAISE_APPLICATION_ERROR(-20004, 'İşlemi yapan kullanıcı en fazla 10 karakter olabilir.');
     END IF;
 
     BEGIN
-        SELECT
-            BAKIYE,
-            DOVIZCINSI,
-            HESAPDURUMKODU
-        INTO
-            V_ONCEKIBAKIYE,
-            V_DOVIZCINSI,
-            V_HESAPDURUMKODU
+        SELECT BAKIYE, DOVIZCINSI, HESAPDURUMKODU
+        INTO V_ONCEKIBAKIYE, V_DOVIZCINSI, V_HESAPDURUMKODU
         FROM KB_HESAPBILGILERI
         WHERE ID = P_HESAPID
         FOR UPDATE;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(
-                -20004,
-                'Hesap bulunamadı.'
-            );
+            RAISE_APPLICATION_ERROR(-20005, 'Hesap bulunamadı.');
     END;
 
     IF V_HESAPDURUMKODU <> 1 THEN
-        RAISE_APPLICATION_ERROR(
-            -20005,
-            'Yalnızca aktif hesaplarda işlem yapılabilir.'
-        );
+        RAISE_APPLICATION_ERROR(-20006, 'Yalnızca aktif hesaplarda işlem yapılabilir.');
     END IF;
 
     IF P_ISLEMTIPI = 1 THEN
-        P_YENIBAKIYE :=
-            V_ONCEKIBAKIYE + P_MIKTAR;
+        V_SONRAKIBAKIYE := V_ONCEKIBAKIYE + P_MIKTAR;
     ELSE
         IF V_ONCEKIBAKIYE < P_MIKTAR THEN
-            RAISE_APPLICATION_ERROR(
-                -20006,
-                'Hesap bakiyesi para çekme işlemi için yetersiz.'
-            );
+            RAISE_APPLICATION_ERROR(-20007, 'Hesap bakiyesi para çekme işlemi için yetersizdir.');
         END IF;
 
-        P_YENIBAKIYE :=
-            V_ONCEKIBAKIYE - P_MIKTAR;
+        V_SONRAKIBAKIYE := V_ONCEKIBAKIYE - P_MIKTAR;
     END IF;
 
     UPDATE KB_HESAPBILGILERI
-    SET BAKIYE = P_YENIBAKIYE
+    SET BAKIYE = V_SONRAKIBAKIYE
     WHERE ID = P_HESAPID;
 
-    INSERT INTO KB_HESAPHAREKETLERI
+    INSERT INTO KB_HESAPHAREKETI
     (
         HESAPBILGILERIID,
-        PARATRANSFERIID,
         HAREKETTIPI,
         MIKTAR,
         DOVIZCINSI,
         ONCEKIBAKIYE,
         SONRAKIBAKIYE,
-        RECORDUSER
+        ISLEMTARIHI,
+        RECORDUSER,
+        RECORDDATE
     )
     VALUES
     (
         P_HESAPID,
-        NULL,
         P_ISLEMTIPI,
         P_MIKTAR,
         V_DOVIZCINSI,
         V_ONCEKIBAKIYE,
-        P_YENIBAKIYE,
-        P_RECORDUSER
+        V_SONRAKIBAKIYE,
+        SYSTIMESTAMP,
+        P_RECORDUSER,
+        SYSTIMESTAMP
     )
-    RETURNING ID
-    INTO P_HAREKETID;
-END KB_HESAP_CEK_YATIR;
+    RETURNING ID INTO P_HAREKETID;
+
+    P_YENIBAKIYE := V_SONRAKIBAKIYE;
+END;
 /
+
+SELECT * FROM KB_HESAPHAREKETI;
 
 SELECT OBJECT_NAME, STATUS
 FROM USER_OBJECTS
 WHERE OBJECT_NAME = 'KB_HESAP_CEK_YATIR';
+
+SELECT ID, HESAPADI, BAKIYE, DOVIZCINSI, HESAPDURUMKODU
+FROM KB_HESAPBILGILERI
+ORDER BY ID;
+
+DECLARE
+    V_HAREKETID NUMBER;
+    V_YENIBAKIYE NUMBER;
+BEGIN
+    KB_HESAP_CEK_YATIR
+    (
+        P_HESAPID => 14,
+        P_ISLEMTIPI => 1,
+        P_MIKTAR => 1000,
+        P_RECORDUSER => 'TEST',
+        P_HAREKETID => V_HAREKETID,
+        P_YENIBAKIYE => V_YENIBAKIYE
+    );
+
+    DBMS_OUTPUT.PUT_LINE('Hareket ID: ' || V_HAREKETID);
+    DBMS_OUTPUT.PUT_LINE('Yeni bakiye: ' || V_YENIBAKIYE);
+
+    COMMIT;
+END;
+
+
+/
+
+DECLARE
+    V_HAREKETID NUMBER;
+    V_YENIBAKIYE NUMBER;
+BEGIN
+    KB_HESAP_CEK_YATIR
+    (
+        P_HESAPID => 14,
+        P_ISLEMTIPI => 2,
+        P_MIKTAR => 250,
+        P_RECORDUSER => 'TEST',
+        P_HAREKETID => V_HAREKETID,
+        P_YENIBAKIYE => V_YENIBAKIYE
+    );
+
+    DBMS_OUTPUT.PUT_LINE('Hareket ID: ' || V_HAREKETID);
+    DBMS_OUTPUT.PUT_LINE('Yeni bakiye: ' || V_YENIBAKIYE);
+
+    COMMIT;
+END;
+/
+
+
