@@ -12,15 +12,47 @@
     </div>
 
     <!-- Sağdaki personel bilgisi -->
-    <div class="personel-info">
-      <span class="personel-sicil">
-        {{ sicilNo }}
-      </span>
+    <div class="personel-menu">
 
-      <div class="personel-icon">
-        <span class="icon-head"></span>
-        <span class="icon-body"></span>
+      <button type="button"
+              class="personel-info"
+              [class.acik]="profilMenusuAcikMi"
+              (click)="profilMenusunuDegistir()">
+
+        <span class="personel-sicil">
+          {{ sicilNo }} - {{ adSoyad }}
+        </span>
+
+        <div class="personel-icon">
+          <span class="icon-head"></span>
+          <span class="icon-body"></span>
+        </div>
+
+      </button>
+
+      <div class="personel-menu-panel"
+           [class.acik]="profilMenusuAcikMi">
+
+        <a routerLink="/profil-duzenle"
+           class="personel-menu-option"
+           (click)="profilMenusunuKapat()">
+          Profili Düzenle
+        </a>
+
+        <a routerLink="/sifre-degistir"
+           class="personel-menu-option"
+           (click)="profilMenusunuKapat()">
+          Şifre Değiştir
+        </a>
+
+        <button type="button"
+                class="personel-menu-option cikis-option"
+                (click)="cikisYap()">
+          Çıkış Yap
+        </button>
+
       </div>
+
     </div>
 
   </div>

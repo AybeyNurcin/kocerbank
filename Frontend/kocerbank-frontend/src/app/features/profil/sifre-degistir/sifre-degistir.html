@@ -1,0 +1,119 @@
+<section class="profil-page">
+
+  <div class="page-heading">
+
+    <div>
+
+      <h1>Şifre Değiştir</h1>
+
+      <p>
+        Hesabınızın şifresini değiştirmek için önce mevcut şifrenizi doğrulayın.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="profil-card">
+
+    @if (hataMesaji !== '') {
+
+    <div class="form-error-message">
+      {{ hataMesaji }}
+    </div>
+
+    }
+
+    @if (basariMesaji !== '') {
+
+    <div class="form-success-message">
+      {{ basariMesaji }}
+    </div>
+
+    }
+
+    <form (ngSubmit)="degistir()">
+
+      <div class="popup-fields">
+
+        <!-- ESKİ ŞİFRE -->
+        <div class="popup-field full-field">
+
+          <label for="formEskiSifre">
+            Eski Şifre
+          </label>
+
+          <input id="formEskiSifre"
+                 name="formEskiSifre"
+                 type="password"
+                 [(ngModel)]="formModel.eskiSifre"
+                 [disabled]="kaydediliyorMu"
+                 required />
+
+        </div>
+
+
+        <!-- YENİ ŞİFRE -->
+        <div class="popup-field">
+
+          <label for="formYeniSifre">
+            Yeni Şifre
+          </label>
+
+          <input id="formYeniSifre"
+                 name="formYeniSifre"
+                 type="password"
+                 [(ngModel)]="formModel.yeniSifre"
+                 [disabled]="kaydediliyorMu"
+                 minlength="8"
+                 required />
+
+        </div>
+
+
+        <!-- YENİ ŞİFRE TEKRAR -->
+        <div class="popup-field">
+
+          <label for="formYeniSifreTekrar">
+            Yeni Şifre (Tekrar)
+          </label>
+
+          <input id="formYeniSifreTekrar"
+                 name="formYeniSifreTekrar"
+                 type="password"
+                 [(ngModel)]="formModel.yeniSifreTekrar"
+                 [disabled]="kaydediliyorMu"
+                 minlength="8"
+                 required />
+
+        </div>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button type="submit"
+                class="save-button"
+                [disabled]="kaydediliyorMu">
+
+          @if (kaydediliyorMu) {
+
+          Değiştiriliyor...
+
+          } @else {
+
+          Şifreyi Değiştir
+
+          }
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</section>

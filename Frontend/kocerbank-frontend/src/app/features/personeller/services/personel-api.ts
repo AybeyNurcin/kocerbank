@@ -32,6 +32,13 @@ export class PersonelApi {
     );
   }
 
+  getirById(id: number): Observable<Personel> {
+
+    return this.http.get<Personel>(
+      `${this.apiUrl}/GetirById/${id}`
+    );
+  }
+
   ekle(personel: {
     ad: string;
     soyad: string;
@@ -77,6 +84,20 @@ export class PersonelApi {
 
     return this.http.get<PersonelDashboard>(
       `${this.apiUrl}/DashboardOzet`
+    );
+  }
+
+  sifreDegistir(
+    id: number,
+    sifreler: {
+      eskiSifre: string;
+      yeniSifre: string;
+    }
+  ): Observable<void> {
+
+    return this.http.put<void>(
+      `${this.apiUrl}/SifreDegistir/${id}`,
+      sifreler
     );
   }
 }

@@ -368,6 +368,96 @@
   text-transform: uppercase;
 }
 
+.detail-heading-main {
+  min-width: 0;
+}
+
+.account-name-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-icon-button {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid #e0e0e3;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fafafa;
+  color: #85858c;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+  .edit-icon-button:hover:not(:disabled) {
+    border-color: #d2a900;
+    background-color: #fff9de;
+    color: #d2a900;
+  }
+
+  .edit-icon-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .confirm-icon-button {
+    border-color: #b7e4c4;
+    color: #237a46;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+    .confirm-icon-button:hover:not(:disabled) {
+      border-color: #237a46;
+      background-color: #e5f5eb;
+      color: #237a46;
+    }
+
+  .cancel-icon-button {
+    font-size: 15px;
+    line-height: 1;
+  }
+
+    .cancel-icon-button:hover:not(:disabled) {
+      border-color: #a13c3c;
+      background-color: #f4e3e3;
+      color: #a13c3c;
+    }
+
+.account-name-edit {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.account-name-input {
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid #d2a900;
+  border-radius: 6px;
+  outline: none;
+  background-color: #ffffff;
+  color: #34343a;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(210, 169, 0, 0.13);
+}
+
+.hesap-adi-hata {
+  display: block;
+  margin-top: 6px;
+  color: #a52f2f;
+  font-size: 11px;
+}
+
 .account-count-badge {
   min-width: 28px;
   height: 28px;
@@ -796,15 +886,6 @@
     color: #a13c3c;
   }
 
-.detail-actions {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid #e7e7e9;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
 .primary-button,
 .secondary-button {
   min-height: 39px;
@@ -995,11 +1076,6 @@
   .account-item-arrow {
     grid-column: 2;
     grid-row: 1;
-  }
-
-  .detail-actions {
-    align-items: stretch;
-    flex-direction: column-reverse;
   }
 
   .primary-button,

@@ -46,12 +46,28 @@
 }
 
 /* Sağdaki personel alanı */
-.personel-info {
+.personel-menu {
+  position: relative;
   justify-self: end;
+}
+
+.personel-info {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  padding: 6px 20px;
+  border: 1px solid transparent;
+  border-radius: 22px;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
+  .personel-info:hover,
+  .personel-info.acik {
+    border-color: #c6c5ca;
+    background-color: #f5f5f6;
+  }
 
 .personel-sicil {
   color: #303037;
@@ -59,6 +75,61 @@
   font-size: 15px;
   font-weight: 700;
 }
+
+/* Profil açılır menüsü */
+.personel-menu-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 190px;
+  margin-top: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid #c6c5ca;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 20px rgba(50, 50, 50, 0.15);
+  z-index: 20;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+  .personel-menu-panel.acik {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .personel-menu-option {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    color: #55515d;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+    .personel-menu-option:hover {
+      background-color: #ece8f3;
+      color: #7351a3;
+    }
+
+    .personel-menu-option.cikis-option:hover {
+      background-color: #fbe4e4;
+      color: #a52f2f;
+    }
 
 /* CSS ile oluşturulan kullanıcı simgesi */
 .personel-icon {

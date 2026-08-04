@@ -115,6 +115,28 @@ namespace kocerbank_backend.Controllers
         }
 
 
+        [HttpPut("SifreDegistir/{id:long}")]
+        public IActionResult SifreDegistir(
+            long id,
+            [FromBody] PersonelSifreDegistirDTO dto)
+        {
+            try
+            {
+                _personelService.SifreDegistir(id, dto);
+
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { mesaj = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new{mesaj = ex.Message});
+            }
+        }
+
+
         [HttpDelete("Sil/{id:long}")]
         public IActionResult Sil(long id)
         {
