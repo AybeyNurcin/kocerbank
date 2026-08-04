@@ -25,6 +25,14 @@ import {
   DovizCinsi
 } from '../../../shared/enums/doviz-cinsi-enum';
 
+import {
+  HesapHareketTipleri
+} from '../../../shared/enums/hesap-hareket-tipleri-enum';
+
+import {
+  HesapHareketi
+} from '../models/hesap-hareket-model';
+
 interface HesapTipiSecenegi {
   tip: HesapTipi;
   ad: string;
@@ -52,6 +60,8 @@ export class HesapListesi
     HesapTipi.Vadesiz;
 
   seciliHesap: Hesap | null = null;
+
+  detayAcikMi: boolean = false;
 
   yukleniyorMu: boolean = false;
   hataMesaji: string = '';
@@ -176,6 +186,8 @@ export class HesapListesi
     this.seciliHesap =
       ilkHesap;
 
+    this.detayAcikMi = false;
+
   }
 
   get seciliTiptekiHesaplar(): Hesap[] {
@@ -257,6 +269,8 @@ export class HesapListesi
       this.seciliTiptekiHesaplar[0] ??
       null;
 
+    this.detayAcikMi = false;
+
   }
 
   hesapSec(
@@ -265,6 +279,68 @@ export class HesapListesi
 
     this.seciliHesap =
       hesap;
+
+    this.detayAcikMi = false;
+
+  }
+
+  hesapDetaylariniAcKapat(): void {
+
+    this.detayAcikMi =
+      !this.detayAcikMi;
+
+  }
+
+  get seciliHesapHareketleri(): HesapHareketi[] {
+
+    if (this.seciliHesap === null) {
+
+      return [];
+
+    }
+
+    return [
+      {
+        id: 5,
+        hesapId: this.seciliHesap.id,
+        tarih: '2026-08-04',
+        aciklama: 'Gelen Transfer',
+        islemTipi: HesapHareketTipleri.GelenTransfer,
+        tutar: 2000
+      },
+      {
+        id: 4,
+        hesapId: this.seciliHesap.id,
+        tarih: '2026-08-04',
+        aciklama: 'Giden Transfer',
+        islemTipi: HesapHareketTipleri.GidenTransfer,
+        tutar: 300
+      },
+      {
+        id: 3,
+        hesapId: this.seciliHesap.id,
+        tarih: '2026-08-03',
+        aciklama: 'Gelen Transfer',
+        islemTipi: HesapHareketTipleri.GelenTransfer,
+        tutar: 750
+      },
+      {
+        id: 2,
+        hesapId: this.seciliHesap.id,
+        tarih: '2026-08-03',
+        aciklama: 'Para Yatırma',
+        islemTipi: HesapHareketTipleri.ParaYatirma,
+        tutar: 1200
+      },
+      {
+        id: 1,
+        hesapId: this.seciliHesap.id,
+        tarih: '2026-08-01',
+        aciklama: 'Para Çekme',
+        islemTipi: HesapHareketTipleri.ParaCekme,
+        tutar: 500
+      }
+    ];
 
   }
 

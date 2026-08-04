@@ -134,8 +134,9 @@
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 17px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: 14px;
   align-items: start;
 }
 
@@ -183,9 +184,10 @@
       color: #aaaab0;
     }
 
-.wide-field {
-  grid-column: span 3;
-}
+  .alan-ipucu {
+    color: #7b7b82;
+    font-size: 11px;
+  }
 
 
 /* HAZIR TUTAR BUTONLARI */
@@ -193,7 +195,7 @@
 .tutar-chip-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 11px;
+  gap: 9px;
 }
 
 .tutar-chip {
@@ -257,6 +259,20 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+
+/* HATA MESAJI */
+
+.hata-mesaji {
+  margin-top: 14px;
+  padding: 11px 13px;
+  border: 1px solid #efc4c4;
+  border-radius: 6px;
+  background-color: #fbe4e4;
+  color: #a52f2f;
+  font-size: 12px;
+  line-height: 1.5;
+}
 
 
 /* BAŞARI MESAJI */
@@ -347,14 +363,6 @@
 /* TABLET */
 
 @media (max-width: 800px) {
-  .form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .wide-field {
-    grid-column: span 2;
-  }
-
   .tutar-chip-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -372,10 +380,6 @@
   .form-grid,
   .transferred-information {
     grid-template-columns: 1fr;
-  }
-
-  .wide-field {
-    grid-column: span 1;
   }
 
   .tutar-chip-grid {

@@ -316,12 +316,13 @@
                     -4
                   )
                 }}
-                ·
+                |
                 {{
                   dovizKodunuGetir(
                     hesap.dovizCinsi
                   )
                 }}
+                Hesabı
               </span>
 
             </div>
@@ -429,10 +430,10 @@
       </div>
 
 
-      <!-- DETAY SATIRLARI -->
-      <div class="detail-information-list">
+      <!-- IBAN VE DETAY BUTONU -->
+      <div class="detail-iban-row">
 
-        <div class="detail-information-item">
+        <div class="detail-iban-information">
 
           <span>IBAN</span>
 
@@ -442,88 +443,211 @@
 
         </div>
 
-        <div class="detail-information-item">
+        <button type="button"
+                class="secondary-button"
+                (click)="hesapDetaylariniAcKapat()">
 
-          <span>Hesap numarası</span>
+          Hesap Detayları
 
-          <strong>
-            {{ seciliHesap.hesapNo }}
-          </strong>
+        </button>
 
-        </div>
+      </div>
 
-        <div class="detail-information-item">
 
-          <span>Hesap türü</span>
+      <!-- HESAP HAREKETLERİ -->
+      <div class="detail-movements">
 
-          <strong>
-            {{
-              hesapTipiAdiniGetir(
-                seciliHesap.hesapTipi
-              )
-            }}
-          </strong>
+        <div class="movements-heading">
 
-        </div>
+          <span class="panel-label">
+            Hesap hareketleri
+          </span>
 
-        <div class="detail-information-item">
-
-          <span>Şube kodu</span>
-
-          <strong>
-            {{ seciliHesap.subeSubeKodu }}
-          </strong>
+          <h3>Son işlemler</h3>
 
         </div>
 
-        <div class="detail-information-item">
+        <div class="movement-list">
 
-          <span>Açılış tarihi</span>
+          @for (
+          hareket of seciliHesapHareketleri;
+          track hareket.id
+          ) {
 
-          <strong>
-            {{
-              seciliHesap.hesapAcilisTarihi
-                | date:'dd.MM.yyyy'
-            }}
-          </strong>
+          <div class="movement-item">
 
-        </div>
+            <div class="movement-icon"
+                 [class.movement-in]="hareket.islemTipi === 1 || hareket.islemTipi === 3"
+                 [class.movement-out]="hareket.islemTipi === 2 || hareket.islemTipi === 4">
 
-        <div class="detail-information-item">
+              {{
+                hareket.islemTipi === 1 || hareket.islemTipi === 3
+                  ? '↓'
+                  : '↑'
+              }}
 
-          <span>Döviz cinsi</span>
+            </div>
 
-          <strong>
-            {{
-              dovizKodunuGetir(
-                seciliHesap.dovizCinsi
-              )
-            }}
-          </strong>
+            <div class="movement-information">
+
+              <strong>
+                {{ hareket.aciklama }}
+              </strong>
+
+              <span>
+                {{
+                  hareket.tarih
+                    | date:'dd.MM.yyyy'
+                }}
+              </span>
+
+            </div>
+
+            <strong class="movement-amount"
+                    [class.amount-in]="hareket.islemTipi === 1 || hareket.islemTipi === 3"
+                    [class.amount-out]="hareket.islemTipi === 2 || hareket.islemTipi === 4">
+
+              {{
+                hareket.islemTipi === 1 || hareket.islemTipi === 3
+                  ? '+'
+                  : '-'
+              }}
+              {{
+                hareket.tutar
+                  | number:'1.2-2'
+              }}
+              {{
+                dovizSembolunuGetir(
+                  seciliHesap.dovizCinsi
+                )
+              }}
+
+            </strong>
+
+          </div>
+
+          }
 
         </div>
 
       </div>
 
 
-      <!-- DETAY BUTONLARI -->
-      <div class="detail-actions">
+      <!-- HESAP DETAYLARI POPUP -->
+      @if (detayAcikMi) {
 
-        <button type="button"
-                class="secondary-button">
+      <div class="detail-modal-backdrop"
+           (click)="hesapDetaylariniAcKapat()">
 
-          Düzenle
+        <div class="detail-modal"
+             (click)="$event.stopPropagation()">
 
-        </button>
+          <div class="detail-modal-heading">
 
-        <button type="button"
-                class="primary-button">
+            <h3>Hesap Detayları</h3>
 
-          Hesap Hareketleri
+            <button type="button"
+                    class="modal-close-button"
+                    (click)="hesapDetaylariniAcKapat()">
 
-        </button>
+              ×
+
+            </button>
+
+          </div>
+
+          <div class="detail-information-list">
+
+            <div class="detail-information-item">
+
+              <span>IBAN</span>
+
+              <strong class="iban-value">
+                {{ seciliHesap.iban }}
+              </strong>
+
+            </div>
+
+            <div class="detail-information-item">
+
+              <span>Hesap numarası</span>
+
+              <strong>
+                {{ seciliHesap.hesapNo }}
+              </strong>
+
+            </div>
+
+            <div class="detail-information-item">
+
+              <span>Hesap türü</span>
+
+              <strong>
+                {{
+                  hesapTipiAdiniGetir(
+                    seciliHesap.hesapTipi
+                  )
+                }}
+              </strong>
+
+            </div>
+
+            <div class="detail-information-item">
+
+              <span>Şube kodu</span>
+
+              <strong>
+                {{ seciliHesap.subeSubeKodu }}
+              </strong>
+
+            </div>
+
+            <div class="detail-information-item">
+
+              <span>Açılış tarihi</span>
+
+              <strong>
+                {{
+                  seciliHesap.hesapAcilisTarihi
+                    | date:'dd.MM.yyyy'
+                }}
+              </strong>
+
+            </div>
+
+            <div class="detail-information-item">
+
+              <span>Döviz cinsi</span>
+
+              <strong>
+                {{
+                  dovizKodunuGetir(
+                    seciliHesap.dovizCinsi
+                  )
+                }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="detail-actions">
+
+            <button type="button"
+                    class="secondary-button">
+
+              Düzenle
+
+            </button>
+
+          </div>
+
+        </div>
 
       </div>
+
+      }
 
       } @else {
 

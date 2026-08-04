@@ -35,7 +35,7 @@
         <strong>Para Çek</strong>
 
         <small>
-          IBAN'a çekim yapılır
+          IBAN'dan para çek
         </small>
 
       </span>
@@ -56,7 +56,7 @@
         <strong>Para Yatır</strong>
 
         <small>
-          IBAN'a yatırım yapılır
+          IBAN'a para yatır
         </small>
 
       </span>
@@ -74,7 +74,7 @@
     <div class="form-grid">
 
       <!-- IBAN -->
-      <div class="form-field wide-field">
+      <div class="form-field">
 
         <label for="iban">
           IBAN
@@ -85,9 +85,15 @@
                name="iban"
                type="text"
                autocomplete="off"
-               maxlength="34"
-               [(ngModel)]="iban"
+               maxlength="32"
+               [ngModel]="iban"
+               (ngModelChange)="ibanDegisti($event)"
+               (paste)="ibanYapistir($event)"
                placeholder="TR00 0000 0000 0000 0000 0000 00" />
+
+        @if (ibanDogrulaniyorMu) {
+          <small class="alan-ipucu">Hesap doğrulanıyor...</small>
+        }
 
       </div>
 
@@ -95,7 +101,7 @@
       @if (islemTipi === 'Cek') {
 
       <!-- HAZIR TUTAR SEÇENEKLERİ -->
-      <div class="form-field wide-field">
+      <div class="form-field">
 
         <label>
           Çekilecek Tutar
@@ -120,28 +126,10 @@
 
       </div>
 
-
-      <!-- DİĞER TUTAR -->
-      <div class="form-field wide-field">
-
-        <label for="digerTutar">
-          Diğer Tutar
-        </label>
-
-        <input id="digerTutar"
-               name="digerTutar"
-               type="number"
-               min="0"
-               [(ngModel)]="tutar"
-               (ngModelChange)="ozelTutarGirildi()"
-               placeholder="Çekilecek tutarı giriniz" />
-
-      </div>
-
       } @else {
 
       <!-- YATIRILACAK TUTAR -->
-      <div class="form-field wide-field">
+      <div class="form-field">
 
         <label for="yatirilacakTutar">
           Yatırılacak Tutar
@@ -159,7 +147,60 @@
 
       }
 
+
+      <!-- İSİM SOYİSİM -->
+      <div class="form-field">
+
+        <label for="isimSoyisim">
+          İsim Soyisim
+          <span>*</span>
+        </label>
+
+        <input id="isimSoyisim"
+               name="isimSoyisim"
+               type="text"
+               autocomplete="off"
+               [(ngModel)]="isimSoyisim"
+               placeholder="Hesap sahibinin adı soyadı" />
+
+        @if (maskelenmisAdSoyad !== '') {
+          <small class="alan-ipucu">Hesap sahibi: {{ maskelenmisAdSoyad }}</small>
+        }
+
+      </div>
+
+
+      @if (islemTipi === 'Cek') {
+
+      <!-- DİĞER TUTAR -->
+      <div class="form-field">
+
+        <label for="digerTutar">
+          Diğer Tutar
+        </label>
+
+        <input id="digerTutar"
+               name="digerTutar"
+               type="number"
+               min="0"
+               [(ngModel)]="tutar"
+               (ngModelChange)="ozelTutarGirildi()"
+               placeholder="Çekilecek tutarı giriniz" />
+
+      </div>
+
+      }
+
     </div>
+
+
+    @if (hataMesaji !== '') {
+
+    <div class="hata-mesaji">
+      {{ hataMesaji }}
+    </div>
+
+    }
 
   </div>
 
@@ -171,8 +212,12 @@
             [disabled]="!ileriAktifMi"
             (click)="ileriGec()">
 
-      İleri
-      <span>→</span>
+      @if (ibanDogrulaniyorMu) {
+        Doğrulanıyor...
+      } @else {
+        İleri
+        <span>→</span>
+      }
 
     </button>
 
@@ -241,6 +286,15 @@
 
     </div>
 
+
+    @if (hataMesaji !== '') {
+
+    <div class="hata-mesaji">
+      {{ hataMesaji }}
+    </div>
+
+    }
+
   </div>
 
 
@@ -248,6 +302,7 @@
 
     <button type="button"
             class="secondary-button"
+            [disabled]="yukleniyorMu"
             (click)="geriDon()">
 
       <span>←</span>
@@ -257,9 +312,14 @@
 
     <button type="button"
             class="primary-button"
+            [disabled]="yukleniyorMu"
             (click)="onayla()">
 
-      Onayla
+      @if (yukleniyorMu) {
+        İşleniyor...
+      } @else {
+        Onayla
+      }
 
     </button>
 

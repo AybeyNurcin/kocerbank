@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Hesap } from '../models/hesap-model';
+import { HesapCekYatir } from '../models/hesap-cek-yatir-model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,10 +24,26 @@ export class HesapApi {
     );
   }
 
+  ibanaGoreListele(iban: string): Observable<Hesap[]> {
+    return this.http.post<Hesap[]>(
+      `${this.apiUrl}/listele`,
+      {
+        iban: iban
+      }
+    );
+  }
+
   getirById(hesapId: number): Observable<Hesap> {
     return this.http.post<Hesap>(
       `${this.apiUrl}/GetirById/${hesapId}`,
       null
+    );
+  }
+
+  paraCekYatir(dto: HesapCekYatir): Observable<HesapCekYatir> {
+    return this.http.post<HesapCekYatir>(
+      `${this.apiUrl}/ParaCekYatir`,
+      dto
     );
   }
 }

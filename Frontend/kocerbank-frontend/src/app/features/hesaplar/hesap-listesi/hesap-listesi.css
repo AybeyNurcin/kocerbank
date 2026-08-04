@@ -567,7 +567,43 @@
     font-size: 10px;
   }
 
+.detail-iban-row {
+  margin-bottom: 17px;
+  padding: 11px 12px;
+  box-sizing: border-box;
+  border: 1px solid #e6e6e8;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background-color: #fafafa;
+}
+
+.detail-iban-information {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+  .detail-iban-information span {
+    color: #88888f;
+    font-size: 10px;
+  }
+
+  .detail-iban-information strong {
+    color: #34343a;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+.detail-iban-row .secondary-button {
+  flex-shrink: 0;
+}
+
 .detail-information-list {
+  margin-bottom: 17px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
@@ -602,6 +638,163 @@
   font-family: Consolas, monospace;
   letter-spacing: 0.02em;
 }
+
+
+/* HESAP HAREKETLERİ */
+
+.detail-movements {
+  padding-top: 16px;
+  border-top: 1px solid #e7e7e9;
+}
+
+.movements-heading {
+  margin-bottom: 12px;
+}
+
+  .movements-heading h3 {
+    margin: 4px 0 0;
+    color: #34343a;
+    font-size: 15px;
+  }
+
+.movement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.movement-item {
+  min-width: 0;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #e6e6e8;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  background-color: #fafafa;
+}
+
+.movement-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+  .movement-icon.movement-in {
+    background-color: #e5f5eb;
+    color: #237a46;
+  }
+
+  .movement-icon.movement-out {
+    background-color: #f4e3e3;
+    color: #a13c3c;
+  }
+
+.movement-information {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+  .movement-information strong {
+    overflow: hidden;
+    color: #34343a;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .movement-information span {
+    color: #88888f;
+    font-size: 10px;
+  }
+
+.movement-amount {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+  .movement-amount.amount-in {
+    color: #237a46;
+  }
+
+
+/* HESAP DETAYLARI POPUP */
+
+.detail-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: rgba(35, 35, 40, 0.45);
+}
+
+.detail-modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  padding: 22px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  border-radius: 13px;
+  background-color: #ffffff;
+  box-shadow: 0 20px 50px rgba(35, 35, 40, 0.25);
+}
+
+.detail-modal-heading {
+  margin-bottom: 17px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e8e8ea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+  .detail-modal-heading h3 {
+    margin: 0;
+    color: #34343a;
+    font-size: 17px;
+  }
+
+.modal-close-button {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f2f2f4;
+  color: #77777e;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+  .modal-close-button:hover {
+    background-color: #e6e6e8;
+    color: #34343a;
+  }
+
+  .movement-amount.amount-out {
+    color: #a13c3c;
+  }
 
 .detail-actions {
   margin-top: 18px;

@@ -3,13 +3,36 @@ import {
   Component
 } from '@angular/core';
 
+import {
+  HesapApi
+} from '../services/hesap-api';
+
+import {
+  Hesap
+} from '../models/hesap-model';
+
+import {
+  HesapCekYatir
+} from '../models/hesap-cek-yatir-model';
+
+import {
+  HesapHareketTipleri
+} from '../../../shared/enums/hesap-hareket-tipleri-enum';
+
+import {
+  MusteriApi
+} from '../../musteriler/services/musteri-api';
+
+import {
+  Musteri
+} from '../../musteriler/models/musteri-model';
+
+import {
+  AuthService
+} from '../../../core/services/auth';
+
 type IslemTipi = 'Cek' | 'Yatir';
 type EkranTipi = 'form' | 'onizleme' | 'basarili';
-
-interface HesapSahibi {
-  adSoyad: string;
-  hesapAdi: string;
-}
 
 interface OnizlemeBilgisi {
   adSoyad: string;
@@ -17,6 +40,8 @@ interface OnizlemeBilgisi {
   iban: string;
   tutar: number;
 }
+
+const IBAN_DOGRULAMA_GECIKMESI_MS = 500;
 
 @Component({
   selector: 'app-para-cek-yatir',
@@ -26,19 +51,11 @@ interface OnizlemeBilgisi {
 })
 export class ParaCekYatir {
 
-  // Mock hesap sahibi verisi: gerçek bir API bağlantısı olmadığından
-  // girilen IBAN'a göre bu listeden deterministik bir kayıt seçilir.
-  private readonly mockHesapSahipleri: HesapSahibi[] = [
-    { adSoyad: 'Ahmet Yılmaz', hesapAdi: 'Vadesiz Hesap' },
-    { adSoyad: 'Elif Demir', hesapAdi: 'Vadeli Hesap' },
-    { adSoyad: 'Mehmet Kaya', hesapAdi: 'Yatırım Hesabı' },
-    { adSoyad: 'Zeynep Arslan', hesapAdi: 'Vadesiz Hesap' }
-  ];
-
   islemTipi: IslemTipi = 'Cek';
   ekran: EkranTipi = 'form';
 
-  iban: string = '';
+  iban: string = 'TR';
+  isimSoyisim: string = '';
 
   readonly hazirTutarlar: number[] = [200, 500, 1000, 3000];
   seciliHazirTutar: number | null = null;
@@ -47,10 +64,23 @@ export class ParaCekYatir {
 
   onizlemeBilgisi: OnizlemeBilgisi | null = null;
 
+  yukleniyorMu: boolean = false;
+  ibanDogrulaniyorMu: boolean = false;
+  hataMesaji: string = '';
+
+  maskelenmisAdSoyad: string = '';
+
+  private dogrulananHesap: Hesap | null = null;
+  private dogrulananMusteri: Musteri | null = null;
+
+  private ibanZamanlayici: ReturnType<typeof setTimeout> | null = null;
   private basariliZamanlayici: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private hesapApi: HesapApi,
+    private musteriApi: MusteriApi,
+    private authService: AuthService
   ) {
   }
 
@@ -82,6 +112,64 @@ export class ParaCekYatir {
 
   }
 
+  ibanDegisti(
+    deger: string
+  ): void {
+
+    const temiz =
+      (deger ?? '').replace(/\s+/g, '').toUpperCase();
+
+    if (temiz.length === 0) {
+
+      this.iban = 'TR';
+
+    } else {
+
+      let govde: string;
+
+      if (temiz.startsWith('TR')) {
+        govde = temiz.slice(2);
+      } else if (temiz === 'T') {
+        govde = '';
+      } else {
+        govde = temiz;
+      }
+
+      const tamIban =
+        ('TR' + govde).slice(0, 26);
+
+      this.iban =
+        tamIban.match(/.{1,4}/g)?.join(' ') ?? tamIban;
+
+    }
+
+    this.ibanDogrulamasiniSifirla();
+
+    if (this.ibanGecerliMi) {
+
+      this.ibanZamanlayici =
+        setTimeout(
+          () => this.ibanDogrula(),
+          IBAN_DOGRULAMA_GECIKMESI_MS
+        );
+
+    }
+
+  }
+
+  ibanYapistir(
+    event: ClipboardEvent
+  ): void {
+
+    event.preventDefault();
+
+    const yapistirilanMetin =
+      event.clipboardData?.getData('text') ?? '';
+
+    this.ibanDegisti(yapistirilanMetin);
+
+  }
+
   get ibanGecerliMi(): boolean {
 
     const temizIban =
@@ -100,74 +188,277 @@ export class ParaCekYatir {
 
   }
 
+  get isimSoyisimGecerliMi(): boolean {
+
+    return this.isimSoyisim.trim().length > 0;
+
+  }
+
   get ileriAktifMi(): boolean {
 
     return (
       this.ibanGecerliMi &&
-      this.tutarGecerliMi
+      this.tutarGecerliMi &&
+      this.isimSoyisimGecerliMi &&
+      this.dogrulananHesap !== null &&
+      !this.yukleniyorMu &&
+      !this.ibanDogrulaniyorMu
+    );
+
+  }
+
+  private ibanDogrulamasiniSifirla(): void {
+
+    if (this.ibanZamanlayici !== null) {
+      clearTimeout(this.ibanZamanlayici);
+      this.ibanZamanlayici = null;
+    }
+
+    this.ibanDogrulaniyorMu = false;
+    this.dogrulananHesap = null;
+    this.dogrulananMusteri = null;
+    this.maskelenmisAdSoyad = '';
+    this.hataMesaji = '';
+
+  }
+
+  private ibanDogrula(): void {
+
+    const temizIban =
+      this.iban.replace(/\s+/g, '').toUpperCase();
+
+    this.ibanDogrulaniyorMu = true;
+    this.hataMesaji = '';
+
+    this.hesapApi
+      .ibanaGoreListele(temizIban)
+      .subscribe({
+
+        next: (hesaplar: Hesap[]) => {
+
+          const hesap =
+            hesaplar[0] ?? null;
+
+          if (hesap === null) {
+
+            this.ibanDogrulaniyorMu = false;
+
+            this.hataMesaji =
+              'Bu IBAN\'a ait hesap bulunamadı.';
+
+            this.cdr.detectChanges();
+
+            return;
+
+          }
+
+          this.musteriApi
+            .getirById(hesap.musteriBilgileriId)
+            .subscribe({
+
+              next: (musteri: Musteri) => {
+
+                this.dogrulananHesap = hesap;
+                this.dogrulananMusteri = musteri;
+
+                this.maskelenmisAdSoyad =
+                  this.adiMaskele(
+                    `${musteri.ad} ${musteri.soyad}`
+                  );
+
+                this.ibanDogrulaniyorMu = false;
+
+                this.cdr.detectChanges();
+
+              },
+
+              error: (hata) => {
+
+                console.error(
+                  'Hesap sahibi bilgisi getirme hatası:',
+                  hata
+                );
+
+                this.ibanDogrulaniyorMu = false;
+
+                this.hataMesaji =
+                  hata?.error?.mesaj ??
+                  'Hesap sahibi bilgileri getirilirken bir hata oluştu.';
+
+                this.cdr.detectChanges();
+
+              }
+
+            });
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'IBAN ile hesap arama hatası:',
+            hata
+          );
+
+          this.ibanDogrulaniyorMu = false;
+
+          this.hataMesaji =
+            hata?.error?.mesaj ??
+            'Hesap aranırken bir hata oluştu.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+  private adiMaskele(
+    adSoyad: string
+  ): string {
+
+    return adSoyad
+      .trim()
+      .split(/\s+/)
+      .map(
+        (kelime) =>
+          kelime.length <= 2
+            ? kelime
+            : kelime.slice(0, 2) + '*'.repeat(kelime.length - 2)
+      )
+      .join(' ');
+
+  }
+
+  private isimSoyisimEslesiyorMu(): boolean {
+
+    if (this.dogrulananMusteri === null) {
+      return false;
+    }
+
+    const normallestir =
+      (deger: string) =>
+        deger
+          .trim()
+          .replace(/\s+/g, ' ')
+          .toLocaleUpperCase('tr-TR')
+          .replace(/İ/g, 'I');
+
+    const gercekAdSoyad =
+      `${this.dogrulananMusteri.ad} ${this.dogrulananMusteri.soyad}`;
+
+    return (
+      normallestir(gercekAdSoyad) ===
+      normallestir(this.isimSoyisim)
     );
 
   }
 
   ileriGec(): void {
 
-    if (!this.ileriAktifMi || this.tutar === null) {
+    if (
+      !this.ileriAktifMi ||
+      this.tutar === null ||
+      this.dogrulananHesap === null ||
+      this.dogrulananMusteri === null
+    ) {
       return;
+    }
+
+    if (!this.isimSoyisimEslesiyorMu()) {
+
+      this.hataMesaji =
+        'Girilen isim soyisim, IBAN sahibiyle eşleşmiyor.';
+
+      return;
+
     }
 
     const temizIban =
       this.iban.replace(/\s+/g, '').toUpperCase();
 
-    const hesapSahibi =
-      this.ibanSahibiBul(temizIban);
-
     this.onizlemeBilgisi = {
-      adSoyad: hesapSahibi.adSoyad,
-      hesapAdi: hesapSahibi.hesapAdi,
+      adSoyad: `${this.dogrulananMusteri.ad} ${this.dogrulananMusteri.soyad}`,
+      hesapAdi: this.dogrulananHesap.hesapAdi,
       iban: temizIban,
       tutar: this.tutar
     };
 
+    this.hataMesaji = '';
     this.ekran = 'onizleme';
 
   }
 
   geriDon(): void {
 
+    this.hataMesaji = '';
     this.ekran = 'form';
 
   }
 
   onayla(): void {
 
-    this.ekran = 'basarili';
-
-    this.basariliZamanlayici =
-      setTimeout(
-        () => {
-          this.formuSifirla();
-          this.ekran = 'form';
-          this.cdr.detectChanges();
-        },
-        3000
-      );
-
-  }
-
-  private ibanSahibiBul(
-    iban: string
-  ): HesapSahibi {
-
-    let karakterToplami = 0;
-
-    for (const karakter of iban) {
-      karakterToplami += karakter.charCodeAt(0);
+    if (this.dogrulananHesap === null || this.onizlemeBilgisi === null) {
+      return;
     }
 
-    const index =
-      karakterToplami % this.mockHesapSahipleri.length;
+    this.yukleniyorMu = true;
+    this.hataMesaji = '';
 
-    return this.mockHesapSahipleri[index];
+    const dto: HesapCekYatir = {
+      hesapId: this.dogrulananHesap.id,
+      islemTipi:
+        this.islemTipi === 'Cek'
+          ? HesapHareketTipleri.ParaCekme
+          : HesapHareketTipleri.ParaYatirma,
+      miktar: this.onizlemeBilgisi.tutar,
+      recordUser: this.authService.personelSicilNoGetir(),
+      hareketId: 0,
+      yeniBakiye: 0
+    };
+
+    this.hesapApi
+      .paraCekYatir(dto)
+      .subscribe({
+
+        next: () => {
+
+          this.yukleniyorMu = false;
+          this.ekran = 'basarili';
+
+          this.basariliZamanlayici =
+            setTimeout(
+              () => {
+                this.formuSifirla();
+                this.ekran = 'form';
+                this.cdr.detectChanges();
+              },
+              3000
+            );
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Para çek/yatır işlemi hatası:',
+            hata
+          );
+
+          this.yukleniyorMu = false;
+
+          this.hataMesaji =
+            hata?.error?.mesaj ??
+            'İşlem gerçekleştirilirken bir hata oluştu.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
 
   }
 
@@ -178,10 +469,14 @@ export class ParaCekYatir {
       this.basariliZamanlayici = null;
     }
 
-    this.iban = '';
+    this.ibanDogrulamasiniSifirla();
+
+    this.iban = 'TR';
+    this.isimSoyisim = '';
     this.tutar = null;
     this.seciliHazirTutar = null;
     this.onizlemeBilgisi = null;
+    this.hataMesaji = '';
 
   }
 }
