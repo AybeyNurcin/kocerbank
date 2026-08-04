@@ -83,5 +83,37 @@ namespace kocerbank_backend.Controllers
                 });
             }
         }
+
+        [HttpPost("ParaCekYatir")]
+        public IActionResult ParaCekYatir([FromBody] HesapCekYatirDTO dto)
+        {
+            try
+            {
+                HesapCekYatirDTO sonuc = _hesapService.ParaCekYatir(dto);
+
+                return Ok(sonuc);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+        }
     }
 }

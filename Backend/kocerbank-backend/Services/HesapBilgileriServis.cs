@@ -67,6 +67,39 @@ namespace kocerbank_backend.Services
             _hesapRepository.Guncelle(dto);
         }
 
+        // 5. PARA ÇEKME / YATIRMA
+        public HesapCekYatirDTO ParaCekYatir(HesapCekYatirDTO dto)
+        {
+            if (dto is null)
+            {
+                throw new ArgumentNullException(nameof(dto), "İşlem bilgileri gönderilmelidir.");
+            }
+
+            if (dto.HesapId <= 0)
+            {
+                throw new ArgumentException("Geçersiz hesap ID.");
+            }
+
+            if (dto.IslemTipi != HesapHareketTipleri.ParaYatirma && dto.IslemTipi != HesapHareketTipleri.ParaCekme)
+            {
+                throw new ArgumentException("İşlem tipi para yatırma veya para çekme olmalıdır.");
+            }
+
+            if (dto.Miktar <= 0)
+            {
+                throw new ArgumentException("İşlem miktarı sıfırdan büyük olmalıdır.");
+            }
+
+            if (dto.RecordUser is not null && dto.RecordUser.Length > 10)
+            {
+                throw new ArgumentException("İşlemi yapan kullanıcı en fazla 10 karakter olabilir.");
+            }
+
+            dto.RecordUser = string.IsNullOrWhiteSpace(dto.RecordUser) ? null : dto.RecordUser.Trim();
+
+            return _hesapRepository.ParaCekYatir(dto);
+        }
+
                 // ORTAK DOĞRULAMA METODU
         private void RealityCheck(HesapDTO dto)
         {

@@ -218,6 +218,53 @@ namespace kocerbank_backend.DataAccess
             }
         }
 
+        // 5. Para çek/yatır işlemi
+        public HesapCekYatirDTO ParaCekYatir(HesapCekYatirDTO dto)
+        {
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                conn.Open();
+
+                using (OracleTransaction transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        using (OracleCommand KB = new OracleCommand("KB_HESAP_CEK_YATIR", conn))
+                        {
+                            KB.CommandType = CommandType.StoredProcedure;
+                            KB.BindByName = true;
+                            KB.Transaction = transaction;
+
+                            KB.Parameters.Add("P_HESAPID", OracleDbType.Int64).Value = dto.HesapId;
+                            KB.Parameters.Add("P_ISLEMTIPI", OracleDbType.Byte).Value = (byte)dto.IslemTipi;
+                            KB.Parameters.Add("P_MIKTAR", OracleDbType.Decimal).Value = dto.Miktar;
+                            KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = (object?)dto.RecordUser ?? DBNull.Value;
+
+                            OracleParameter pHareketId = new OracleParameter("P_HAREKETID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
+                            OracleParameter pYeniBakiye = new OracleParameter("P_YENIBAKIYE", OracleDbType.Decimal) { Direction = ParameterDirection.Output };
+
+                            KB.Parameters.Add(pHareketId);
+                            KB.Parameters.Add(pYeniBakiye);
+
+                            KB.ExecuteNonQuery();
+
+                            dto.HareketId = ((OracleDecimal)pHareketId.Value).ToInt64();
+                            dto.YeniBakiye = ((OracleDecimal)pYeniBakiye.Value).Value;
+
+                            transaction.Commit();
+
+                            return dto;
+                        }
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
         // YARDIMCI METOT: Veritabanı satırını DTO nesnesine dönüştürür (Kod tekrarını önler)
         private HesapDTO MapReaderToDTO(OracleDataReader reader)
         {
