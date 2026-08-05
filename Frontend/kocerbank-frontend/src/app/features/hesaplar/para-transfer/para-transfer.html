@@ -1,1 +1,894 @@
-<p>para-transfer works!</p>
+<section class="para-transfer-page">
+
+  <div class="transfer-card">
+
+    <!-- BAŞLIK -->
+
+    <div class="form-header">
+
+      <div>
+        <h1>Para Transferi</h1>
+
+        <p>
+          Hesaplar arasında güvenli şekilde
+          para transferi gerçekleştirin.
+        </p>
+      </div>
+
+    </div>
+
+
+    <!-- FORM EKRANI -->
+    @if (ekran === 'form') {
+
+    <!-- HAVALE / VİRMAN SEKMELERİ -->
+
+    <div class="islem-type-tabs">
+
+      <button type="button"
+              class="islem-type-button"
+              [class.selected-type]="
+            transferSekmesi === 'Havale'
+          "
+              (click)="sekmeSec('Havale')">
+
+        <span class="type-icon">
+          ↗
+        </span>
+
+        <span class="type-content">
+
+          <strong>
+            Başka Hesaba Havale
+          </strong>
+
+          <small>
+            Başka müşterinin hesabına transfer
+          </small>
+
+        </span>
+
+      </button>
+
+
+      <button type="button"
+              class="islem-type-button"
+              [class.selected-type]="
+            transferSekmesi === 'Virman'
+          "
+              (click)="sekmeSec('Virman')">
+
+        <span class="type-icon">
+          ⇄
+        </span>
+
+        <span class="type-content">
+
+          <strong>
+            Kendi Hesabıma Havale
+          </strong>
+
+          <small>
+            Aynı müşterinin hesapları arasında transfer
+          </small>
+
+        </span>
+
+      </button>
+
+    </div>
+
+
+    <div class="form-content">
+
+      <!-- TRANSFER BİLGİLERİ -->
+
+      <div class="section-title">
+
+        <h2>
+          Transfer Bilgileri
+        </h2>
+
+        <p>
+          Gönderen ve alıcı hesap bilgilerini giriniz.
+        </p>
+
+      </div>
+
+
+      <div class="form-grid">
+
+        <!-- GÖNDEREN IBAN -->
+
+        <div class="form-field full-width">
+
+          <label for="gonderenIban">
+            Gönderen Hesap IBAN
+          </label>
+
+          <input id="gonderenIban"
+                 type="text"
+                 autocomplete="off"
+                 maxlength="32"
+                 placeholder="TR00 0000 0000 0000 0000 0000 00"
+                 [ngModel]="transfer.gonderenIBAN"
+                 (ngModelChange)="
+                gonderenIbanDegisti($event)
+              "
+                 (paste)="
+                gonderenIbanYapistir($event)
+              " />
+
+          @if (
+          transfer.gonderenIBAN.length > 2 &&
+          !gonderenIbanGecerliMi
+          ) {
+
+          <small class="field-error">
+            Geçerli bir gönderen IBAN giriniz.
+          </small>
+
+          }
+
+        </div>
+
+
+        <!-- ALICI IBAN -->
+
+        <div class="form-field full-width">
+
+          <label for="aliciIban">
+            Alıcı Hesap IBAN
+          </label>
+
+          <input id="aliciIban"
+                 type="text"
+                 autocomplete="off"
+                 maxlength="32"
+                 placeholder="TR00 0000 0000 0000 0000 0000 00"
+                 [ngModel]="transfer.aliciIBAN"
+                 (ngModelChange)="
+                aliciIbanDegisti($event)
+              "
+                 (paste)="
+                aliciIbanYapistir($event)
+              " />
+
+          @if (
+          transfer.aliciIBAN.length > 2 &&
+          !aliciIbanGecerliMi
+          ) {
+
+          <small class="field-error">
+            Geçerli bir alıcı IBAN giriniz.
+          </small>
+
+          }
+
+          @if (ibanlarAyniMi) {
+
+          <small class="field-error">
+            Gönderen ve alıcı IBAN aynı olamaz.
+          </small>
+
+          }
+
+        </div>
+
+
+        <!-- TUTAR -->
+
+        <div class="form-field">
+
+          <label for="gonderenTutar">
+            Gönderilecek Tutar
+          </label>
+
+          <div class="amount-input-wrapper">
+
+            <input id="gonderenTutar"
+                   type="number"
+                   min="0.01"
+                   step="0.01"
+                   placeholder="0,00"
+                   [ngModel]="
+                  transfer.gonderenTutar || null
+                "
+                   (ngModelChange)="
+                  tutarDegisti($event)
+                " />
+
+            @if (
+            transfer.gonderenDovizTipi !== 0
+            ) {
+
+            <span class="currency-label">
+              {{
+                    dovizKoduGetir(
+                      transfer.gonderenDovizTipi
+                    )
+              }}
+            </span>
+
+            }
+
+          </div>
+
+          @if (
+          transfer.gonderenTutar < 0
+          ) {
+
+          <small class="field-error">
+            Tutar sıfırdan büyük olmalıdır.
+          </small>
+
+          }
+
+        </div>
+
+
+        <!-- AÇIKLAMA -->
+
+        <div class="form-field">
+
+          <label for="aciklama">
+            Açıklama
+          </label>
+
+          <textarea id="aciklama"
+                    rows="3"
+                    maxlength="200"
+                    placeholder="Transfer açıklaması giriniz"
+                    [ngModel]="transfer.aciklama"
+                    (ngModelChange)="
+                aciklamaDegisti($event)
+              "></textarea>
+
+          <small class="character-count">
+            {{
+                transfer.aciklama?.length || 0
+            }}/200
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- YÜKLENİYOR -->
+      @if (transferBilgileriYukleniyorMu) {
+
+      <div class="loading-message">
+
+        <span class="loading-spinner">
+        </span>
+
+        <span>
+          Hesap ve kur bilgileri getiriliyor...
+        </span>
+
+      </div>
+
+      }
+
+
+      <!-- HESAPLAR BULUNDU -->
+      @if (
+      transfer.gonderenHesap &&
+      transfer.aliciHesap &&
+      !transferBilgileriYukleniyorMu
+      ) {
+
+      <div class="account-information-grid">
+
+        <!-- GÖNDEREN HESAP -->
+
+        <article class="account-card">
+
+          <div class="account-card-header">
+
+            <span class="account-direction outgoing">
+              Gönderen
+            </span>
+
+            <span class="currency-badge">
+              {{
+                    dovizKoduGetir(
+                      transfer.gonderenHesap.dovizCinsi
+                    )
+              }}
+            </span>
+
+          </div>
+
+
+          <div class="account-owner">
+            {{
+                  transfer.gonderenHesap.hesapSahibi
+            }}
+          </div>
+
+          <div class="account-name">
+            {{
+                  transfer.gonderenHesap.hesapAdi
+            }}
+          </div>
+
+          <div class="account-iban">
+            {{
+                  transfer.gonderenHesap.iban
+            }}
+          </div>
+
+
+          <div class="account-balance">
+
+            <span>
+              Mevcut bakiye
+            </span>
+
+            <strong>
+              {{
+                    transfer.gonderenHesap.bakiye
+                      | number:'1.2-2'
+              }}
+
+              {{
+                    dovizKoduGetir(
+                      transfer.gonderenHesap.dovizCinsi
+                    )
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <!-- TRANSFER YÖNÜ -->
+
+        <div class="account-transfer-arrow">
+          →
+        </div>
+
+
+        <!-- ALICI HESAP -->
+
+        <article class="account-card">
+
+          <div class="account-card-header">
+
+            <span class="account-direction incoming">
+              Alıcı
+            </span>
+
+            <span class="currency-badge">
+              {{
+                    dovizKoduGetir(
+                      transfer.aliciHesap.dovizCinsi
+                    )
+              }}
+            </span>
+
+          </div>
+
+
+          <div class="account-owner">
+            {{
+                  transfer.aliciHesap.hesapSahibi
+            }}
+          </div>
+
+          <div class="account-name">
+            {{
+                  transfer.aliciHesap.hesapAdi
+            }}
+          </div>
+
+          <div class="account-iban">
+            {{
+                  transfer.aliciHesap.iban
+            }}
+          </div>
+
+
+          <div class="account-balance">
+
+            <span>
+              Mevcut bakiye
+            </span>
+
+            <strong>
+              {{
+                    transfer.aliciHesap.bakiye
+                      | number:'1.2-2'
+              }}
+
+              {{
+                    dovizKoduGetir(
+                      transfer.aliciHesap.dovizCinsi
+                    )
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- KUR BİLGİLERİ -->
+
+      <div class="exchange-information">
+
+        <div class="exchange-header">
+
+          <div>
+            <h3>
+              Döviz Dönüşümü
+            </h3>
+
+            <p>
+              İşlemde uygulanacak kur bilgisi
+            </p>
+          </div>
+
+          @if (transfer.kurTarihi) {
+
+          <span class="exchange-date">
+            {{
+                    transfer.kurTarihi
+                      | date:'dd.MM.yyyy'
+            }}
+          </span>
+
+          }
+
+        </div>
+
+
+        <div class="exchange-rate">
+          {{ transfer.kurAciklamasi }}
+        </div>
+
+
+        <div class="transfer-amount-summary">
+
+          <div class="amount-summary-item">
+
+            <span>
+              Gönderilecek
+            </span>
+
+            <strong>
+              {{
+                    transfer.gonderenTutar
+                      | number:'1.2-2'
+              }}
+
+              {{
+                    dovizKoduGetir(
+                      transfer.gonderenDovizTipi
+                    )
+              }}
+            </strong>
+
+          </div>
+
+
+          <span class="amount-arrow">
+            →
+          </span>
+
+
+          <div class="amount-summary-item">
+
+            <span>
+              Alıcıya geçecek
+            </span>
+
+            <strong>
+              {{
+                    transfer.aliciTutar
+                      | number:'1.2-2'
+              }}
+
+              {{
+                    dovizKoduGetir(
+                      transfer.aliciDovizTipi
+                    )
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      }
+
+
+      <!-- HATA MESAJI -->
+      @if (hataMesaji) {
+
+      <div class="hata-mesaji">
+        {{ hataMesaji }}
+      </div>
+
+      }
+
+
+      <!-- İLERİ -->
+
+      <div class="form-actions">
+
+        <button type="button"
+                class="primary-button"
+                [disabled]="!ileriAktifMi"
+                (click)="ileriGec()">
+          İleri
+        </button>
+
+      </div>
+
+    </div>
+
+    }
+
+
+    <!-- ÖNİZLEME / ONAY EKRANI -->
+    @if (ekran === 'onizleme') {
+
+    <div class="preview-content">
+
+      <div class="preview-header">
+
+        <div class="preview-icon">
+          ⇄
+        </div>
+
+        <h2>
+          Transfer Onayı
+        </h2>
+
+        <p>
+          Bilgileri kontrol ederek işlemi onaylayınız.
+        </p>
+
+      </div>
+
+
+      <div class="preview-card">
+
+        <div class="preview-row">
+
+          <span>
+            Transfer tipi
+          </span>
+
+          <strong>
+            {{
+                transferSekmesi === 'Havale'
+                  ? 'Başka Hesaba Havale'
+                  : 'Kendi Hesabıma Havale'
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="preview-divider">
+        </div>
+
+
+        <div class="preview-account">
+
+          <span class="preview-label">
+            Gönderen hesap
+          </span>
+
+          <strong>
+            {{
+                transfer.gonderenHesap
+                  ?.hesapSahibi
+            }}
+          </strong>
+
+          <span>
+            {{
+                transfer.gonderenHesap
+                  ?.hesapAdi
+            }}
+          </span>
+
+          <small>
+            {{ transfer.gonderenIBAN }}
+          </small>
+
+        </div>
+
+
+        <div class="preview-transfer-arrow">
+          ↓
+        </div>
+
+
+        <div class="preview-account">
+
+          <span class="preview-label">
+            Alıcı hesap
+          </span>
+
+          <strong>
+            {{
+                transfer.aliciHesap
+                  ?.hesapSahibi
+            }}
+          </strong>
+
+          <span>
+            {{
+                transfer.aliciHesap
+                  ?.hesapAdi
+            }}
+          </span>
+
+          <small>
+            {{ transfer.aliciIBAN }}
+          </small>
+
+        </div>
+
+
+        <div class="preview-divider">
+        </div>
+
+
+        <div class="preview-row">
+
+          <span>
+            Gönderilecek tutar
+          </span>
+
+          <strong class="highlighted-amount">
+            {{
+                transfer.gonderenTutar
+                  | number:'1.2-2'
+            }}
+
+            {{
+                dovizKoduGetir(
+                  transfer.gonderenDovizTipi
+                )
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="preview-row">
+
+          <span>
+            Alıcıya geçecek tutar
+          </span>
+
+          <strong class="highlighted-amount">
+            {{
+                transfer.aliciTutar
+                  | number:'1.2-2'
+            }}
+
+            {{
+                dovizKoduGetir(
+                  transfer.aliciDovizTipi
+                )
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="preview-row">
+
+          <span>
+            Uygulanan kur
+          </span>
+
+          <strong>
+            {{ transfer.kurAciklamasi }}
+          </strong>
+
+        </div>
+
+
+        @if (transfer.aciklama) {
+
+        <div class="preview-row">
+
+          <span>
+            Açıklama
+          </span>
+
+          <strong>
+            {{ transfer.aciklama }}
+          </strong>
+
+        </div>
+
+        }
+
+      </div>
+
+
+      @if (hataMesaji) {
+
+      <div class="hata-mesaji">
+        {{ hataMesaji }}
+      </div>
+
+      }
+
+
+      <div class="form-actions preview-actions">
+
+        <button type="button"
+                class="secondary-button"
+                [disabled]="transferYapiliyorMu"
+                (click)="geriDon()">
+          Geri
+        </button>
+
+        <button type="button"
+                class="primary-button"
+                [disabled]="transferYapiliyorMu"
+                (click)="onayla()">
+          {{
+              transferYapiliyorMu
+                ? 'İşlem yapılıyor...'
+                : 'Transferi Onayla'
+          }}
+        </button>
+
+      </div>
+
+    </div>
+
+    }
+
+
+    <!-- BAŞARILI EKRANI -->
+    @if (ekran === 'basarili') {
+
+    <div class="success-message">
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <h2>
+        Transfer Başarıyla Tamamlandı
+      </h2>
+
+      <p>
+        Para transferi başarıyla gerçekleştirilmiştir.
+      </p>
+
+
+      <div class="success-details">
+
+        <div class="success-detail-row">
+
+          <span>
+            Transfer numarası
+          </span>
+
+          <strong>
+            #{{ transfer.transferId }}
+          </strong>
+
+        </div>
+
+
+        <div class="success-detail-row">
+
+          <span>
+            Gönderilen tutar
+          </span>
+
+          <strong>
+            {{
+                transfer.gonderenTutar
+                  | number:'1.2-2'
+            }}
+
+            {{
+                dovizKoduGetir(
+                  transfer.gonderenDovizTipi
+                )
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="success-detail-row">
+
+          <span>
+            Alıcıya geçen tutar
+          </span>
+
+          <strong>
+            {{
+                transfer.aliciTutar
+                  | number:'1.2-2'
+            }}
+
+            {{
+                dovizKoduGetir(
+                  transfer.aliciDovizTipi
+                )
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="success-detail-row">
+
+          <span>
+            Gönderen yeni bakiye
+          </span>
+
+          <strong>
+            {{
+                transfer.gonderenYeniBakiye
+                  | number:'1.2-2'
+            }}
+
+            {{
+                dovizKoduGetir(
+                  transfer.gonderenDovizTipi
+                )
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="success-detail-row">
+
+          <span>
+            Alıcı yeni bakiye
+          </span>
+
+          <strong>
+            {{
+                transfer.aliciYeniBakiye
+                  | number:'1.2-2'
+            }}
+
+            {{
+                dovizKoduGetir(
+                  transfer.aliciDovizTipi
+                )
+            }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <small class="redirect-information">
+        Yeni transfer ekranına yönlendiriliyorsunuz...
+      </small>
+
+    </div>
+
+    }
+
+  </div>
+
+</section>

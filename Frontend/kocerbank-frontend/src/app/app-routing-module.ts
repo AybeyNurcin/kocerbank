@@ -32,6 +32,10 @@ import {
   SifreDegistir
 } from './features/profil/sifre-degistir/sifre-degistir';
 
+import {
+  ParaTransferComponent
+} from './features/hesaplar/para-transfer/para-transfer';
+
 const routes: Routes = [
 
   // Giriş sayfası koruma altında değildir.
@@ -82,6 +86,10 @@ const routes: Routes = [
       {
         path: 'sifre-degistir',
         component: SifreDegistir
+      },
+      {
+        path: 'para-transfer',
+        component: ParaTransferComponent
       },
 
       // Ana adrese gidilirse Dashboard açılır.

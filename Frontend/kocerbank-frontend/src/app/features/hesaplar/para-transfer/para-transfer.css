@@ -1,0 +1,831 @@
+.para-transfer-page {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  color: #34343a;
+  font-family: Arial, sans-serif;
+}
+
+.transfer-card {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid #e6e6e8;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(35, 35, 40, 0.08);
+}
+
+
+/* BAŞLIK */
+
+.form-header {
+  padding: 26px 30px;
+  color: #ffffff;
+  background: linear-gradient( 135deg, #fbba0c, #d79c00 );
+}
+
+  .form-header h1 {
+    margin: 0 0 8px;
+    font-size: 27px;
+    font-weight: 700;
+  }
+
+  .form-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+
+/* HAVALE / VİRMAN SEKMELERİ */
+
+.islem-type-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 24px 30px 0;
+}
+
+.islem-type-button {
+  min-height: 88px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  color: #55555c;
+  background-color: #fafafa;
+  border: 2px solid #e7e7e9;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+  .islem-type-button:hover {
+    border-color: #fbba0c;
+    background-color: #fffaf0;
+    transform: translateY(-1px);
+  }
+
+  .islem-type-button.selected-type {
+    color: #403000;
+    background-color: #fff8e4;
+    border-color: #fbba0c;
+    box-shadow: 0 5px 14px rgba(251, 186, 12, 0.18);
+  }
+
+.type-icon {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background-color: #fbba0c;
+  border-radius: 50%;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.type-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+  .type-content strong {
+    font-size: 15px;
+  }
+
+  .type-content small {
+    color: #89898f;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+.selected-type .type-content small {
+  color: #725800;
+}
+
+
+/* FORM */
+
+.form-content {
+  padding: 28px 30px 30px;
+}
+
+.section-title {
+  margin-bottom: 21px;
+}
+
+  .section-title h2 {
+    margin: 0 0 6px;
+    color: #34343a;
+    font-size: 19px;
+  }
+
+  .section-title p {
+    margin: 0;
+    color: #818187;
+    font-size: 13px;
+  }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.form-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+  .form-field.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-field label {
+    margin-bottom: 8px;
+    color: #4d4d53;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .form-field input,
+  .form-field textarea {
+    width: 100%;
+    padding: 12px 13px;
+    box-sizing: border-box;
+    color: #34343a;
+    background-color: #ffffff;
+    border: 1px solid #d9d9dd;
+    border-radius: 8px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .form-field input {
+    height: 44px;
+  }
+
+  .form-field textarea {
+    min-height: 92px;
+    resize: vertical;
+    line-height: 1.45;
+  }
+
+    .form-field input:focus,
+    .form-field textarea:focus {
+      border-color: #fbba0c;
+      box-shadow: 0 0 0 3px rgba(251, 186, 12, 0.16);
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: #ababaf;
+    }
+
+.field-error {
+  margin-top: 6px;
+  color: #c0392b;
+  font-size: 12px;
+}
+
+.character-count {
+  align-self: flex-end;
+  margin-top: 5px;
+  color: #9a9a9f;
+  font-size: 11px;
+}
+
+
+/* TUTAR */
+
+.amount-input-wrapper {
+  position: relative;
+}
+
+  .amount-input-wrapper input {
+    padding-right: 65px;
+  }
+
+.currency-label {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  padding-left: 10px;
+  color: #8a6800;
+  border-left: 1px solid #e3e3e6;
+  font-size: 13px;
+  font-weight: 700;
+  transform: translateY(-50%);
+}
+
+
+/* YÜKLENİYOR */
+
+.loading-message {
+  margin-top: 22px;
+  padding: 15px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  color: #725800;
+  background-color: #fff8e4;
+  border: 1px solid #f4d77f;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.loading-spinner {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 3px solid rgba(251, 186, 12, 0.28);
+  border-top-color: #d79c00;
+  border-radius: 50%;
+  animation: spinner-don 0.8s linear infinite;
+}
+
+@keyframes spinner-don {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* HESAP KARTLARI */
+
+.account-information-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 45px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 14px;
+}
+
+.account-card {
+  min-width: 0;
+  padding: 18px;
+  background-color: #fafafa;
+  border: 1px solid #e3e3e6;
+  border-radius: 11px;
+}
+
+.account-card-header {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.account-direction,
+.currency-badge {
+  padding: 5px 9px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+  .account-direction.outgoing {
+    color: #9b2d22;
+    background-color: #fdecea;
+  }
+
+  .account-direction.incoming {
+    color: #217143;
+    background-color: #e9f7ef;
+  }
+
+.currency-badge {
+  color: #654e00;
+  background-color: #fff0bd;
+}
+
+.account-owner {
+  margin-bottom: 5px;
+  overflow: hidden;
+  color: #34343a;
+  font-size: 16px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-name {
+  margin-bottom: 10px;
+  color: #707077;
+  font-size: 13px;
+}
+
+.account-iban {
+  overflow-wrap: anywhere;
+  color: #85858b;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.account-balance {
+  margin-top: 16px;
+  padding-top: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid #e3e3e6;
+}
+
+  .account-balance span {
+    color: #88888e;
+    font-size: 12px;
+  }
+
+  .account-balance strong {
+    color: #34343a;
+    font-size: 15px;
+    text-align: right;
+  }
+
+.account-transfer-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fbba0c;
+  font-size: 29px;
+  font-weight: 700;
+}
+
+
+/* DÖVİZ KURU */
+
+.exchange-information {
+  margin-top: 20px;
+  padding: 19px;
+  background-color: #fffaf0;
+  border: 1px solid #f0d277;
+  border-radius: 11px;
+}
+
+.exchange-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+  .exchange-header h3 {
+    margin: 0 0 5px;
+    color: #493800;
+    font-size: 16px;
+  }
+
+  .exchange-header p {
+    margin: 0;
+    color: #8b7740;
+    font-size: 12px;
+  }
+
+.exchange-date {
+  padding: 5px 9px;
+  color: #725800;
+  background-color: #ffffff;
+  border: 1px solid #efd98f;
+  border-radius: 15px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.exchange-rate {
+  margin-top: 16px;
+  padding: 12px 14px;
+  color: #493800;
+  background-color: #ffffff;
+  border: 1px dashed #e0bd50;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.transfer-amount-summary {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.amount-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+  .amount-summary-item span {
+    color: #847548;
+    font-size: 12px;
+  }
+
+  .amount-summary-item strong {
+    color: #3e3000;
+    font-size: 17px;
+  }
+
+.amount-arrow {
+  color: #d79c00;
+  font-size: 23px;
+  font-weight: 700;
+  text-align: center;
+}
+
+
+/* HATA */
+
+.hata-mesaji {
+  margin-top: 20px;
+  padding: 13px 15px;
+  color: #a3291e;
+  background-color: #fdecea;
+  border: 1px solid #f1b9b3;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+
+/* BUTONLAR */
+
+.form-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 11px;
+}
+
+.primary-button,
+.secondary-button {
+  min-width: 125px;
+  min-height: 42px;
+  padding: 10px 19px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.primary-button {
+  color: #ffffff;
+  background-color: #fbba0c;
+  border: 1px solid #fbba0c;
+}
+
+  .primary-button:hover:not(:disabled) {
+    background-color: #d79c00;
+    border-color: #d79c00;
+    transform: translateY(-1px);
+  }
+
+.secondary-button {
+  color: #55555c;
+  background-color: #ffffff;
+  border: 1px solid #d3d3d7;
+}
+
+  .secondary-button:hover:not(:disabled) {
+    background-color: #f3f3f4;
+    border-color: #bcbcc1;
+  }
+
+  .primary-button:disabled,
+  .secondary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    transform: none;
+  }
+
+
+/* ÖNİZLEME */
+
+.preview-content {
+  padding: 30px;
+}
+
+.preview-header {
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.preview-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background-color: #fbba0c;
+  border-radius: 50%;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.preview-header h2 {
+  margin: 0 0 7px;
+  color: #34343a;
+  font-size: 22px;
+}
+
+.preview-header p {
+  margin: 0;
+  color: #838389;
+  font-size: 13px;
+}
+
+.preview-card {
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 22px;
+  background-color: #fafafa;
+  border: 1px solid #e3e3e6;
+  border-radius: 12px;
+}
+
+.preview-row {
+  padding: 9px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+  .preview-row span {
+    color: #818187;
+    font-size: 13px;
+  }
+
+  .preview-row strong {
+    max-width: 65%;
+    color: #34343a;
+    font-size: 13px;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .preview-row .highlighted-amount {
+    color: #9a7000;
+    font-size: 16px;
+  }
+
+.preview-divider {
+  height: 1px;
+  margin: 12px 0;
+  background-color: #e2e2e5;
+}
+
+.preview-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+  .preview-account .preview-label {
+    margin-bottom: 3px;
+    color: #9a7000;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .preview-account strong {
+    color: #34343a;
+    font-size: 15px;
+  }
+
+  .preview-account span:not(.preview-label) {
+    color: #6f6f75;
+    font-size: 13px;
+  }
+
+  .preview-account small {
+    color: #909096;
+    font-family: Consolas, monospace;
+    font-size: 11px;
+  }
+
+.preview-transfer-arrow {
+  margin: 12px 0;
+  color: #fbba0c;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.preview-actions {
+  max-width: 650px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+
+/* BAŞARILI EKRANI */
+
+.success-message {
+  padding: 44px 30px;
+  text-align: center;
+}
+
+.success-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background-color: #2ba46f;
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(43, 164, 111, 0.22);
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.success-message h2 {
+  margin: 0 0 8px;
+  color: #34343a;
+  font-size: 23px;
+}
+
+.success-message > p {
+  margin: 0;
+  color: #7e7e84;
+  font-size: 13px;
+}
+
+.success-details {
+  max-width: 530px;
+  margin: 25px auto 17px;
+  padding: 18px 21px;
+  background-color: #f8f8f9;
+  border: 1px solid #e3e3e6;
+  border-radius: 11px;
+}
+
+.success-detail-row {
+  padding: 9px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+  .success-detail-row + .success-detail-row {
+    border-top: 1px solid #e7e7e9;
+  }
+
+  .success-detail-row span {
+    color: #808086;
+    font-size: 12px;
+  }
+
+  .success-detail-row strong {
+    color: #34343a;
+    font-size: 13px;
+    text-align: right;
+  }
+
+.redirect-information {
+  color: #96969b;
+  font-size: 11px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 800px) {
+
+  .para-transfer-page {
+    padding: 15px;
+  }
+
+  .form-header,
+  .form-content,
+  .preview-content {
+    padding-right: 21px;
+    padding-left: 21px;
+  }
+
+  .islem-type-tabs {
+    padding-right: 21px;
+    padding-left: 21px;
+  }
+
+  .account-information-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-transfer-arrow {
+    min-height: 28px;
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 620px) {
+
+  .para-transfer-page {
+    padding: 10px;
+  }
+
+  .transfer-card {
+    border-radius: 10px;
+  }
+
+  .form-header {
+    padding: 21px 18px;
+  }
+
+    .form-header h1 {
+      font-size: 23px;
+    }
+
+  .islem-type-tabs {
+    grid-template-columns: 1fr;
+    padding: 18px 18px 0;
+  }
+
+  .islem-type-button {
+    min-height: 77px;
+  }
+
+  .form-content,
+  .preview-content {
+    padding: 23px 18px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field.full-width {
+    grid-column: auto;
+  }
+
+  .transfer-amount-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .amount-arrow {
+    transform: rotate(90deg);
+  }
+
+  .exchange-header {
+    flex-direction: column;
+  }
+
+  .preview-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+    .preview-row strong {
+      max-width: 100%;
+      text-align: left;
+    }
+
+  .form-actions,
+  .preview-actions {
+    flex-direction: column-reverse;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .success-detail-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+    .success-detail-row strong {
+      text-align: left;
+    }
+}

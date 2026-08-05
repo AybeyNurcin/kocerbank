@@ -5,13 +5,24 @@
     <!-- Sol taraf bilinçli olarak boş bırakılıyor -->
     <div class="header-spacer"></div>
 
+
     <!-- Ekranın tam ortasındaki logo -->
+
     <div class="bank-brand">
-      <div class="bank-symbol">K</div>
-      <div class="bank-name">KoçerBank</div>
+
+      <div class="bank-symbol">
+        K
+      </div>
+
+      <div class="bank-name">
+        KoçerBank
+      </div>
+
     </div>
 
+
     <!-- Sağdaki personel bilgisi -->
+
     <div class="personel-menu">
 
       <button type="button"
@@ -24,11 +35,17 @@
         </span>
 
         <div class="personel-icon">
-          <span class="icon-head"></span>
-          <span class="icon-body"></span>
+
+          <span class="icon-head">
+          </span>
+
+          <span class="icon-body">
+          </span>
+
         </div>
 
       </button>
+
 
       <div class="personel-menu-panel"
            [class.acik]="profilMenusuAcikMi">
@@ -39,11 +56,13 @@
           Profili Düzenle
         </a>
 
+
         <a routerLink="/sifre-degistir"
            class="personel-menu-option"
            (click)="profilMenusunuKapat()">
           Şifre Değiştir
         </a>
+
 
         <button type="button"
                 class="personel-menu-option cikis-option"
@@ -57,40 +76,67 @@
 
   </div>
 
+
+  <!-- ANA MENÜ -->
+
   <nav class="navigation">
 
     <a routerLink="/dashboard"
        routerLinkActive="active">
-      <span class="menu-icon">◆</span>
+      <span class="menu-icon">
+        ◆
+      </span>
+
       Dashboard
     </a>
 
+
     <a routerLink="/subeler"
        routerLinkActive="active">
-      <span class="menu-icon">◆</span>
+      <span class="menu-icon">
+        ◆
+      </span>
+
       Şubeler
     </a>
 
+
     <a routerLink="/personeller"
        routerLinkActive="active">
-      <span class="menu-icon">◆</span>
+      <span class="menu-icon">
+        ◆
+      </span>
+
       Personeller
     </a>
 
+
     <a routerLink="/musteriler"
        routerLinkActive="active">
-      <span class="menu-icon">◆</span>
+      <span class="menu-icon">
+        ◆
+      </span>
+
       Müşteriler
     </a>
 
-    <!-- Hesap İşlemleri combo box menüsü: fare üstüne gelince açılır -->
-    <div class="combo-menu">
+
+    <!-- HESAP İŞLEMLERİ COMBO MENÜSÜ -->
+
+    <div class="combo-menu"
+         routerLinkActive="active">
 
       <button type="button"
               class="combo-menu-toggle">
-        <span class="menu-icon">◆</span>
+
+        <span class="menu-icon">
+          ◆
+        </span>
+
         Hesap İşlemleri
+
       </button>
+
 
       <div class="combo-menu-panel">
 
@@ -100,10 +146,12 @@
           Para Çek/Yatır
         </a>
 
-        <button type="button"
-                class="combo-menu-option">
+
+        <a routerLink="/para-transfer"
+           routerLinkActive="active"
+           class="combo-menu-option">
           Para Transferi
-        </button>
+        </a>
 
       </div>
 
