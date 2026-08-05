@@ -237,7 +237,7 @@ namespace kocerbank_backend.DataAccess
 
                             KB.Parameters.Add("P_HESAPID", OracleDbType.Int64).Value = dto.HesapId;
                             KB.Parameters.Add("P_ISLEMTIPI", OracleDbType.Byte).Value = (byte)dto.IslemTipi;
-                            KB.Parameters.Add("P_MIKTAR", OracleDbType.Decimal).Value = dto.Miktar;
+                            KB.Parameters.Add("P_TUTAR", OracleDbType.Decimal).Value = dto.Tutar;
                             KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = (object?)dto.RecordUser ?? DBNull.Value;
 
                             OracleParameter pHareketId = new OracleParameter("P_HAREKETID", OracleDbType.Int64) { Direction = ParameterDirection.Output };

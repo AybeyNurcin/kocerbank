@@ -5,7 +5,7 @@ import {
 export interface HesapCekYatir {
   hesapId: number;
   islemTipi: HesapHareketTipleri;
-  miktar: number;
+  tutar: number;
   recordUser: string | null;
   hareketId: number;
   yeniBakiye: number;

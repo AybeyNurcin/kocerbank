@@ -85,9 +85,9 @@ namespace kocerbank_backend.Services
                 throw new ArgumentException("İşlem tipi para yatırma veya para çekme olmalıdır.");
             }
 
-            if (dto.Miktar <= 0)
+            if (dto.Tutar <= 0)
             {
-                throw new ArgumentException("İşlem miktarı sıfırdan büyük olmalıdır.");
+                throw new ArgumentException("İşlem tutarı sıfırdan büyük olmalıdır.");
             }
 
             if (dto.RecordUser is not null && dto.RecordUser.Length > 10)

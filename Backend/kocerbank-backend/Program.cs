@@ -21,7 +21,8 @@ builder.Services.AddScoped<MusteriIletisimRepository>();
 builder.Services.AddScoped<MusteriIletisimService>();
 builder.Services.AddScoped<HesapRepository>();
 builder.Services.AddScoped<HesapService>();
-
+builder.Services.AddScoped<HesapHareketiRepository>();
+builder.Services.AddScoped<HesapHareketiService>();
 builder.Services.AddScoped<ParaTransferRepository>();
 builder.Services.AddScoped<ParaTransferServis>();
 builder.Services.AddScoped<DovizKuruServis>();

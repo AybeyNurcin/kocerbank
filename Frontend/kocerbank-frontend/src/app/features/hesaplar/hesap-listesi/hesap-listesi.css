@@ -817,6 +817,119 @@
     color: #237a46;
   }
 
+.movements-message {
+  margin: 0;
+  padding: 20px 0;
+  color: #99999f;
+  font-size: 12px;
+  text-align: center;
+}
+
+.movements-error {
+  color: #a52f2f;
+}
+
+.movements-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.movements-all-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #d2a900;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+  .movements-all-button:hover {
+    color: #b99200;
+    text-decoration: underline;
+  }
+
+
+/* TÜM HESAP HAREKETLERİ POPUP */
+
+.movements-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: rgba(35, 35, 40, 0.45);
+}
+
+.movements-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  padding: 22px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  border-radius: 13px;
+  background-color: #ffffff;
+  box-shadow: 0 20px 50px rgba(35, 35, 40, 0.25);
+}
+
+  .movements-modal .movement-list {
+    margin-bottom: 17px;
+  }
+
+
+/* SAYFALAMA */
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination-button {
+  min-width: 82px;
+  padding: 9px 14px;
+  border: 1px solid #d2a900;
+  border-radius: 7px;
+  background-color: #ffffff;
+  color: #d2a900;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+  .pagination-button:hover:not(:disabled) {
+    background-color: #d2a900;
+    color: #ffffff;
+  }
+
+  .pagination-button:disabled {
+    border-color: #d7d7dc;
+    background-color: #f3f3f5;
+    color: #aaaab0;
+    cursor: not-allowed;
+  }
+
+.page-number {
+  min-width: 100px;
+  color: #34343a;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
 
 /* HESAP DETAYLARI POPUP */
 

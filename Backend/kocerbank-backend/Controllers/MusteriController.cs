@@ -133,7 +133,7 @@ namespace kocerbank_backend.Controllers
             }
         }
 
-        [HttpGet("DashboardOzet")]
+        [HttpPost("DashboardOzet")]
         public IActionResult GetirDashboardOzet()
         {
             try
