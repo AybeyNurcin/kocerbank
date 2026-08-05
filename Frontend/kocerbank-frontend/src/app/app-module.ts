@@ -24,6 +24,7 @@ import { HesapListesi } from './features/hesaplar/hesap-listesi/hesap-listesi';
 import { ParaCekYatir } from './features/hesaplar/para-cek-yatir/para-cek-yatir';
 import { ProfilDuzenle } from './features/profil/profil-duzenle/profil-duzenle';
 import { SifreDegistir } from './features/profil/sifre-degistir/sifre-degistir';
+import { ParaTransferComponent } from './features/hesaplar/para-transfer/para-transfer';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { SifreDegistir } from './features/profil/sifre-degistir/sifre-degistir';
     ParaCekYatir,
     ProfilDuzenle,
     SifreDegistir,
+    ParaTransferComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideHttpClient()],
