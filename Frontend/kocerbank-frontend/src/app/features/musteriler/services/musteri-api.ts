@@ -94,8 +94,9 @@ export class MusteriApi {
 
   dashboardOzet(): Observable<MusteriDashboard> {
 
-    return this.http.get<MusteriDashboard>(
-      `${this.apiUrl}/DashboardOzet`
+    return this.http.post<MusteriDashboard>(
+      `${this.apiUrl}/DashboardOzet`,
+      null
     );
   }
 }

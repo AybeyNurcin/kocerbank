@@ -63,8 +63,9 @@ export class SubeApi {
 
   dashboardOzet(): Observable<SubeDashboard> {
 
-    return this.http.get<SubeDashboard>(
-      `${this.apiUrl}/DashboardOzet`
+    return this.http.post<SubeDashboard>(
+      `${this.apiUrl}/DashboardOzet`,
+      null
     );
   }
 }

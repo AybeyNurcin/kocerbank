@@ -1,0 +1,346 @@
+<div class="cek-yatir-form">
+
+  <!-- BAŞLIK -->
+  <div class="form-header">
+
+    <div>
+
+      <h2>Para Çek / Yatır</h2>
+
+      <p>
+        IBAN ve tutar bilgilerini girerek
+        para çekme veya yatırma işlemi
+        başlatabilirsiniz.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- ÇEK / YATIR SEKMELERİ -->
+  <div class="islem-type-tabs">
+
+    <button type="button"
+            class="islem-type-button"
+            [class.selected-type]="islemTipi === 'Cek'"
+            (click)="sekmeSec('Cek')">
+
+      <span class="type-icon">
+        Ç
+      </span>
+
+      <span>
+
+        <strong>Para Çek</strong>
+
+        <small>
+          IBAN'dan para çek
+        </small>
+
+      </span>
+
+    </button>
+
+    <button type="button"
+            class="islem-type-button"
+            [class.selected-type]="islemTipi === 'Yatir'"
+            (click)="sekmeSec('Yatir')">
+
+      <span class="type-icon">
+        Y
+      </span>
+
+      <span>
+
+        <strong>Para Yatır</strong>
+
+        <small>
+          IBAN'a para yatır
+        </small>
+
+      </span>
+
+    </button>
+
+  </div>
+
+
+  <!-- FORM EKRANI -->
+  @if (ekran === 'form') {
+
+  <div class="form-content screen-transition">
+
+    <div class="form-grid">
+
+      <!-- IBAN -->
+      <div class="form-field">
+
+        <label for="iban">
+          IBAN
+          <span>*</span>
+        </label>
+
+        <input id="iban"
+               name="iban"
+               type="text"
+               autocomplete="off"
+               maxlength="32"
+               [ngModel]="iban"
+               (ngModelChange)="ibanDegisti($event)"
+               (paste)="ibanYapistir($event)"
+               placeholder="TR00 0000 0000 0000 0000 0000 00" />
+
+        @if (ibanDogrulaniyorMu) {
+          <small class="alan-ipucu">Hesap doğrulanıyor...</small>
+        }
+
+      </div>
+
+
+      @if (islemTipi === 'Cek') {
+
+      <!-- HAZIR TUTAR SEÇENEKLERİ -->
+      <div class="form-field">
+
+        <label>
+          Çekilecek Tutar
+        </label>
+
+        <div class="tutar-chip-grid">
+
+          @for (hazirTutar of hazirTutarlar; track hazirTutar) {
+
+          <button type="button"
+                  class="tutar-chip"
+                  [class.selected-chip]="seciliHazirTutar === hazirTutar"
+                  (click)="hazirTutarSec(hazirTutar)">
+
+            {{ hazirTutar }} TL
+
+          </button>
+
+          }
+
+        </div>
+
+      </div>
+
+      } @else {
+
+      <!-- YATIRILACAK TUTAR -->
+      <div class="form-field">
+
+        <label for="yatirilacakTutar">
+          Yatırılacak Tutar
+          <span>*</span>
+        </label>
+
+        <input id="yatirilacakTutar"
+               name="yatirilacakTutar"
+               type="number"
+               min="0"
+               [(ngModel)]="tutar"
+               placeholder="Yatırılacak tutarı giriniz" />
+
+      </div>
+
+      }
+
+
+      <!-- İSİM SOYİSİM -->
+      <div class="form-field">
+
+        <label for="isimSoyisim">
+          İsim Soyisim
+          <span>*</span>
+        </label>
+
+        <input id="isimSoyisim"
+               name="isimSoyisim"
+               type="text"
+               autocomplete="off"
+               [(ngModel)]="isimSoyisim"
+               placeholder="Hesap sahibinin adı soyadı" />
+
+        @if (maskelenmisAdSoyad !== '') {
+          <small class="alan-ipucu">Hesap sahibi: {{ maskelenmisAdSoyad }}</small>
+        }
+
+      </div>
+
+
+      @if (islemTipi === 'Cek') {
+
+      <!-- DİĞER TUTAR -->
+      <div class="form-field">
+
+        <label for="digerTutar">
+          Diğer Tutar
+        </label>
+
+        <input id="digerTutar"
+               name="digerTutar"
+               type="number"
+               min="0"
+               [(ngModel)]="tutar"
+               (ngModelChange)="ozelTutarGirildi()"
+               placeholder="Çekilecek tutarı giriniz" />
+
+      </div>
+
+      }
+
+    </div>
+
+
+    @if (hataMesaji !== '') {
+
+    <div class="hata-mesaji">
+      {{ hataMesaji }}
+    </div>
+
+    }
+
+  </div>
+
+
+  <div class="form-actions">
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="!ileriAktifMi"
+            (click)="ileriGec()">
+
+      @if (ibanDogrulaniyorMu) {
+        Doğrulanıyor...
+      } @else {
+        İleri
+        <span>→</span>
+      }
+
+    </button>
+
+  </div>
+
+  }
+
+
+  <!-- ÖNİZLEME EKRANI -->
+  @if (ekran === 'onizleme' && onizlemeBilgisi !== null) {
+
+  <div class="form-content screen-transition">
+
+    <div class="section-heading">
+
+      <h3>İşlem Önizlemesi</h3>
+
+      <p>
+        Devam etmeden önce bilgileri kontrol ediniz.
+      </p>
+
+    </div>
+
+
+    <div class="transferred-information">
+
+      <div>
+
+        <span>IBAN Sahibi</span>
+
+        <strong>
+          {{ onizlemeBilgisi.adSoyad }}
+        </strong>
+
+      </div>
+
+      <div>
+
+        <span>Hesap Adı</span>
+
+        <strong>
+          {{ onizlemeBilgisi.hesapAdi }}
+        </strong>
+
+      </div>
+
+      <div>
+
+        <span>IBAN</span>
+
+        <strong>
+          {{ onizlemeBilgisi.iban }}
+        </strong>
+
+      </div>
+
+      <div>
+
+        <span>Tutar</span>
+
+        <strong>
+          {{ onizlemeBilgisi.tutar }} TL
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    @if (hataMesaji !== '') {
+
+    <div class="hata-mesaji">
+      {{ hataMesaji }}
+    </div>
+
+    }
+
+  </div>
+
+
+  <div class="form-actions">
+
+    <button type="button"
+            class="secondary-button"
+            [disabled]="yukleniyorMu"
+            (click)="geriDon()">
+
+      <span>←</span>
+      Geri
+
+    </button>
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="yukleniyorMu"
+            (click)="onayla()">
+
+      @if (yukleniyorMu) {
+        İşleniyor...
+      } @else {
+        Onayla
+      }
+
+    </button>
+
+  </div>
+
+  }
+
+
+  <!-- BAŞARILI EKRANI -->
+  @if (ekran === 'basarili') {
+
+  <div class="form-content screen-transition">
+
+    <div class="success-message">
+
+      İşleminiz onaylandı.
+
+    </div>
+
+  </div>
+
+  }
+
+</div>

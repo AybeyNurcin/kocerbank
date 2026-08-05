@@ -294,4 +294,4 @@ BEGIN
 END KB_HESAPHAREKETI_LISTELE;
 /
 
-select * from KB_HESAPHAREKETI where hesapbilgileriid = 14;
+select * from KB_HESAPbilgileri;
