@@ -63,6 +63,31 @@ export class ParaTransferComponent
   hataMesaji =
     '';
 
+
+  /*
+   * KULLANICININ GİRECEĞİ
+   * AD SOYAD BİLGİLERİ
+   */
+
+  gonderenIsimSoyisim =
+    '';
+
+  aliciIsimSoyisim =
+    '';
+
+
+  /*
+   * BACKEND'DEN GELEN GERÇEK
+   * İSİMLERİN MASKELENMİŞ HALLERİ
+   */
+
+  gonderenMaskelenmisAdSoyad =
+    '';
+
+  aliciMaskelenmisAdSoyad =
+    '';
+
+
   private bilgiGetirmeZamanlayici:
     ReturnType<typeof setTimeout> | null =
     null;
@@ -72,7 +97,7 @@ export class ParaTransferComponent
     null;
 
   /*
-   * Eski API isteğinin yeni form
+   * Eski bir API cevabının yeni form
    * değerlerini ezmesini engeller.
    */
   private bilgiIstegiNo =
@@ -97,8 +122,8 @@ export class ParaTransferComponent
     this.zamanlayicilariTemizle();
 
     /*
-     * Devam eden eski bilgi isteğini
-     * geçersiz duruma getirir.
+     * Component kapatıldığında devam eden
+     * bilgi isteğini geçersiz hale getirir.
      */
     this.bilgiIstegiNo++;
 
@@ -124,6 +149,9 @@ export class ParaTransferComponent
 
     this.formuSifirla();
 
+    this.ekran =
+      'form';
+
   }
 
 
@@ -137,6 +165,13 @@ export class ParaTransferComponent
 
     this.transfer.gonderenIBAN =
       this.ibanBicimlendir(deger);
+
+    /*
+     * IBAN değiştiği için daha önce girilen
+     * gönderen adı artık geçerli değildir.
+     */
+    this.gonderenIsimSoyisim =
+      '';
 
     this.formBilgileriDegisti();
 
@@ -153,6 +188,13 @@ export class ParaTransferComponent
 
     this.transfer.aliciIBAN =
       this.ibanBicimlendir(deger);
+
+    /*
+     * IBAN değiştiği için daha önce girilen
+     * alıcı adı artık geçerli değildir.
+     */
+    this.aliciIsimSoyisim =
+      '';
 
     this.formBilgileriDegisti();
 
@@ -171,8 +213,10 @@ export class ParaTransferComponent
       deger ?? 0;
 
     /*
-     * Tutar değişince önceki kur ve
-     * alıcı tutarı artık geçerli değildir.
+     * Tutar değiştiğinde kur ve alıcı tutarı
+     * yeniden hesaplanmalıdır.
+     *
+     * Girilen ad soyadlar korunur.
      */
     this.formBilgileriDegisti();
 
@@ -181,9 +225,6 @@ export class ParaTransferComponent
 
   /*
    * AÇIKLAMA DEĞİŞİMİ
-   *
-   * Açıklama değiştiğinde hesap ve kur
-   * bilgilerini tekrar almaya gerek yoktur.
    */
 
   aciklamaDegisti(
@@ -198,17 +239,25 @@ export class ParaTransferComponent
 
   /*
    * FORMDA HESAPLAMAYI ETKİLEYEN
-   * BİR ALAN DEĞİŞTİ
+   * BİR BİLGİ DEĞİŞTİ
    */
 
   private formBilgileriDegisti():
     void {
 
     /*
-     * Devam eden eski API isteğini
+     * Önceki API isteğinin sonucunu
      * geçersiz hale getirir.
      */
     this.bilgiIstegiNo++;
+
+    /*
+     * Önceki istek devam ediyor olsa bile
+     * form değiştiği için yükleniyor durumu
+     * kapatılır.
+     */
+    this.transferBilgileriYukleniyorMu =
+      false;
 
     this.transferSonucBilgileriniSifirla();
 
@@ -218,7 +267,7 @@ export class ParaTransferComponent
 
 
   /*
-   * GÖNDEREN IBAN YAPIŞTIRMA
+   * IBAN YAPIŞTIRMA
    */
 
   gonderenIbanYapistir(
@@ -235,10 +284,6 @@ export class ParaTransferComponent
 
   }
 
-
-  /*
-   * ALICI IBAN YAPIŞTIRMA
-   */
 
   aliciIbanYapistir(
     event: ClipboardEvent
@@ -275,25 +320,24 @@ export class ParaTransferComponent
       return 'TR';
     }
 
-    let govde: string;
+    let ibanGovdesi: string;
 
-    if (temiz.startsWith('TR')) {
+    if (
+      temiz.startsWith('TR')
+    ) {
 
-      govde =
+      ibanGovdesi =
         temiz.slice(2);
 
     } else {
 
-      govde =
+      ibanGovdesi =
         temiz;
 
     }
 
-    /*
-     * Türk IBAN'ı toplam 26 karakterdir.
-     */
     const tamIban =
-      ('TR' + govde)
+      ('TR' + ibanGovdesi)
         .slice(0, 26);
 
     return (
@@ -318,7 +362,7 @@ export class ParaTransferComponent
 
 
   /*
-   * IBAN GEÇERLİLİKLERİ
+   * IBAN GEÇERLİLİĞİ
    */
 
   get gonderenIbanGecerliMi():
@@ -382,7 +426,7 @@ export class ParaTransferComponent
 
 
   /*
-   * TUTAR GEÇERLİ Mİ?
+   * TUTAR KONTROLÜ
    */
 
   get tutarGecerliMi():
@@ -390,6 +434,23 @@ export class ParaTransferComponent
 
     return (
       this.transfer.gonderenTutar > 0
+    );
+
+  }
+
+
+  /*
+   * AD SOYAD ALANLARI DOLU MU?
+   */
+
+  get isimlerGirildiMi():
+    boolean {
+
+    return (
+      this.gonderenIsimSoyisim
+        .trim().length > 0 &&
+      this.aliciIsimSoyisim
+        .trim().length > 0
     );
 
   }
@@ -422,6 +483,7 @@ export class ParaTransferComponent
 
     return (
       this.bilgiGetirilebilirMi &&
+      this.isimlerGirildiMi &&
       this.transfer.gonderenHesap !==
       null &&
       this.transfer.aliciHesap !==
@@ -470,7 +532,7 @@ export class ParaTransferComponent
   /*
    * HESAP VE KUR BİLGİLERİNİ GETİR
    *
-   * BU İŞLEM PARA TRANSFERİ YAPMAZ.
+   * BU ENDPOINT PARA TRANSFERİ YAPMAZ.
    */
 
   private transferBilgileriniGetir():
@@ -486,8 +548,9 @@ export class ParaTransferComponent
       ++this.bilgiIstegiNo;
 
     /*
-     * Kullanıcının ekranda gördüğü
-     * biçimlendirilmiş IBAN'ları koruyoruz.
+     * Backend temiz IBAN döndürebilir.
+     * Ekrandaki biçimlendirilmiş IBAN'ları
+     * koruyoruz.
      */
     const gonderenIban =
       this.transfer.gonderenIBAN;
@@ -516,8 +579,9 @@ export class ParaTransferComponent
         ) => {
 
           /*
-           * Kullanıcı istek sürerken formu
-           * değiştirdiyse bu yanıt kullanılmaz.
+           * Kullanıcı istek devam ederken
+           * formu değiştirdiyse eski cevap
+           * kullanılmaz.
            */
           if (
             istekNo !== this.bilgiIstegiNo
@@ -538,6 +602,23 @@ export class ParaTransferComponent
             aciklama:
               aciklama
           };
+
+          /*
+           * Gerçek isimler inputlara yazılmaz.
+           * Yalnızca maskelenmiş şekilde
+           * kullanıcıya gösterilir.
+           */
+          this.gonderenMaskelenmisAdSoyad =
+            this.adiMaskele(
+              sonuc.gonderenHesap
+                ?.hesapSahibi ?? ''
+            );
+
+          this.aliciMaskelenmisAdSoyad =
+            this.adiMaskele(
+              sonuc.aliciHesap
+                ?.hesapSahibi ?? ''
+            );
 
           this.transferBilgileriYukleniyorMu =
             false;
@@ -578,7 +659,117 @@ export class ParaTransferComponent
 
 
   /*
-   * ÖNİZLEME EKRANI
+   * AD SOYAD MASKELEME
+   *
+   * Murat Aybey Nurçin
+   * Mu*** Ay*** Nu****
+   */
+
+  private adiMaskele(
+    adSoyad: string
+  ): string {
+
+    if (
+      adSoyad.trim() === ''
+    ) {
+      return '';
+    }
+
+    return adSoyad
+      .trim()
+      .split(/\s+/)
+      .map(
+        (kelime) => {
+
+          if (
+            kelime.length <= 2
+          ) {
+            return kelime;
+          }
+
+          return (
+            kelime.slice(0, 2) +
+            '*'.repeat(
+              kelime.length - 2
+            )
+          );
+
+        }
+      )
+      .join(' ');
+
+  }
+
+
+  /*
+   * KARŞILAŞTIRMA ÖNCESİ
+   * METNİ NORMALLEŞTİR
+   */
+
+  private metniNormallestir(
+    deger: string
+  ): string {
+
+    return deger
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLocaleUpperCase('tr-TR');
+
+  }
+
+
+  private gonderenIsmiEslesiyorMu():
+    boolean {
+
+    const gercekAdSoyad =
+      this.transfer.gonderenHesap
+        ?.hesapSahibi;
+
+    if (
+      !gercekAdSoyad
+    ) {
+      return false;
+    }
+
+    return (
+      this.metniNormallestir(
+        gercekAdSoyad
+      ) ===
+      this.metniNormallestir(
+        this.gonderenIsimSoyisim
+      )
+    );
+
+  }
+
+
+  private aliciIsmiEslesiyorMu():
+    boolean {
+
+    const gercekAdSoyad =
+      this.transfer.aliciHesap
+        ?.hesapSahibi;
+
+    if (
+      !gercekAdSoyad
+    ) {
+      return false;
+    }
+
+    return (
+      this.metniNormallestir(
+        gercekAdSoyad
+      ) ===
+      this.metniNormallestir(
+        this.aliciIsimSoyisim
+      )
+    );
+
+  }
+
+
+  /*
+   * ÖNİZLEME EKRANINA GEÇ
    */
 
   ileriGec(): void {
@@ -587,6 +778,28 @@ export class ParaTransferComponent
       !this.ileriAktifMi
     ) {
       return;
+    }
+
+    if (
+      !this.gonderenIsmiEslesiyorMu()
+    ) {
+
+      this.hataMesaji =
+        'Girilen gönderen ad soyadı, gönderen IBAN sahibiyle eşleşmiyor.';
+
+      return;
+
+    }
+
+    if (
+      !this.aliciIsmiEslesiyorMu()
+    ) {
+
+      this.hataMesaji =
+        'Girilen alıcı ad soyadı, alıcı IBAN sahibiyle eşleşmiyor.';
+
+      return;
+
     }
 
     this.hataMesaji =
@@ -618,12 +831,20 @@ export class ParaTransferComponent
 
   }
 
+  yeniTransferYap(): void {
+
+    this.formuSifirla();
+
+    this.ekran =
+      'form';
+
+  }
+
 
   /*
    * GERÇEK PARA TRANSFERİ
    *
-   * Yalnızca onay ekranındaki
-   * Onayla butonuyla çalışır.
+   * SADECE ONAYLA BUTONUNDA ÇAĞRILIR.
    */
 
   onayla(): void {
@@ -636,6 +857,23 @@ export class ParaTransferComponent
       null
     ) {
       return;
+    }
+
+    /*
+     * Önizlemede alanlar değiştirilemiyor
+     * olsa da işlem öncesinde isimleri
+     * tekrar kontrol ediyoruz.
+     */
+    if (
+      !this.gonderenIsmiEslesiyorMu() ||
+      !this.aliciIsmiEslesiyorMu()
+    ) {
+
+      this.hataMesaji =
+        'Hesap sahibi bilgileri doğrulanamadı. Forma dönerek bilgileri kontrol ediniz.';
+
+      return;
+
     }
 
     this.transferYapiliyorMu =
@@ -661,8 +899,8 @@ export class ParaTransferComponent
 
           /*
            * Transfer endpoint'i hesap ve kur
-           * alanlarını null döndürse bile bilgi
-           * ekranından gelen değerleri koruruz.
+           * alanlarını null döndürürse bilgi
+           * endpoint'inden gelen değerleri korur.
            */
           this.transfer =
           {
@@ -752,10 +990,6 @@ export class ParaTransferComponent
 
   /*
    * BACKEND'E GÖNDERİLECEK DTO
-   *
-   * Service tarafından doldurulacak alanları
-   * frontend doldurmaz. Backend hesapları,
-   * döviz türlerini ve kuru yeniden bulur.
    */
 
   private transferIstekDtoOlustur():
@@ -797,8 +1031,8 @@ export class ParaTransferComponent
    * SERVICE VE PROSEDÜR SONUÇ
    * ALANLARINI SIFIRLA
    *
-   * Kullanıcının girdiği IBAN, tutar ve
-   * açıklama korunur.
+   * IBAN, tutar, açıklama ve kullanıcının
+   * girdiği ad soyadlar korunur.
    */
 
   private transferSonucBilgileriniSifirla():
@@ -849,6 +1083,12 @@ export class ParaTransferComponent
     this.transfer.aliciYeniBakiye =
       0;
 
+    this.gonderenMaskelenmisAdSoyad =
+      '';
+
+    this.aliciMaskelenmisAdSoyad =
+      '';
+
     this.hataMesaji =
       '';
 
@@ -864,9 +1104,6 @@ export class ParaTransferComponent
 
     this.zamanlayicilariTemizle();
 
-    /*
-     * Devam eden bilgi isteğini geçersiz kılar.
-     */
     this.bilgiIstegiNo++;
 
     this.transfer =
@@ -877,6 +1114,18 @@ export class ParaTransferComponent
         'Havale'
         ? TransferTipleri.Havale
         : TransferTipleri.Virman;
+
+    this.gonderenIsimSoyisim =
+      '';
+
+    this.aliciIsimSoyisim =
+      '';
+
+    this.gonderenMaskelenmisAdSoyad =
+      '';
+
+    this.aliciMaskelenmisAdSoyad =
+      '';
 
     this.transferBilgileriYukleniyorMu =
       false;
