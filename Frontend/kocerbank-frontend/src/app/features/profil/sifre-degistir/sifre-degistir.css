@@ -1,0 +1,128 @@
+.profil-page {
+  width: 100%;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #070707;
+  font-family: Arial, sans-serif;
+}
+
+
+/* SAYFA BAŞLIĞI */
+
+.page-heading {
+  width: 100%;
+  max-width: 620px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+  .page-heading h1 {
+    margin: 0 0 7px;
+    font-size: 29px;
+    font-weight: 700;
+    color: #000000;
+  }
+
+  .page-heading p {
+    margin: 0;
+    color: #86868f;
+    font-size: 14px;
+  }
+
+
+/* FORM KARTI */
+
+.profil-card {
+  width: 100%;
+  max-width: 620px;
+  box-sizing: border-box;
+  padding: 28px;
+  background-color: #ffffff;
+  border: 1px solid #ebebee;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(40, 40, 55, 0.05);
+}
+
+.popup-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+}
+
+.popup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.full-field {
+  grid-column: 1 / -1;
+}
+
+.popup-field label {
+  color: #505058;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.popup-field input {
+  height: 42px;
+  padding: 0 11px;
+  border: 1px solid #ccccd0;
+  border-radius: 6px;
+  outline: none;
+}
+
+  .popup-field input:focus {
+    border-color: #d2a900;
+    box-shadow: 0 0 0 3px rgba(210, 169, 0, 0.14);
+  }
+
+  .popup-field input:disabled {
+    background-color: #eeeeef;
+    color: #77777e;
+  }
+
+.form-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-button {
+  padding: 10px 17px;
+  border: none;
+  border-radius: 6px;
+  background-color: #d2a900;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+  .save-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+.form-error-message {
+  margin-bottom: 18px;
+  padding: 11px;
+  border-radius: 6px;
+  background-color: #fbe4e4;
+  color: #a52f2f;
+  font-size: 13px;
+  text-align: center;
+}
+
+.form-success-message {
+  margin-bottom: 18px;
+  padding: 11px;
+  border-radius: 6px;
+  background-color: #e3f6e8;
+  color: #1f7a3d;
+  font-size: 13px;
+  text-align: center;
+}

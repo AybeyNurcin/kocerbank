@@ -1,0 +1,214 @@
+<section class="profil-page">
+
+  <div class="page-heading">
+
+    <div>
+
+      <h1>Profili Düzenle</h1>
+
+      <p>
+        Kendi ad, soyad, telefon, e-posta ve adres bilgilerinizi güncelleyebilirsiniz.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="profil-card">
+
+    @if (yukleniyorMu) {
+
+    <div class="card-information-message">
+      Yükleniyor...
+    </div>
+
+    } @else {
+
+    @if (hataMesaji !== '') {
+
+    <div class="form-error-message">
+      {{ hataMesaji }}
+    </div>
+
+    }
+
+    @if (basariMesaji !== '') {
+
+    <div class="form-success-message">
+      {{ basariMesaji }}
+    </div>
+
+    }
+
+    <form (ngSubmit)="kaydet()">
+
+      <div class="popup-fields">
+
+        <!-- ŞUBE KODU (DÜZENLENEMEZ) -->
+        <div class="popup-field">
+
+          <label for="formSubeKodu">
+            Şube Kodu
+          </label>
+
+          <input id="formSubeKodu"
+                 name="formSubeKodu"
+                 type="text"
+                 [value]="mevcutPersonel?.subeKodu"
+                 disabled />
+
+        </div>
+
+
+        <!-- ROL (DÜZENLENEMEZ) -->
+        <div class="popup-field">
+
+          <label for="formRol">
+            Rol
+          </label>
+
+          <input id="formRol"
+                 name="formRol"
+                 type="text"
+                 [value]="mevcutPersonel?.rol"
+                 disabled />
+
+        </div>
+
+
+        <!-- TCKN (DÜZENLENEMEZ) -->
+        <div class="popup-field">
+
+          <label for="formTckn">
+            TC Kimlik No
+          </label>
+
+          <input id="formTckn"
+                 name="formTckn"
+                 type="text"
+                 [value]="mevcutPersonel?.tckn"
+                 disabled />
+
+        </div>
+
+
+        <!-- AD -->
+        <div class="popup-field">
+
+          <label for="formAd">
+            Ad
+          </label>
+
+          <input id="formAd"
+                 name="formAd"
+                 type="text"
+                 [(ngModel)]="formModel.ad"
+                 [disabled]="kaydediliyorMu"
+                 maxlength="50"
+                 required />
+
+        </div>
+
+
+        <!-- SOYAD -->
+        <div class="popup-field">
+
+          <label for="formSoyad">
+            Soyad
+          </label>
+
+          <input id="formSoyad"
+                 name="formSoyad"
+                 type="text"
+                 [(ngModel)]="formModel.soyad"
+                 [disabled]="kaydediliyorMu"
+                 maxlength="50"
+                 required />
+
+        </div>
+
+
+        <!-- TELEFON -->
+        <div class="popup-field">
+
+          <label for="formTelefon">
+            Telefon
+          </label>
+
+          <input id="formTelefon"
+                 name="formTelefon"
+                 type="text"
+                 [(ngModel)]="formModel.telefonNo"
+                 [disabled]="kaydediliyorMu"
+                 maxlength="11"
+                 required />
+
+        </div>
+
+
+        <!-- E-POSTA -->
+        <div class="popup-field">
+
+          <label for="formEposta">
+            E-posta
+          </label>
+
+          <input id="formEposta"
+                 name="formEposta"
+                 type="email"
+                 [(ngModel)]="formModel.email"
+                 [disabled]="kaydediliyorMu"
+                 maxlength="50"
+                 required />
+
+        </div>
+
+
+        <!-- ADRES -->
+        <div class="popup-field full-field">
+
+          <label for="formAdres">
+            Adres
+          </label>
+
+          <input id="formAdres"
+                 name="formAdres"
+                 type="text"
+                 [(ngModel)]="formModel.adres"
+                 [disabled]="kaydediliyorMu"
+                 maxlength="50"
+                 required />
+
+        </div>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button type="submit"
+                class="save-button"
+                [disabled]="kaydediliyorMu">
+
+          @if (kaydediliyorMu) {
+
+          Kaydediliyor...
+
+          } @else {
+
+          Değişiklikleri Kaydet
+
+          }
+
+        </button>
+
+      </div>
+
+    </form>
+
+    }
+
+  </div>
+
+</section>

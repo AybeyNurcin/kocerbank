@@ -112,6 +112,48 @@ namespace kocerbank_backend.Services
             _personelRepository.Guncelle(dto);
         }
 
+        // 4.1 PERSONEL ŞİFRE DEĞİŞTİRME
+        public void SifreDegistir(long id, PersonelSifreDegistirDTO dto)
+        {
+            IdKontrolEt(id);
+
+            if (string.IsNullOrWhiteSpace(dto.EskiSifre))
+            {
+                throw new ArgumentException("Eski şifre boş bırakılamaz.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.YeniSifre))
+            {
+                throw new ArgumentException("Yeni şifre boş bırakılamaz.");
+            }
+
+            if (dto.YeniSifre.Length < 8)
+            {
+                throw new ArgumentException("Yeni şifre en az 8 karakter olmalıdır.");
+            }
+
+            PersonelDTO? mevcutPersonel = _personelRepository.GetirById(id);
+
+            if (mevcutPersonel is null)
+            {
+                throw new KeyNotFoundException("Personel bulunamadı.");
+            }
+
+            var sonuc = _passwordHasher.VerifyHashedPassword(
+                mevcutPersonel,
+                mevcutPersonel.Sifre,
+                dto.EskiSifre);
+
+            if (sonuc == PasswordVerificationResult.Failed)
+            {
+                throw new UnauthorizedAccessException("Eski şifre hatalı.");
+            }
+
+            mevcutPersonel.Sifre = _passwordHasher.HashPassword(mevcutPersonel, dto.YeniSifre);
+
+            _personelRepository.Guncelle(mevcutPersonel);
+        }
+
         // 5. PERSONEL SİLME
         public void Sil(long id)
         {

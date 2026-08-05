@@ -371,15 +371,81 @@
 
       <div class="detail-heading">
 
-        <div>
+        <div class="detail-heading-main">
 
           <span class="panel-label">
             Hesap bilgileri
           </span>
 
-          <h2>
-            {{ seciliHesap.hesapAdi }}
-          </h2>
+          @if (!hesapAdiDuzenleniyorMu) {
+
+          <div class="account-name-display">
+
+            <h2>
+              {{ seciliHesap.hesapAdi }}
+            </h2>
+
+            <button type="button"
+                    class="edit-icon-button"
+                    title="Hesap adını düzenle"
+                    (click)="hesapAdiniDuzenlemeyeBasla()">
+
+              <svg width="15"
+                   height="15"
+                   viewBox="0 0 24 24"
+                   fill="none"
+                   stroke="currentColor"
+                   stroke-width="2"
+                   stroke-linecap="round"
+                   stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+              </svg>
+
+            </button>
+
+          </div>
+
+          } @else {
+
+          <div class="account-name-edit">
+
+            <input type="text"
+                   class="account-name-input"
+                   maxlength="50"
+                   autocomplete="off"
+                   [(ngModel)]="duzenlenenHesapAdi"
+                   [disabled]="hesapAdiKaydediliyorMu"
+                   (keyup.enter)="hesapAdiniKaydet()"
+                   (keyup.escape)="hesapAdiDuzenlemeyiIptalEt()" />
+
+            <button type="button"
+                    class="edit-icon-button confirm-icon-button"
+                    title="Kaydet"
+                    [disabled]="hesapAdiKaydediliyorMu"
+                    (click)="hesapAdiniKaydet()">
+              ✓
+            </button>
+
+            <button type="button"
+                    class="edit-icon-button cancel-icon-button"
+                    title="Vazgeç"
+                    [disabled]="hesapAdiKaydediliyorMu"
+                    (click)="hesapAdiDuzenlemeyiIptalEt()">
+              ×
+            </button>
+
+          </div>
+
+          @if (hesapAdiHataMesaji !== '') {
+
+          <small class="hesap-adi-hata">
+            {{ hesapAdiHataMesaji }}
+          </small>
+
+          }
+
+          }
 
         </div>
 
@@ -631,18 +697,6 @@
 
           </div>
 
-
-          <div class="detail-actions">
-
-            <button type="button"
-                    class="secondary-button">
-
-              Düzenle
-
-            </button>
-
-          </div>
-
         </div>
 
       </div>
@@ -719,7 +773,8 @@
 
       <button type="button"
               class="operation-card"
-              [disabled]="seciliHesap === null">
+              [disabled]="seciliHesap === null"
+              (click)="paraCekYatirEkraninaGit()">
 
         <span class="operation-icon">
           ₺

@@ -66,6 +66,11 @@ export class HesapListesi
   yukleniyorMu: boolean = false;
   hataMesaji: string = '';
 
+  hesapAdiDuzenleniyorMu: boolean = false;
+  duzenlenenHesapAdi: string = '';
+  hesapAdiKaydediliyorMu: boolean = false;
+  hesapAdiHataMesaji: string = '';
+
   readonly hesapTipleri: HesapTipiSecenegi[] = [
     {
       tip: HesapTipi.Vadesiz,
@@ -187,6 +192,7 @@ export class HesapListesi
       ilkHesap;
 
     this.detayAcikMi = false;
+    this.hesapAdiDuzenlemesiniSifirla();
 
   }
 
@@ -270,6 +276,7 @@ export class HesapListesi
       null;
 
     this.detayAcikMi = false;
+    this.hesapAdiDuzenlemesiniSifirla();
 
   }
 
@@ -281,6 +288,7 @@ export class HesapListesi
       hesap;
 
     this.detayAcikMi = false;
+    this.hesapAdiDuzenlemesiniSifirla();
 
   }
 
@@ -288,6 +296,129 @@ export class HesapListesi
 
     this.detayAcikMi =
       !this.detayAcikMi;
+
+  }
+
+  hesapAdiniDuzenlemeyeBasla(): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    this.duzenlenenHesapAdi =
+      this.seciliHesap.hesapAdi;
+
+    this.hesapAdiHataMesaji = '';
+    this.hesapAdiDuzenleniyorMu = true;
+
+  }
+
+  hesapAdiDuzenlemeyiIptalEt(): void {
+
+    this.hesapAdiDuzenlemesiniSifirla();
+
+  }
+
+  hesapAdiniKaydet(): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    const yeniHesapAdi =
+      this.duzenlenenHesapAdi.trim();
+
+    if (yeniHesapAdi.length === 0) {
+
+      this.hesapAdiHataMesaji =
+        'Hesap adı boş bırakılamaz.';
+
+      return;
+
+    }
+
+    if (yeniHesapAdi.length > 50) {
+
+      this.hesapAdiHataMesaji =
+        'Hesap adı en fazla 50 karakter olabilir.';
+
+      return;
+
+    }
+
+    if (yeniHesapAdi === this.seciliHesap.hesapAdi) {
+
+      this.hesapAdiDuzenlemesiniSifirla();
+
+      return;
+
+    }
+
+    const guncellenecekHesap: Hesap = {
+      ...this.seciliHesap,
+      hesapAdi: yeniHesapAdi
+    };
+
+    this.hesapAdiKaydediliyorMu = true;
+    this.hesapAdiHataMesaji = '';
+
+    this.hesapApi
+      .guncelle(
+        guncellenecekHesap.id,
+        guncellenecekHesap
+      )
+      .subscribe({
+
+        next: () => {
+
+          if (this.seciliHesap !== null) {
+            this.seciliHesap.hesapAdi = yeniHesapAdi;
+          }
+
+          const listedekiHesap =
+            this.hesaplar.find(
+              (hesap: Hesap) =>
+                hesap.id === guncellenecekHesap.id
+            );
+
+          if (listedekiHesap) {
+            listedekiHesap.hesapAdi = yeniHesapAdi;
+          }
+
+          this.hesapAdiKaydediliyorMu = false;
+          this.hesapAdiDuzenleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Hesap adı güncelleme hatası:',
+            hata
+          );
+
+          this.hesapAdiKaydediliyorMu = false;
+
+          this.hesapAdiHataMesaji =
+            hata?.error?.mesaj ??
+            'Hesap adı güncellenirken bir hata oluştu.';
+
+          this.changeDetector.markForCheck();
+
+        }
+
+      });
+
+  }
+
+  private hesapAdiDuzenlemesiniSifirla(): void {
+
+    this.hesapAdiDuzenleniyorMu = false;
+    this.hesapAdiKaydediliyorMu = false;
+    this.duzenlenenHesapAdi = '';
+    this.hesapAdiHataMesaji = '';
 
   }
 
@@ -428,6 +559,23 @@ export class HesapListesi
     this.router.navigate([
       '/musteriler'
     ]);
+
+  }
+
+  paraCekYatirEkraninaGit(): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    this.router.navigate(
+      ['/para-cek-yatir'],
+      {
+        queryParams: {
+          iban: this.seciliHesap.iban
+        }
+      }
+    );
 
   }
 }

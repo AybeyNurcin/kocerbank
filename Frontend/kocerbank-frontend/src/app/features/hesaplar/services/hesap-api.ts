@@ -46,4 +46,11 @@ export class HesapApi {
       dto
     );
   }
+
+  guncelle(hesapId: number, dto: Hesap): Observable<void> {
+    return this.http.put<void>(
+      `${this.apiUrl}/Guncelle/${hesapId}`,
+      dto
+    );
+  }
 }

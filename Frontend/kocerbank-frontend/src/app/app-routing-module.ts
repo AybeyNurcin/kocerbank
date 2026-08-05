@@ -24,6 +24,14 @@ import {
   ParaCekYatir
 } from './features/hesaplar/para-cek-yatir/para-cek-yatir';
 
+import {
+  ProfilDuzenle
+} from './features/profil/profil-duzenle/profil-duzenle';
+
+import {
+  SifreDegistir
+} from './features/profil/sifre-degistir/sifre-degistir';
+
 const routes: Routes = [
 
   // Giriş sayfası koruma altında değildir.
@@ -66,6 +74,14 @@ const routes: Routes = [
       {
         path: 'para-cek-yatir',
         component: ParaCekYatir
+      },
+      {
+        path: 'profil-duzenle',
+        component: ProfilDuzenle
+      },
+      {
+        path: 'sifre-degistir',
+        component: SifreDegistir
       },
 
       // Ana adrese gidilirse Dashboard açılır.

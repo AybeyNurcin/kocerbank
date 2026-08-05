@@ -27,6 +27,10 @@ import {
   MusteriApi
 } from '../services/musteri-api';
 
+import {
+  MusteriListeDurumu
+} from '../services/musteri-liste-durumu';
+
 @Component({
   selector: 'app-musteri-listesi',
   standalone: false,
@@ -36,11 +40,39 @@ import {
 export class MusteriListesi
   implements OnInit, OnDestroy {
 
-  musteriler: Musteri[] = [];
+  // Aşağıdaki dört alan, hesaplar ekranına gidip
+  // (özellikle tarayıcı geri tuşuyla) geri dönüldüğünde
+  // kaybolmamaları için MusteriListeDurumu servisinde
+  // tutulur, bu alanlar yalnızca ona vekillik eder.
 
-  aramaKriterleri: MusteriFiltre = {};
+  get musteriler(): Musteri[] {
+    return this.durum.musteriler;
+  }
+  set musteriler(deger: Musteri[]) {
+    this.durum.musteriler = deger;
+  }
 
-  mevcutSayfa: number = 1;
+  get aramaKriterleri(): MusteriFiltre {
+    return this.durum.aramaKriterleri;
+  }
+  set aramaKriterleri(deger: MusteriFiltre) {
+    this.durum.aramaKriterleri = deger;
+  }
+
+  get mevcutSayfa(): number {
+    return this.durum.mevcutSayfa;
+  }
+  set mevcutSayfa(deger: number) {
+    this.durum.mevcutSayfa = deger;
+  }
+
+  get bilgiMesaji(): string {
+    return this.durum.bilgiMesaji;
+  }
+  set bilgiMesaji(deger: string) {
+    this.durum.bilgiMesaji = deger;
+  }
+
   sayfaBasinaKayit: number = 10;
 
   musteriFormuAcikMi: boolean = false;
@@ -50,9 +82,6 @@ export class MusteriListesi
 
   yukleniyorMu: boolean = false;
   hataMesaji: string = '';
-
-  bilgiMesaji: string =
-    'Filtreleme yapmak için önce müşteri tipini seçiniz.';
 
 
   // TELEFON İÇİN OTOMATİK ARAMA
@@ -66,7 +95,8 @@ export class MusteriListesi
   constructor(
     private musteriApi: MusteriApi,
     private router: Router,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private durum: MusteriListeDurumu
   ) {
   }
 

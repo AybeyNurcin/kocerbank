@@ -1,7 +1,12 @@
 import {
   ChangeDetectorRef,
-  Component
+  Component,
+  OnInit
 } from '@angular/core';
+
+import {
+  ActivatedRoute
+} from '@angular/router';
 
 import {
   HesapApi
@@ -49,7 +54,8 @@ const IBAN_DOGRULAMA_GECIKMESI_MS = 500;
   templateUrl: './para-cek-yatir.html',
   styleUrl: './para-cek-yatir.css'
 })
-export class ParaCekYatir {
+export class ParaCekYatir
+  implements OnInit {
 
   islemTipi: IslemTipi = 'Cek';
   ekran: EkranTipi = 'form';
@@ -76,12 +82,29 @@ export class ParaCekYatir {
   private ibanZamanlayici: ReturnType<typeof setTimeout> | null = null;
   private basariliZamanlayici: ReturnType<typeof setTimeout> | null = null;
 
+  private isimOtomatikDoldurulacakMi: boolean = false;
+
   constructor(
     private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
     private hesapApi: HesapApi,
     private musteriApi: MusteriApi,
     private authService: AuthService
   ) {
+  }
+
+  ngOnInit(): void {
+
+    const gelenIban =
+      this.route.snapshot.queryParamMap.get('iban');
+
+    if (gelenIban) {
+
+      this.isimOtomatikDoldurulacakMi = true;
+      this.ibanDegisti(gelenIban);
+
+    }
+
   }
 
   sekmeSec(
@@ -93,7 +116,11 @@ export class ParaCekYatir {
     }
 
     this.islemTipi = tip;
-    this.formuSifirla();
+
+    this.seciliHazirTutar = null;
+    this.tutar = null;
+    this.onizlemeBilgisi = null;
+    this.hataMesaji = '';
 
   }
 
@@ -265,6 +292,15 @@ export class ParaCekYatir {
                   this.adiMaskele(
                     `${musteri.ad} ${musteri.soyad}`
                   );
+
+                if (this.isimOtomatikDoldurulacakMi) {
+
+                  this.isimSoyisim =
+                    `${musteri.ad} ${musteri.soyad}`;
+
+                  this.isimOtomatikDoldurulacakMi = false;
+
+                }
 
                 this.ibanDogrulaniyorMu = false;
 
