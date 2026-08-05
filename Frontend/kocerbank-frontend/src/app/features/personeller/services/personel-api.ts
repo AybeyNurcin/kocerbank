@@ -82,8 +82,9 @@ export class PersonelApi {
 
   dashboardOzet(): Observable<PersonelDashboard> {
 
-    return this.http.get<PersonelDashboard>(
-      `${this.apiUrl}/DashboardOzet`
+    return this.http.post<PersonelDashboard>(
+      `${this.apiUrl}/DashboardOzet`,
+      null
     );
   }
 

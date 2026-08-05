@@ -533,21 +533,35 @@
 
         </div>
 
+        @if (hareketlerHataMesaji !== '') {
+
+        <p class="movements-message movements-error">
+          {{ hareketlerHataMesaji }}
+        </p>
+
+        } @else if (sonBesHesapHareketi.length === 0) {
+
+        <p class="movements-message">
+          Bu hesaba ait hareket bulunmuyor.
+        </p>
+
+        } @else {
+
         <div class="movement-list">
 
           @for (
-          hareket of seciliHesapHareketleri;
+          hareket of sonBesHesapHareketi;
           track hareket.id
           ) {
 
           <div class="movement-item">
 
             <div class="movement-icon"
-                 [class.movement-in]="hareket.islemTipi === 1 || hareket.islemTipi === 3"
-                 [class.movement-out]="hareket.islemTipi === 2 || hareket.islemTipi === 4">
+                 [class.movement-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
+                 [class.movement-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
 
               {{
-                hareket.islemTipi === 1 || hareket.islemTipi === 3
+                hareketGirisMi(hareket.hesapHareketiTipi)
                   ? '↓'
                   : '↑'
               }}
@@ -557,24 +571,24 @@
             <div class="movement-information">
 
               <strong>
-                {{ hareket.aciklama }}
+                {{ hareketAciklamasiniGetir(hareket.hesapHareketiTipi) }}
               </strong>
 
               <span>
                 {{
-                  hareket.tarih
-                    | date:'dd.MM.yyyy'
+                  hareket.islemTarihi
+                    | date:'dd.MM.yyyy HH:mm'
                 }}
               </span>
 
             </div>
 
             <strong class="movement-amount"
-                    [class.amount-in]="hareket.islemTipi === 1 || hareket.islemTipi === 3"
-                    [class.amount-out]="hareket.islemTipi === 2 || hareket.islemTipi === 4">
+                    [class.amount-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
+                    [class.amount-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
 
               {{
-                hareket.islemTipi === 1 || hareket.islemTipi === 3
+                hareketGirisMi(hareket.hesapHareketiTipi)
                   ? '+'
                   : '-'
               }}
@@ -596,7 +610,152 @@
 
         </div>
 
+        <div class="movements-footer">
+
+          <button type="button"
+                  class="movements-all-button"
+                  (click)="tumHareketleriAc()">
+
+            Tüm hesap hareketleri
+
+          </button>
+
+        </div>
+
+        }
+
       </div>
+
+
+      <!-- TÜM HESAP HAREKETLERİ POPUP -->
+      @if (tumHareketlerPopupAcikMi) {
+
+      <div class="movements-modal-backdrop"
+           (click)="tumHareketleriKapat()">
+
+        <div class="movements-modal"
+             (click)="$event.stopPropagation()">
+
+          <div class="detail-modal-heading">
+
+            <h3>Tüm Hesap Hareketleri</h3>
+
+            <button type="button"
+                    class="modal-close-button"
+                    (click)="tumHareketleriKapat()">
+
+              ×
+
+            </button>
+
+          </div>
+
+          <div class="movement-list">
+
+            @for (
+            hareket of sayfadakiHesapHareketleri;
+            track hareket.id
+            ) {
+
+            <div class="movement-item">
+
+              <div class="movement-icon"
+                   [class.movement-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
+                   [class.movement-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
+
+                {{
+                  hareketGirisMi(hareket.hesapHareketiTipi)
+                    ? '↓'
+                    : '↑'
+                }}
+
+              </div>
+
+              <div class="movement-information">
+
+                <strong>
+                  {{ hareketAciklamasiniGetir(hareket.hesapHareketiTipi) }}
+                </strong>
+
+                <span>
+                  {{
+                    hareket.islemTarihi
+                      | date:'dd.MM.yyyy HH:mm'
+                  }}
+                </span>
+
+              </div>
+
+              <strong class="movement-amount"
+                      [class.amount-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
+                      [class.amount-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
+
+                {{
+                  hareketGirisMi(hareket.hesapHareketiTipi)
+                    ? '+'
+                    : '-'
+                }}
+                {{
+                  hareket.tutar
+                    | number:'1.2-2'
+                }}
+                {{
+                  dovizSembolunuGetir(
+                    seciliHesap.dovizCinsi
+                  )
+                }}
+
+              </strong>
+
+            </div>
+
+            }
+
+          </div>
+
+          @if (hareketlerToplamSayfa > 1) {
+
+          <div class="pagination">
+
+            <span class="page-number">
+
+              Sayfa
+              {{ hareketlerMevcutSayfa }} /
+              {{ hareketlerToplamSayfa }}
+
+            </span>
+
+            <div class="pagination-controls">
+
+              <button type="button"
+                      class="pagination-button"
+                      [disabled]="hareketlerMevcutSayfa === 1"
+                      (click)="hareketlerOncekiSayfa()">
+
+                Önceki
+
+              </button>
+
+              <button type="button"
+                      class="pagination-button"
+                      [disabled]="hareketlerMevcutSayfa === hareketlerToplamSayfa"
+                      (click)="hareketlerSonrakiSayfa()">
+
+                Sonraki
+
+              </button>
+
+            </div>
+
+          </div>
+
+          }
+
+        </div>
+
+      </div>
+
+      }
 
 
       <!-- HESAP DETAYLARI POPUP -->

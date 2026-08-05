@@ -455,7 +455,7 @@ CREATE OR REPLACE PROCEDURE KB_HESAP_CEK_YATIR
 (
     P_HESAPID IN NUMBER,
     P_ISLEMTIPI IN NUMBER,
-    P_MIKTAR IN NUMBER,
+    P_TUTAR IN NUMBER,
     P_RECORDUSER IN VARCHAR2,
     P_HAREKETID OUT NUMBER,
     P_YENIBAKIYE OUT NUMBER
@@ -474,8 +474,8 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20002, 'İşlem tipi para yatırma veya para çekme olmalıdır.');
     END IF;
 
-    IF P_MIKTAR IS NULL OR P_MIKTAR <= 0 THEN
-        RAISE_APPLICATION_ERROR(-20003, 'İşlem miktarı sıfırdan büyük olmalıdır.');
+    IF P_TUTAR IS NULL OR P_TUTAR <= 0 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'İşlem tutarı sıfırdan büyük olmalıdır.');
     END IF;
 
     IF P_RECORDUSER IS NOT NULL AND LENGTH(P_RECORDUSER) > 10 THEN
@@ -498,13 +498,13 @@ BEGIN
     END IF;
 
     IF P_ISLEMTIPI = 1 THEN
-        V_SONRAKIBAKIYE := V_ONCEKIBAKIYE + P_MIKTAR;
+        V_SONRAKIBAKIYE := V_ONCEKIBAKIYE + P_TUTAR;
     ELSE
-        IF V_ONCEKIBAKIYE < P_MIKTAR THEN
+        IF V_ONCEKIBAKIYE < P_TUTAR THEN
             RAISE_APPLICATION_ERROR(-20007, 'Hesap bakiyesi para çekme işlemi için yetersizdir.');
         END IF;
 
-        V_SONRAKIBAKIYE := V_ONCEKIBAKIYE - P_MIKTAR;
+        V_SONRAKIBAKIYE := V_ONCEKIBAKIYE - P_TUTAR;
     END IF;
 
     UPDATE KB_HESAPBILGILERI
@@ -515,7 +515,7 @@ BEGIN
     (
         HESAPBILGILERIID,
         HAREKETTIPI,
-        MIKTAR,
+        TUTAR,
         DOVIZCINSI,
         ONCEKIBAKIYE,
         SONRAKIBAKIYE,
@@ -527,7 +527,7 @@ BEGIN
     (
         P_HESAPID,
         P_ISLEMTIPI,
-        P_MIKTAR,
+        P_TUTAR,
         V_DOVIZCINSI,
         V_ONCEKIBAKIYE,
         V_SONRAKIBAKIYE,

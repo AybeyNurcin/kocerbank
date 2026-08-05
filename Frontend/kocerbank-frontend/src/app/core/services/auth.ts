@@ -25,13 +25,21 @@ export class AuthService {
   // Bu süre kadar hareketsiz kalınırsa oturum otomatik sonlandırılır.
   private readonly OTURUM_ZAMAN_ASIMI_MS = 30 * 60 * 1000;
 
-  // Aktivite zaman damgasının localStorage'a en fazla bu sıklıkla
+  // Aktivite zaman damgasının depoya en fazla bu sıklıkla
   // yazılmasını sağlar (mousemove gibi sık tetiklenen olaylarda
   // gereksiz yazım yapılmasını önler).
   private readonly AKTIVITE_YAZMA_ARALIGI_MS = 10 * 1000;
 
   private readonly apiUrl =
     'http://localhost:5107/api/Personel';
+
+  // Oturum bilgilerinin saklanacağı depoyu belirler. Güvenlik nedeniyle
+  // sessionStorage kullanılır (tarayıcı sekmesi kapatılınca oturum
+  // bilgileri silinir). Depolama türü değiştirilmek istenirse
+  // sadece bu fonksiyon güncellenmelidir.
+  private oturumDeposu(): Storage {
+    return sessionStorage;
+  }
 
   constructor(private http: HttpClient) {
 
@@ -59,22 +67,22 @@ export class AuthService {
 
   oturumAc(sicilNo: string, personel: Personel): void {
 
-    localStorage.setItem(
+    this.oturumDeposu().setItem(
       this.oturumAnahtari,
       sicilNo
     );
 
-    localStorage.setItem(
+    this.oturumDeposu().setItem(
       this.oturumAdSoyadAnahtari,
       `${personel.ad} ${personel.soyad}`
     );
 
-    localStorage.setItem(
+    this.oturumDeposu().setItem(
       this.oturumIdAnahtari,
       String(personel.id)
     );
 
-    localStorage.setItem(
+    this.oturumDeposu().setItem(
       this.oturumSonAktiviteAnahtari,
       String(Date.now())
     );
@@ -83,19 +91,19 @@ export class AuthService {
 
   oturumKapat(): void {
 
-    localStorage.removeItem(
+    this.oturumDeposu().removeItem(
       this.oturumAnahtari
     );
 
-    localStorage.removeItem(
+    this.oturumDeposu().removeItem(
       this.oturumAdSoyadAnahtari
     );
 
-    localStorage.removeItem(
+    this.oturumDeposu().removeItem(
       this.oturumIdAnahtari
     );
 
-    localStorage.removeItem(
+    this.oturumDeposu().removeItem(
       this.oturumSonAktiviteAnahtari
     );
 
@@ -105,7 +113,7 @@ export class AuthService {
   // ad-soyad bilgisini oturumdan güncellemek için kullanılır.
   adSoyadGuncelle(ad: string, soyad: string): void {
 
-    localStorage.setItem(
+    this.oturumDeposu().setItem(
       this.oturumAdSoyadAnahtari,
       `${ad} ${soyad}`
     );
@@ -114,11 +122,11 @@ export class AuthService {
 
   oturumAcikMi(): boolean {
 
-    if (localStorage.getItem(this.oturumAnahtari) === null) {
+    if (this.oturumDeposu().getItem(this.oturumAnahtari) === null) {
       return false;
     }
 
-    const sonAktivite = localStorage.getItem(
+    const sonAktivite = this.oturumDeposu().getItem(
       this.oturumSonAktiviteAnahtari
     );
 
@@ -137,7 +145,7 @@ export class AuthService {
 
   personelSicilNoGetir(): string | null {
 
-    return localStorage.getItem(
+    return this.oturumDeposu().getItem(
       this.oturumAnahtari
     );
 
@@ -145,7 +153,7 @@ export class AuthService {
 
   personelAdSoyadGetir(): string | null {
 
-    return localStorage.getItem(
+    return this.oturumDeposu().getItem(
       this.oturumAdSoyadAnahtari
     );
 
@@ -153,7 +161,7 @@ export class AuthService {
 
   personelIdGetir(): number | null {
 
-    const id = localStorage.getItem(
+    const id = this.oturumDeposu().getItem(
       this.oturumIdAnahtari
     );
 
@@ -163,19 +171,19 @@ export class AuthService {
 
   private aktiviteyiGuncelle(): void {
 
-    if (localStorage.getItem(this.oturumAnahtari) === null) {
+    if (this.oturumDeposu().getItem(this.oturumAnahtari) === null) {
       return;
     }
 
     const sonAktivite = Number(
-      localStorage.getItem(this.oturumSonAktiviteAnahtari) ?? 0
+      this.oturumDeposu().getItem(this.oturumSonAktiviteAnahtari) ?? 0
     );
 
     if (Date.now() - sonAktivite < this.AKTIVITE_YAZMA_ARALIGI_MS) {
       return;
     }
 
-    localStorage.setItem(
+    this.oturumDeposu().setItem(
       this.oturumSonAktiviteAnahtari,
       String(Date.now())
     );

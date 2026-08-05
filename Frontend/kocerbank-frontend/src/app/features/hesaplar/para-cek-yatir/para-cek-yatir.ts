@@ -448,7 +448,7 @@ export class ParaCekYatir
         this.islemTipi === 'Cek'
           ? HesapHareketTipleri.ParaCekme
           : HesapHareketTipleri.ParaYatirma,
-      miktar: this.onizlemeBilgisi.tutar,
+      tutar: this.onizlemeBilgisi.tutar,
       recordUser: this.authService.personelSicilNoGetir(),
       hareketId: 0,
       yeniBakiye: 0
