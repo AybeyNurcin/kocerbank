@@ -1,4 +1,4 @@
-/*using kocerbank_backend.Models.DTOs;
+using kocerbank_backend.Models.DTOs;
 using kocerbank_backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,89 +6,79 @@ namespace kocerbank_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ParaTransferiController : ControllerBase
+    public class ParaTransferController : ControllerBase
     {
-        private readonly ParaTransferiService _paraTransferiService;
+        private readonly ParaTransferServis
+            _paraTransferServis;
 
-        public ParaTransferiController(ParaTransferiService paraTransferiService)
+
+        public ParaTransferController(
+            ParaTransferServis paraTransferServis
+        )
         {
-            _paraTransferiService = paraTransferiService;
+            _paraTransferServis =
+                paraTransferServis;
         }
 
-        // 1. PARA TRANSFERİ EKLEME
-        // POST /api/ParaTransferi/Ekle
-        [HttpPost("Ekle")]
-        public IActionResult Ekle([FromBody] ParaTransferiDTO dto)
+
+        [HttpPost("ParaTransferiYap")]
+        public IActionResult ParaTransferiYap(
+            [FromBody] ParaTransferDTO dto
+        )
         {
             try
             {
-                ParaTransferiDTO eklenenTransfer =
-                    _paraTransferiService.Ekle(dto);
+                ParaTransferDTO sonuc =
+                    _paraTransferServis
+                        .ParaTransferiYap(dto);
 
-                return CreatedAtAction(
-                    nameof(GetirById),
-                    new { id = eklenenTransfer.Id },
-                    eklenenTransfer);
+                return Ok(sonuc);
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-        }
-
-        // 2. ID'YE GÖRE GETİR
-        [HttpGet("GetirById/{id:long}")]
-        public IActionResult GetirById(long id)
-        {
-            try
-            {
-                ParaTransferiDTO? transfer =
-                    _paraTransferiService.GetirById(id);
-
-                if (transfer is null)
-                {
-                    return NotFound(new
+                return NotFound(
+                    new
                     {
-                        mesaj = "Para transferi bulunamadı."
-                    });
-                }
-
-                return Ok(transfer);
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (FileNotFoundException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
-            }
-        }
-
-        // 3. GÜNCELLE
-        [HttpPut("Guncelle/{id:long}")]
-        public IActionResult Guncelle(
-            long id,
-            [FromBody] ParaTransferiDTO dto)
-        {
-            try
-            {
-                dto.Id = id;
-
-                _paraTransferiService.Guncelle(dto);
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    mesaj = ex.Message
-                });
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
             }
         }
     }
 }
-*/

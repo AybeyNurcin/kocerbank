@@ -1,130 +1,273 @@
-using System;
 using System.Data;
-using Oracle.ManagedDataAccess.Client;
-using kocerbank_backend.Models.DTOs;
 using Microsoft.Extensions.Configuration;
-using kocerbank_backend.Enums;
+using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
+using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.DataAccess
 {
-    public class ParaTransferiRepository
+    public class ParaTransferRepository
     {
         private readonly string _connectionString;
 
-        // Bağlantı dizesini appsettings.json'dan almak için IConfiguration kullanıyoruz
-        public ParaTransferiRepository(IConfiguration configuration)
+        public ParaTransferRepository(
+            IConfiguration configuration
+        )
         {
-            _connectionString = configuration.GetConnectionString("OracleConnection")
-                ?? throw new InvalidOperationException("Connection string bulunamadı: 'OracleConnection'");
+            _connectionString =
+                configuration.GetConnectionString(
+                    "OracleConnection"
+                )
+                ?? throw new InvalidOperationException(
+                    "Connection string bulunamadı: 'OracleConnection'"
+                );
         }
 
-        // 1. PARA TRANSFERİ EKLEME
-        public ParaTransferiDTO Ekle(ParaTransferiDTO dto)
+
+        // PARA TRANSFERİ YAPMA
+
+        public ParaTransferDTO ParaTransferiYap(
+            ParaTransferDTO dto
+        )
         {
-            using (OracleConnection conn = new OracleConnection(_connectionString))
+            using (
+                OracleConnection conn =
+                    new OracleConnection(
+                        _connectionString
+                    )
+            )
             {
-                using (OracleCommand KB = new OracleCommand("KB_PARATRANSFERI_EKLE", conn))
+                conn.Open();
+
+                using (
+                    OracleTransaction transaction =
+                        conn.BeginTransaction()
+                )
                 {
-                    KB.CommandType = CommandType.StoredProcedure;
-
-                    // IN Parametreleri
-                    KB.Parameters.Add("P_GONDERENIBAN", OracleDbType.Varchar2).Value = dto.GonderenIBAN;
-                    KB.Parameters.Add("P_ALICIIBAN", OracleDbType.Varchar2).Value = dto.AliciIBAN;
-                    KB.Parameters.Add("P_TRANSFERTIPI", OracleDbType.Byte).Value = (byte)dto.TransferTipi;
-                    KB.Parameters.Add("P_MIKTAR", OracleDbType.Decimal).Value = dto.Miktar;
-                    KB.Parameters.Add("P_ACIKLAMA", OracleDbType.Varchar2).Value = dto.Aciklama;
-                    KB.Parameters.Add("P_GONDERENDOVIZTIPI", OracleDbType.Byte).Value = (byte)dto.GonderenDovizTipi;
-                    KB.Parameters.Add("P_ALICIDOVIZTIPI", OracleDbType.Byte).Value = (byte)dto.AliciDovizTipi;
-                    KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
-
-                    // OUT Parametresi
-                    OracleParameter pId = new OracleParameter("P_ID", OracleDbType.Int64)
+                    try
                     {
-                        Direction = ParameterDirection.Output
-                    };
-
-                    KB.Parameters.Add(pId);
-
-                    conn.Open();
-                    KB.ExecuteNonQuery();
-
-                    dto.Id = Convert.ToInt64(pId.Value.ToString());
-
-                    return dto;
-                }
-            }
-        }
-
-        // 2. ID'YE GÖRE GETİR
-        public ParaTransferiDTO? GetirById(long id)
-        {
-            ParaTransferiDTO? transfer = null;
-
-            using (OracleConnection conn = new OracleConnection(_connectionString))
-            {
-                using (OracleCommand KB = new OracleCommand("KB_PARATRANSFERI_GETIRBYID", conn))
-                {
-                    KB.CommandType = CommandType.StoredProcedure;
-
-                    KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = id;
-                    KB.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-
-                    conn.Open();
-
-                    using (OracleDataReader reader = KB.ExecuteReader())
-                    {
-                        if (reader.Read())
+                        using (
+                            OracleCommand KB =
+                                new OracleCommand(
+                                    "KB_PARA_TRANSFERI_YAP",
+                                    conn
+                                )
+                        )
                         {
-                            transfer = MapReaderToDTO(reader);
+                            KB.CommandType =
+                                CommandType.StoredProcedure;
+
+                            KB.BindByName = true;
+
+                            KB.Transaction = transaction;
+
+
+                            // IN PARAMETRELERİ
+
+                            KB.Parameters.Add(
+                                "P_GONDERENHESAPID",
+                                OracleDbType.Int64
+                            ).Value =
+                                dto.GonderenHesapId;
+
+
+                            KB.Parameters.Add(
+                                "P_ALICIHESAPID",
+                                OracleDbType.Int64
+                            ).Value =
+                                dto.AliciHesapId;
+
+
+                            KB.Parameters.Add(
+                                "P_TRANSFERTIPI",
+                                OracleDbType.Byte
+                            ).Value =
+                                (byte)dto.TransferTipi;
+
+
+                            KB.Parameters.Add(
+                                "P_GONDERENTUTAR",
+                                OracleDbType.Decimal
+                            ).Value =
+                                dto.GonderenTutar;
+
+
+                            KB.Parameters.Add(
+                                "P_DOVIZKURU",
+                                OracleDbType.Decimal
+                            ).Value =
+                                dto.DovizKuru;
+
+
+                            KB.Parameters.Add(
+                                "P_ACIKLAMA",
+                                OracleDbType.Varchar2
+                            ).Value =
+                                string.IsNullOrWhiteSpace(
+                                    dto.Aciklama
+                                )
+                                    ? DBNull.Value
+                                    : dto.Aciklama.Trim();
+
+
+                            KB.Parameters.Add(
+                                "P_RECORDUSER",
+                                OracleDbType.Varchar2
+                            ).Value =
+                                string.IsNullOrWhiteSpace(
+                                    dto.RecordUser
+                                )
+                                    ? DBNull.Value
+                                    : dto.RecordUser.Trim();
+
+
+                            // OUT PARAMETRELERİ
+
+                            OracleParameter pTransferId =
+                                new OracleParameter(
+                                    "P_TRANSFERID",
+                                    OracleDbType.Int64
+                                )
+                                {
+                                    Direction =
+                                        ParameterDirection.Output
+                                };
+
+
+                            OracleParameter pGonderenHareketId =
+                                new OracleParameter(
+                                    "P_GONDERENHAREKETID",
+                                    OracleDbType.Int64
+                                )
+                                {
+                                    Direction =
+                                        ParameterDirection.Output
+                                };
+
+
+                            OracleParameter pAliciHareketId =
+                                new OracleParameter(
+                                    "P_ALICIHAREKETID",
+                                    OracleDbType.Int64
+                                )
+                                {
+                                    Direction =
+                                        ParameterDirection.Output
+                                };
+
+
+                            OracleParameter pGonderenYeniBakiye =
+                                new OracleParameter(
+                                    "P_GONDERENYENIBAKIYE",
+                                    OracleDbType.Decimal
+                                )
+                                {
+                                    Direction =
+                                        ParameterDirection.Output
+                                };
+
+
+                            OracleParameter pAliciYeniBakiye =
+                                new OracleParameter(
+                                    "P_ALICIYENIBAKIYE",
+                                    OracleDbType.Decimal
+                                )
+                                {
+                                    Direction =
+                                        ParameterDirection.Output
+                                };
+
+
+                            OracleParameter pAliciTutar =
+                                new OracleParameter(
+                                    "P_ALICITUTAR",
+                                    OracleDbType.Decimal
+                                )
+                                {
+                                    Direction =
+                                        ParameterDirection.Output
+                                };
+
+
+                            KB.Parameters.Add(pTransferId);
+
+                            KB.Parameters.Add(
+                                pGonderenHareketId
+                            );
+
+                            KB.Parameters.Add(
+                                pAliciHareketId
+                            );
+
+                            KB.Parameters.Add(
+                                pGonderenYeniBakiye
+                            );
+
+                            KB.Parameters.Add(
+                                pAliciYeniBakiye
+                            );
+
+                            KB.Parameters.Add(
+                                pAliciTutar
+                            );
+
+
+                            // PROSEDÜRÜ ÇALIŞTIR
+
+                            KB.ExecuteNonQuery();
+
+
+                            // OUT DEĞERLERİNİ DTO'YA AKTAR
+
+                            dto.TransferId =
+                                ((OracleDecimal)
+                                    pTransferId.Value
+                                ).ToInt64();
+
+
+                            dto.GonderenHareketId =
+                                ((OracleDecimal)
+                                    pGonderenHareketId.Value
+                                ).ToInt64();
+
+
+                            dto.AliciHareketId =
+                                ((OracleDecimal)
+                                    pAliciHareketId.Value
+                                ).ToInt64();
+
+
+                            dto.GonderenYeniBakiye =
+                                ((OracleDecimal)
+                                    pGonderenYeniBakiye.Value
+                                ).Value;
+
+
+                            dto.AliciYeniBakiye =
+                                ((OracleDecimal)
+                                    pAliciYeniBakiye.Value
+                                ).Value;
+
+
+                            dto.AliciTutar =
+                                ((OracleDecimal)
+                                    pAliciTutar.Value
+                                ).Value;
+
+
+                            transaction.Commit();
+
+                            return dto;
                         }
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+
+                        throw;
                     }
                 }
             }
-
-            return transfer;
-        }
-
-        // 3. GÜNCELLE
-        public void Guncelle(ParaTransferiDTO dto)
-        {
-            using (OracleConnection conn = new OracleConnection(_connectionString))
-            {
-                using (OracleCommand KB = new OracleCommand("KB_PARATRANSFERI_GUNCELLE", conn))
-                {
-                    KB.CommandType = CommandType.StoredProcedure;
-
-                    KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = dto.Id;
-                    KB.Parameters.Add("P_GONDERENIBAN", OracleDbType.Varchar2).Value = dto.GonderenIBAN;
-                    KB.Parameters.Add("P_ALICIIBAN", OracleDbType.Varchar2).Value = dto.AliciIBAN;
-                    KB.Parameters.Add("P_TRANSFERTIPI", OracleDbType.Byte).Value = (byte)dto.TransferTipi;
-                    KB.Parameters.Add("P_MIKTAR", OracleDbType.Decimal).Value = dto.Miktar;
-                    KB.Parameters.Add("P_ACIKLAMA", OracleDbType.Varchar2).Value = dto.Aciklama;
-                    KB.Parameters.Add("P_GONDERENDOVIZTIPI", OracleDbType.Byte).Value = (byte)dto.GonderenDovizTipi;
-                    KB.Parameters.Add("P_ALICIDOVIZTIPI", OracleDbType.Byte).Value = (byte)dto.AliciDovizTipi;
-                    KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
-
-                    conn.Open();
-                    KB.ExecuteNonQuery();
-                }
-            }
-        }
-
-        // YARDIMCI METOT: Veritabanı satırını DTO nesnesine dönüştürür
-        private ParaTransferiDTO MapReaderToDTO(OracleDataReader reader)
-        {
-            return new ParaTransferiDTO
-            {
-                Id = Convert.ToInt64(reader["ID"]),
-                GonderenIBAN = reader["GONDERENIBAN"].ToString()!,
-                AliciIBAN = reader["ALICIIBAN"].ToString()!,
-                TransferTipi = (TransferTipleri)Convert.ToByte(reader["TRANSFERTIPI"]),
-                Miktar = Convert.ToDecimal(reader["MIKTAR"]),
-                Aciklama = reader["ACIKLAMA"].ToString()!,
-                GonderenDovizTipi = (DovizTipleri)Convert.ToByte(reader["GONDERENDOVIZTIPI"]),
-                AliciDovizTipi = (DovizTipleri)Convert.ToByte(reader["ALICIDOVIZTIPI"]),
-                TarihSaat = Convert.ToDateTime(reader["TARIHSAAT"]),
-                RecordUser = reader["RECORDUSER"].ToString()
-            };
         }
     }
 }

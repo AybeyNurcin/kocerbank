@@ -1,17 +1,11 @@
 namespace kocerbank_backend.Enums
 {
-    public enum TransferTipleri
+    public enum TransferTipleri : byte
     {
+        None = 0,
         Havale = 1,
-        EFT = 2,
-        FAST = 3
+        Virman = 2
     }
 
-    public enum DovizTipleri
-    {
-        TL = 1,
-        USD = 2,
-        EUR = 3
-    }
 }
 

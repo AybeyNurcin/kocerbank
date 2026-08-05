@@ -22,6 +22,10 @@ builder.Services.AddScoped<MusteriIletisimService>();
 builder.Services.AddScoped<HesapRepository>();
 builder.Services.AddScoped<HesapService>();
 
+builder.Services.AddScoped<ParaTransferRepository>();
+builder.Services.AddScoped<ParaTransferServis>();
+builder.Services.AddScoped<DovizKuruServis>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>
