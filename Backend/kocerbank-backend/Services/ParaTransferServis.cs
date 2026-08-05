@@ -9,6 +9,9 @@ namespace kocerbank_backend.Services
         private readonly HesapRepository
             _hesapRepository;
 
+        private readonly MusteriRepository
+            _musteriRepository;
+
         private readonly ParaTransferRepository
             _paraTransferRepository;
 
@@ -18,12 +21,16 @@ namespace kocerbank_backend.Services
 
         public ParaTransferServis(
             HesapRepository hesapRepository,
+            MusteriRepository musteriRepository,
             ParaTransferRepository paraTransferRepository,
             DovizKuruServis dovizKuruService
         )
         {
             _hesapRepository =
                 hesapRepository;
+
+            _musteriRepository =
+                musteriRepository;
 
             _paraTransferRepository =
                 paraTransferRepository;
@@ -33,20 +40,44 @@ namespace kocerbank_backend.Services
         }
 
 
-        public ParaTransferDTO ParaTransferiYap(
+        /*
+         * TRANSFER BİLGİLERİNİ GETİR
+         *
+         * Bu metot prosedür çağırmaz.
+         * Bakiye değiştirmez.
+         * Transfer kaydı oluşturmaz.
+         */
+
+        public ParaTransferDTO TransferBilgileriniGetir(
             ParaTransferDTO dto
         )
         {
+            if (dto is null)
+            {
+                throw new ArgumentNullException(
+                    nameof(dto),
+                    "Transfer bilgileri gönderilmelidir."
+                );
+            }
+
+
             /*
-             * 1. FRONTEND'DEN GELEN TEMEL
-             * BİLGİLERİ KONTROL ET
+             * IBAN KONTROLLERİ
              */
 
-            TransferBilgileriniKontrolEt(dto);
+            IbanKontrolEt(
+                dto.GonderenIBAN,
+                "Gönderen"
+            );
+
+            IbanKontrolEt(
+                dto.AliciIBAN,
+                "Alıcı"
+            );
 
 
             /*
-             * 2. IBAN'LARI TEMİZLE
+             * IBAN'LARI TEMİZLE
              */
 
             dto.GonderenIBAN =
@@ -60,10 +91,6 @@ namespace kocerbank_backend.Services
                 );
 
 
-            /*
-             * 3. AYNI IBAN KONTROLÜ
-             */
-
             if (
                 dto.GonderenIBAN ==
                 dto.AliciIBAN
@@ -76,7 +103,7 @@ namespace kocerbank_backend.Services
 
 
             /*
-             * 4. GÖNDEREN HESABI BUL
+             * HESAPLARI GETİR
              */
 
             HesapDTO? gonderenHesap =
@@ -92,10 +119,6 @@ namespace kocerbank_backend.Services
             }
 
 
-            /*
-             * 5. ALICI HESABI BUL
-             */
-
             HesapDTO? aliciHesap =
                 _hesapRepository.GetirByIBAN(
                     dto.AliciIBAN
@@ -110,61 +133,102 @@ namespace kocerbank_backend.Services
 
 
             /*
-             * 6. HESAP DURUM KONTROLLERİ
+             * HESAP DURUMLARINI KONTROL ET
              */
 
-            if (
-                gonderenHesap.HesapDurumKodu !=
-                HesapDurumKodlari.Aktif
-            )
-            {
-                throw new InvalidOperationException(
-                    "Gönderen hesap aktif değildir."
-                );
-            }
-
-
-            if (
-                aliciHesap.HesapDurumKodu !=
-                HesapDurumKodlari.Aktif
-            )
-            {
-                throw new InvalidOperationException(
-                    "Alıcı hesap aktif değildir."
-                );
-            }
-
-
-            /*
-             * 7. BAKİYE KONTROLÜ
-             *
-             * Bu kontrol prosedürde de tekrar yapılır.
-             */
-
-            if (
-                gonderenHesap.Bakiye <
-                dto.GonderenTutar
-            )
-            {
-                throw new InvalidOperationException(
-                    "Gönderen hesap bakiyesi yetersizdir."
-                );
-            }
-
-
-            /*
-             * 8. HAVALE / VİRMAN KONTROLÜ
-             */
-
-            TransferTipiniKontrolEt(
-                dto.TransferTipi,
+            HesapDurumlariniKontrolEt(
                 gonderenHesap,
                 aliciHesap
             );
 
 
             /*
-             * 9. HESAP BİLGİLERİNİ DTO'YA AKTAR
+             * TRANSFER TİPİ GÖNDERİLMİŞSE
+             * HAVALE/VİRMAN KONTROLÜ YAP
+             *
+             * TransferTipi 0 gelirse bilgi getirme
+             * işlemi yine çalışabilir.
+             */
+
+            if (
+                dto.TransferTipi ==
+                    TransferTipleri.Havale ||
+                dto.TransferTipi ==
+                    TransferTipleri.Virman
+            )
+            {
+                TransferTipiniKontrolEt(
+                    dto.TransferTipi,
+                    gonderenHesap,
+                    aliciHesap
+                );
+            }
+            else if (
+                dto.TransferTipi !=
+                TransferTipleri.None
+            )
+            {
+                throw new ArgumentException(
+                    "Transfer tipi geçersizdir."
+                );
+            }
+
+
+            /*
+             * TUTAR GÖNDERİLMİŞSE
+             * BAKİYE VE TUTAR KONTROLLERİ
+             */
+
+            if (dto.GonderenTutar > 0)
+            {
+                TutarKontrolEt(
+                    dto.GonderenTutar
+                );
+
+                if (
+                    gonderenHesap.Bakiye <
+                    dto.GonderenTutar
+                )
+                {
+                    throw new InvalidOperationException(
+                        "Gönderen hesap bakiyesi yetersizdir."
+                    );
+                }
+            }
+
+
+            /*
+             * HESAP SAHİPLERİNİ GETİR
+             */
+
+            MusteriDTO? gonderenMusteri =
+                _musteriRepository.GetirById(
+                    gonderenHesap.MusteriBilgileriId
+                );
+
+            if (gonderenMusteri is null)
+            {
+                throw new KeyNotFoundException(
+                    "Gönderen hesap sahibi bulunamadı."
+                );
+            }
+
+
+            MusteriDTO? aliciMusteri =
+                _musteriRepository.GetirById(
+                    aliciHesap.MusteriBilgileriId
+                );
+
+            if (aliciMusteri is null)
+            {
+                throw new KeyNotFoundException(
+                    "Alıcı hesap sahibi bulunamadı."
+                );
+            }
+
+
+            /*
+             * ID VE DÖVİZ BİLGİLERİNİ DTO'YA YAZ
              */
 
             dto.GonderenHesapId =
@@ -181,7 +245,11 @@ namespace kocerbank_backend.Services
 
 
             /*
-             * 10. TRANSFER KURUNU HESAPLA
+             * KURU HESAPLA
+             *
+             * Anlamı:
+             * 1 gönderen dövizi =
+             * X alıcı dövizi
              */
 
             dto.DovizKuru =
@@ -192,9 +260,184 @@ namespace kocerbank_backend.Services
                     );
 
 
+            dto.KurAciklamasi =
+                $"1 {gonderenHesap.DovizCinsi} = " +
+                $"{dto.DovizKuru} " +
+                $"{aliciHesap.DovizCinsi}";
+
+
+            dto.KurTarihi =
+                _dovizKuruService
+                    .KurTarihiniGetir();
+
+
             /*
-             * 11. METİN ALANLARINI TEMİZLE
+             * DETAYLI HESAP BİLGİLERİNİ DTO'YA YAZ
              */
+
+            dto.GonderenHesap =
+                TransferHesabaDonustur(
+                    gonderenHesap,
+                    gonderenMusteri
+                );
+
+            dto.AliciHesap =
+                TransferHesabaDonustur(
+                    aliciHesap,
+                    aliciMusteri
+                );
+
+
+            /*
+             * TUTAR VARSA ALICIYA GEÇECEK
+             * TUTARI ÖNİZLEME İÇİN HESAPLA
+             */
+
+            if (dto.GonderenTutar > 0)
+            {
+                dto.AliciTutar =
+                    decimal.Round(
+                        dto.GonderenTutar *
+                        dto.DovizKuru,
+                        2,
+                        MidpointRounding.AwayFromZero
+                    );
+            }
+
+
+            return dto;
+        }
+
+
+        /*
+         * GERÇEK PARA TRANSFERİ
+         *
+         * Bu metot repository ve prosedür çağırır.
+         */
+
+        public ParaTransferDTO ParaTransferiYap(
+            ParaTransferDTO dto
+        )
+        {
+            TransferBilgileriniKontrolEt(dto);
+
+
+            dto.GonderenIBAN =
+                IbanTemizle(
+                    dto.GonderenIBAN
+                );
+
+            dto.AliciIBAN =
+                IbanTemizle(
+                    dto.AliciIBAN
+                );
+
+
+            if (
+                dto.GonderenIBAN ==
+                dto.AliciIBAN
+            )
+            {
+                throw new ArgumentException(
+                    "Gönderen ve alıcı IBAN aynı olamaz."
+                );
+            }
+
+
+            /*
+             * HESAPLARI GETİR
+             */
+
+            HesapDTO? gonderenHesap =
+                _hesapRepository.GetirByIBAN(
+                    dto.GonderenIBAN
+                );
+
+            if (gonderenHesap is null)
+            {
+                throw new KeyNotFoundException(
+                    "Gönderen IBAN'a ait hesap bulunamadı."
+                );
+            }
+
+
+            HesapDTO? aliciHesap =
+                _hesapRepository.GetirByIBAN(
+                    dto.AliciIBAN
+                );
+
+            if (aliciHesap is null)
+            {
+                throw new KeyNotFoundException(
+                    "Alıcı IBAN'a ait hesap bulunamadı."
+                );
+            }
+
+
+            /*
+             * HESAP DURUMLARI
+             */
+
+            HesapDurumlariniKontrolEt(
+                gonderenHesap,
+                aliciHesap
+            );
+
+
+            /*
+             * BAKİYE
+             */
+
+            if (
+                gonderenHesap.Bakiye <
+                dto.GonderenTutar
+            )
+            {
+                throw new InvalidOperationException(
+                    "Gönderen hesap bakiyesi yetersizdir."
+                );
+            }
+
+
+            /*
+             * HAVALE / VİRMAN
+             */
+
+            TransferTipiniKontrolEt(
+                dto.TransferTipi,
+                gonderenHesap,
+                aliciHesap
+            );
+
+
+            /*
+             * GÜVENİLİR HESAP BİLGİLERİNİ
+             * DTO'YA YENİDEN YAZ
+             *
+             * Frontend'den gelen ID, döviz ve kur
+             * değerlerine güvenilmez.
+             */
+
+            dto.GonderenHesapId =
+                gonderenHesap.Id;
+
+            dto.AliciHesapId =
+                aliciHesap.Id;
+
+            dto.GonderenDovizTipi =
+                gonderenHesap.DovizCinsi;
+
+            dto.AliciDovizTipi =
+                aliciHesap.DovizCinsi;
+
+
+            dto.DovizKuru =
+                _dovizKuruService
+                    .TransferKuruGetir(
+                        gonderenHesap.DovizCinsi,
+                        aliciHesap.DovizCinsi
+                    );
+
 
             dto.Aciklama =
                 string.IsNullOrWhiteSpace(
@@ -211,14 +454,14 @@ namespace kocerbank_backend.Services
                     : dto.RecordUser.Trim();
 
 
-            /*
-             * 12. REPOSITORY'Yİ ÇAĞIR
-             */
-
             return _paraTransferRepository
                 .ParaTransferiYap(dto);
         }
 
+
+        /*
+         * GERÇEK TRANSFER İSTEĞİ KONTROLLERİ
+         */
 
         private void TransferBilgileriniKontrolEt(
             ParaTransferDTO dto
@@ -237,7 +480,6 @@ namespace kocerbank_backend.Services
                 dto.GonderenIBAN,
                 "Gönderen"
             );
-
 
             IbanKontrolEt(
                 dto.AliciIBAN,
@@ -258,41 +500,9 @@ namespace kocerbank_backend.Services
             }
 
 
-            if (dto.GonderenTutar <= 0)
-            {
-                throw new ArgumentException(
-                    "Gönderen tutar sıfırdan büyük olmalıdır."
-                );
-            }
-
-
-            /*
-             * Veritabanındaki tutar kolonu
-             * NUMBER(14,2) olduğu için en fazla
-             * 12 tam sayı hanesi kullanılabilir.
-             */
-
-            if (
-                dto.GonderenTutar >
-                999999999999.99m
-            )
-            {
-                throw new ArgumentException(
-                    "Gönderen tutar izin verilen üst sınırı aşmaktadır."
-                );
-            }
-
-
-            if (
-                OndalikBasamakSayisiGetir(
-                    dto.GonderenTutar
-                ) > 2
-            )
-            {
-                throw new ArgumentException(
-                    "Gönderen tutar en fazla iki ondalık basamak içerebilir."
-                );
-            }
+            TutarKontrolEt(
+                dto.GonderenTutar
+            );
 
 
             if (
@@ -318,6 +528,82 @@ namespace kocerbank_backend.Services
         }
 
 
+        /*
+         * ORTAK TUTAR KONTROLÜ
+         */
+
+        private void TutarKontrolEt(
+            decimal gonderenTutar
+        )
+        {
+            if (gonderenTutar <= 0)
+            {
+                throw new ArgumentException(
+                    "Gönderen tutar sıfırdan büyük olmalıdır."
+                );
+            }
+
+
+            if (
+                gonderenTutar >
+                999999999999.99m
+            )
+            {
+                throw new ArgumentException(
+                    "Gönderen tutar izin verilen üst sınırı aşmaktadır."
+                );
+            }
+
+
+            if (
+                OndalikBasamakSayisiGetir(
+                    gonderenTutar
+                ) > 2
+            )
+            {
+                throw new ArgumentException(
+                    "Gönderen tutar en fazla iki ondalık basamak içerebilir."
+                );
+            }
+        }
+
+
+        /*
+         * ORTAK HESAP DURUM KONTROLÜ
+         */
+
+        private void HesapDurumlariniKontrolEt(
+            HesapDTO gonderenHesap,
+            HesapDTO aliciHesap
+        )
+        {
+            if (
+                gonderenHesap.HesapDurumKodu !=
+                HesapDurumKodlari.Aktif
+            )
+            {
+                throw new InvalidOperationException(
+                    "Gönderen hesap aktif değildir."
+                );
+            }
+
+
+            if (
+                aliciHesap.HesapDurumKodu !=
+                HesapDurumKodlari.Aktif
+            )
+            {
+                throw new InvalidOperationException(
+                    "Alıcı hesap aktif değildir."
+                );
+            }
+        }
+
+
+        /*
+         * IBAN KONTROLÜ
+         */
+
         private void IbanKontrolEt(
             string iban,
             string alanAdi
@@ -330,8 +616,10 @@ namespace kocerbank_backend.Services
                 );
             }
 
+
             string temizIban =
                 IbanTemizle(iban);
+
 
             if (temizIban.Length != 26)
             {
@@ -339,6 +627,7 @@ namespace kocerbank_backend.Services
                     $"{alanAdi} IBAN 26 karakter olmalıdır."
                 );
             }
+
 
             if (
                 !temizIban.StartsWith(
@@ -352,8 +641,10 @@ namespace kocerbank_backend.Services
                 );
             }
 
+
             string sayisalKisim =
                 temizIban.Substring(2);
+
 
             if (!sayisalKisim.All(char.IsDigit))
             {
@@ -363,6 +654,10 @@ namespace kocerbank_backend.Services
             }
         }
 
+
+        /*
+         * IBAN TEMİZLEME
+         */
 
         private string IbanTemizle(
             string iban
@@ -374,6 +669,10 @@ namespace kocerbank_backend.Services
                 .ToUpperInvariant();
         }
 
+
+        /*
+         * HAVALE / VİRMAN KONTROLÜ
+         */
 
         private void TransferTipiniKontrolEt(
             TransferTipleri transferTipi,
@@ -410,6 +709,88 @@ namespace kocerbank_backend.Services
             }
         }
 
+
+        /*
+         * HESAP DTO → TRANSFER HESAP DTO
+         */
+
+        private TransferHesapDTO TransferHesabaDonustur(
+            HesapDTO hesap,
+            MusteriDTO musteri
+        )
+        {
+            string hesapSahibi;
+
+
+            if (
+                musteri.MusteriTipi ==
+                    MusteriTipiDurumlari.Kurumsal &&
+                !string.IsNullOrWhiteSpace(
+                    musteri.Unvan
+                )
+            )
+            {
+                hesapSahibi =
+                    musteri.Unvan.Trim();
+            }
+            else
+            {
+                hesapSahibi =
+                    $"{musteri.Ad} {musteri.Soyad}"
+                        .Trim();
+            }
+
+
+            return new TransferHesapDTO
+            {
+                Id =
+                    hesap.Id,
+
+                RecordUser =
+                    hesap.RecordUser,
+
+                RecordDate =
+                    hesap.RecordDate,
+
+                HesapAdi =
+                    hesap.HesapAdi,
+
+                HesapNo =
+                    hesap.HesapNo,
+
+                IBAN =
+                    hesap.IBAN,
+
+                Bakiye =
+                    hesap.Bakiye,
+
+                SubeSubeKodu =
+                    hesap.SubeSubeKodu,
+
+                DovizCinsi =
+                    hesap.DovizCinsi,
+
+                HesapAcilisTarihi =
+                    hesap.HesapAcilisTarihi,
+
+                HesapDurumKodu =
+                    hesap.HesapDurumKodu,
+
+                MusteriBilgileriId =
+                    hesap.MusteriBilgileriId,
+
+                HesapTipi =
+                    hesap.HesapTipi,
+
+                HesapSahibi =
+                    hesapSahibi
+            };
+        }
+
+
+        /*
+         * ONDALIK BASAMAK SAYISI
+         */
 
         private int OndalikBasamakSayisiGetir(
             decimal deger

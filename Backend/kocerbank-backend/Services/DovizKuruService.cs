@@ -295,5 +295,13 @@ namespace kocerbank_backend.Services
                 MidpointRounding.AwayFromZero
             );
         }
+
+        public DateTime KurTarihiniGetir()
+        {
+            DovizKuruDosyasiDTO kurDosyasi =
+                KurDosyasiniOku();
+
+            return kurDosyasi.KurTarihi;
+        }
     }
 }

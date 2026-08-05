@@ -80,5 +80,65 @@ namespace kocerbank_backend.Controllers
                 );
             }
         }
+
+        [HttpPost("TransferBilgileriniGetir")]
+        public IActionResult TransferBilgileriniGetir(
+            [FromBody] ParaTransferDTO dto
+        )
+        {
+            try
+            {
+                ParaTransferDTO sonuc =
+                    _paraTransferServis
+                        .TransferBilgileriniGetir(dto);
+
+                return Ok(sonuc);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (FileNotFoundException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+        }
     }
 }
