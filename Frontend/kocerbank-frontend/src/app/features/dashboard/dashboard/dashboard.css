@@ -67,7 +67,7 @@
     border-bottom-color: rgba(255, 255, 255, 0.2);
   }
 
-  .card-color .data-source.sample-source {
+  .card-color .data-source.live-source {
     background-color: rgba(255, 255, 255, 0.2);
     color: #ffffff;
   }
@@ -146,7 +146,7 @@
   white-space: nowrap;
 }
 
-.sample-source {
+.live-source {
   background-color: #f1f1f4;
   color: #9a9aa2;
 }
