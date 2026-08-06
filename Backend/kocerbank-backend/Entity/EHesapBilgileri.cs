@@ -23,45 +23,149 @@ namespace kocerbank_backend.DataAccess
         // 1. HESAP EKLEME
         public HesapDTO Ekle(HesapDTO dto)
         {
-            using (OracleConnection conn = new OracleConnection(_connectionString))
+            using OracleConnection conn =
+                new OracleConnection(_connectionString);
+
+            conn.Open();
+
+            using OracleTransaction transaction =
+                conn.BeginTransaction();
+
+            try
             {
-                using (OracleCommand KB = new OracleCommand("KB_HESAPBILGILERI_EKLE", conn))
-                {
-                    KB.CommandType = CommandType.StoredProcedure;
+                using OracleCommand command =
+                    new OracleCommand(
+                        "KB_HESAPBILGILERI_EKLE",
+                        conn
+                    );
 
-                    KB.Parameters.Add("P_HESAPADI", OracleDbType.Varchar2).Value = dto.HesapAdi;
-                    KB.Parameters.Add("P_HESAPNO", OracleDbType.Varchar2).Value = dto.HesapNo;
-                    KB.Parameters.Add("P_IBAN", OracleDbType.Varchar2).Value = dto.IBAN;
-                    KB.Parameters.Add("P_BAKIYE", OracleDbType.Decimal).Value = dto.Bakiye;
-                    KB.Parameters.Add("P_SUBESUBEKODU", OracleDbType.Varchar2).Value = dto.SubeSubeKodu;
-                    KB.Parameters.Add("P_DOVIZCINSI", OracleDbType.Byte).Value = (byte)dto.DovizCinsi;
-                    KB.Parameters.Add("P_HESAPDURUMKODU", OracleDbType.Byte).Value = (byte)dto.HesapDurumKodu;
-                    KB.Parameters.Add("P_MUSTERIBILGILERIID", OracleDbType.Int64).Value = dto.MusteriBilgileriId;
-                    KB.Parameters.Add("P_HESAPTIPI", OracleDbType.Byte).Value = (byte)dto.HesapTipi;
+                command.CommandType =
+                    CommandType.StoredProcedure;
 
-                    // OUT Parametreleri
-                    OracleParameter pId = new OracleParameter("P_ID", OracleDbType.Int64)
+                command.BindByName = true;
+
+                command.Transaction = transaction;
+
+
+                // IN PARAMETRELERİ
+
+                command.Parameters.Add(
+                    "P_HESAPADI",
+                    OracleDbType.Varchar2
+                ).Value = dto.HesapAdi;
+
+                command.Parameters.Add(
+                    "P_SUBESUBEKODU",
+                    OracleDbType.Varchar2
+                ).Value = dto.SubeSubeKodu;
+
+                command.Parameters.Add(
+                    "P_DOVIZCINSI",
+                    OracleDbType.Byte
+                ).Value = (byte)dto.DovizCinsi;
+
+                command.Parameters.Add(
+                    "P_HESAPDURUMKODU",
+                    OracleDbType.Byte
+                ).Value = (byte)dto.HesapDurumKodu;
+
+                command.Parameters.Add(
+                    "P_MUSTERIBILGILERIID",
+                    OracleDbType.Int64
+                ).Value = dto.MusteriBilgileriId;
+
+                command.Parameters.Add(
+                    "P_HESAPTIPI",
+                    OracleDbType.Byte
+                ).Value = (byte)dto.HesapTipi;
+
+                command.Parameters.Add(
+                    "P_RECORDUSER",
+                    OracleDbType.Varchar2
+                ).Value =
+                    string.IsNullOrWhiteSpace(dto.RecordUser)
+                        ? DBNull.Value
+                        : dto.RecordUser;
+
+
+                // OUT PARAMETRELERİ
+
+                OracleParameter pYeniId =
+                    new OracleParameter(
+                        "P_YENI_ID",
+                        OracleDbType.Int64
+                    )
                     {
-                        Direction = ParameterDirection.Output
+                        Direction =
+                            ParameterDirection.Output
                     };
 
-                    OracleParameter pHesapAcilisTarihi = new OracleParameter("P_HESAPACILISTARIHI", OracleDbType.Date)
+                OracleParameter pHesapNo =
+                    new OracleParameter(
+                        "P_HESAPNO",
+                        OracleDbType.Varchar2,
+                        16
+                    )
                     {
-                        Direction = ParameterDirection.Output
+                        Direction =
+                            ParameterDirection.Output
                     };
 
-                    KB.Parameters.Add(pId);
-                    KB.Parameters.Add(pHesapAcilisTarihi);
+                OracleParameter pIban =
+                    new OracleParameter(
+                        "P_IBAN",
+                        OracleDbType.Varchar2,
+                        26
+                    )
+                    {
+                        Direction =
+                            ParameterDirection.Output
+                    };
 
-                    conn.Open();
-                    KB.ExecuteNonQuery();
+                command.Parameters.Add(pYeniId);
+                command.Parameters.Add(pHesapNo);
+                command.Parameters.Add(pIban);
 
-                    dto.Id = ((OracleDecimal)pId.Value).ToInt64();
-                    dto.HesapAcilisTarihi = ((OracleDate)pHesapAcilisTarihi.Value).Value;
 
-                    return dto;
-                }
+                // PROSEDÜRÜ ÇALIŞTIR
+
+                command.ExecuteNonQuery();
+
+
+                // ÜRETİLEN DEĞERLERİ DTO'YA YAZ
+
+                dto.Id =
+                    ((OracleDecimal)pYeniId.Value)
+                    .ToInt64();
+
+                dto.HesapNo =
+                    pHesapNo.Value?.ToString()
+                    ?? string.Empty;
+
+                dto.IBAN =
+                    pIban.Value?.ToString()
+                    ?? string.Empty;
+
+                dto.Bakiye = 0;
+
+                transaction.Commit();
             }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+
+
+            /*
+            * Hesabın açılış tarihi, record date ve diğer
+            * veritabanı değerlerini doğru şekilde almak için
+            * eklenen hesabı tekrar getiriyoruz.
+            */
+            HesapDTO? olusturulanHesap =
+                GetirById(dto.Id);
+
+            return olusturulanHesap ?? dto;
         }
 
                 // 2. ID'YE GÖRE GETİR (READ)

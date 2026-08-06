@@ -4,13 +4,10 @@
   <div class="page-heading">
 
     <div>
-
       <button type="button"
               class="back-button"
               (click)="musteriListesineDon()">
-
         ← Müşteri listesine dön
-
       </button>
 
       <h1>Müşteri Hesapları</h1>
@@ -20,8 +17,15 @@
         <strong>{{ musteriId }}</strong>
         • Hesapları görüntüleyebilir ve yönetebilirsiniz.
       </p>
-
     </div>
+
+    <button type="button"
+            class="new-account-button"
+            [disabled]="yukleniyorMu || musteriId <= 0"
+            (click)="hesapFormunuAc()">
+      <span>+</span>
+      Yeni Hesap
+    </button>
 
   </div>
 
@@ -30,38 +34,29 @@
   @if (yukleniyorMu) {
 
   <div class="state-card loading-state">
-
     <span class="loading-spinner"></span>
 
     <div>
-
       <strong>Hesaplar yükleniyor</strong>
 
       <p>
         Müşteriye ait hesap bilgileri getiriliyor.
       </p>
-
     </div>
-
   </div>
 
   }
 
 
   <!-- HATA -->
-  @if (
-  !yukleniyorMu &&
-  hataMesaji !== ''
-  ) {
+  @if (!yukleniyorMu && hataMesaji !== '') {
 
   <div class="state-card error-state">
-
     <strong>Hesaplar getirilemedi</strong>
 
     <p>
       {{ hataMesaji }}
     </p>
-
   </div>
 
   }
@@ -88,6 +83,12 @@
       Bu müşteri için henüz bir hesap kaydı oluşturulmamış.
     </p>
 
+    <button type="button"
+            class="first-account-button"
+            (click)="hesapFormunuAc()">
+      + İlk Hesabı Oluştur
+    </button>
+
   </div>
 
   }
@@ -104,7 +105,6 @@
   <div class="accounts-summary">
 
     <div>
-
       <span class="summary-label">
         Hesaplarım
       </span>
@@ -112,7 +112,6 @@
       <strong>
         {{ hesaplar.length }} hesap
       </strong>
-
     </div>
 
     <p>
@@ -138,7 +137,6 @@
       <div class="type-card-heading">
 
         <div class="type-icon">
-
           @if (secenek.tip === 1) {
           V
           } @else if (secenek.tip === 2) {
@@ -146,24 +144,15 @@
           } @else {
           Y
           }
-
         </div>
 
         <div>
-
-          <strong>
-            {{ secenek.ad }}
-          </strong>
+          <strong>{{ secenek.ad }}</strong>
 
           <span>
-            {{
-              hesapTipindekiHesapSayisi(
-                secenek.tip
-              )
-            }}
+            {{ hesapTipindekiHesapSayisi(secenek.tip) }}
             hesap
           </span>
-
         </div>
 
         <span class="type-arrow">
@@ -172,46 +161,28 @@
 
       </div>
 
-
       <div class="type-totals">
 
         @for (
-        toplam of hesapTipiToplamlariniGetir(
-        secenek.tip
-        );
+        toplam of hesapTipiToplamlariniGetir(secenek.tip);
         track toplam.dovizCinsi
         ) {
 
         <div class="type-total-item">
-
           <span>
-            {{
-              dovizKodunuGetir(
-                toplam.dovizCinsi
-              )
-            }}
+            {{ dovizKodunuGetir(toplam.dovizCinsi) }}
           </span>
 
           <strong>
-            {{
-              toplam.toplam
-                | number:'1.2-2'
-            }}
-            {{
-              dovizSembolunuGetir(
-                toplam.dovizCinsi
-              )
-            }}
+            {{ toplam.toplam | number:'1.2-2' }}
+            {{ dovizSembolunuGetir(toplam.dovizCinsi) }}
           </strong>
-
         </div>
 
         }
 
         @if (
-        hesapTipindekiHesapSayisi(
-        secenek.tip
-        ) === 0
+        hesapTipindekiHesapSayisi(secenek.tip) === 0
         ) {
 
         <span class="no-account-type">
@@ -238,20 +209,14 @@
       <div class="panel-heading">
 
         <div>
-
           <span class="panel-label">
             Hesap listesi
           </span>
 
           <h2>
-            {{
-              hesapTipiAdiniGetir(
-                seciliHesapTipi
-              )
-            }}
+            {{ hesapTipiAdiniGetir(seciliHesapTipi) }}
             Hesaplar
           </h2>
-
         </div>
 
         <span class="account-count-badge">
@@ -261,20 +226,22 @@
       </div>
 
 
-      @if (
-      seciliTiptekiHesaplar.length === 0
-      ) {
+      @if (seciliTiptekiHesaplar.length === 0) {
 
       <div class="panel-empty-state">
-
         <strong>
           Bu türde hesap bulunmuyor
         </strong>
 
         <p>
-          Farklı bir hesap türü seçebilirsiniz.
+          Farklı bir hesap türü seçebilir veya yeni hesap oluşturabilirsiniz.
         </p>
 
+        <button type="button"
+                class="first-account-button"
+                (click)="hesapFormunuAc()">
+          + Yeni Hesap Oluştur
+        </button>
       </div>
 
       } @else {
@@ -294,59 +261,33 @@
           <div class="account-item-main">
 
             <div class="account-item-icon">
-
-              {{
-                dovizSembolunuGetir(
-                  hesap.dovizCinsi
-                )
-              }}
-
+              {{ dovizSembolunuGetir(hesap.dovizCinsi) }}
             </div>
 
             <div class="account-item-information">
-
               <strong>
                 {{ hesap.hesapAdi }}
               </strong>
 
               <span>
-                ••••
-                {{
-                  hesap.iban.slice(
-                    -4
-                  )
-                }}
+                •••• {{ hesap.iban.slice(-4) }}
                 |
-                {{
-                  dovizKodunuGetir(
-                    hesap.dovizCinsi
-                  )
-                }}
+                {{ dovizKodunuGetir(hesap.dovizCinsi) }}
                 Hesabı
               </span>
-
             </div>
 
           </div>
 
           <div class="account-item-balance">
-
             <strong>
-              {{
-                hesap.bakiye
-                  | number:'1.2-2'
-              }}
-              {{
-                dovizSembolunuGetir(
-                  hesap.dovizCinsi
-                )
-              }}
+              {{ hesap.bakiye | number:'1.2-2' }}
+              {{ dovizSembolunuGetir(hesap.dovizCinsi) }}
             </strong>
 
             <span>
               Kullanılabilir bakiye
             </span>
-
           </div>
 
           <span class="account-item-arrow">
@@ -453,13 +394,7 @@
               [class.active-status]="seciliHesap.hesapDurumKodu === 1"
               [class.passive-status]="seciliHesap.hesapDurumKodu === 2"
               [class.closed-status]="seciliHesap.hesapDurumKodu === 3">
-
-          {{
-            hesapDurumuAdiniGetir(
-              seciliHesap.hesapDurumKodu
-            )
-          }}
-
+          {{ hesapDurumuAdiniGetir(seciliHesap.hesapDurumKodu) }}
         </span>
 
       </div>
@@ -473,23 +408,12 @@
         </span>
 
         <strong>
-          {{
-            seciliHesap.bakiye
-              | number:'1.2-2'
-          }}
-          {{
-            dovizSembolunuGetir(
-              seciliHesap.dovizCinsi
-            )
-          }}
+          {{ seciliHesap.bakiye | number:'1.2-2' }}
+          {{ dovizSembolunuGetir(seciliHesap.dovizCinsi) }}
         </strong>
 
         <small>
-          {{
-            dovizKodunuGetir(
-              seciliHesap.dovizCinsi
-            )
-          }}
+          {{ dovizKodunuGetir(seciliHesap.dovizCinsi) }}
           hesabı
         </small>
 
@@ -500,21 +424,17 @@
       <div class="detail-iban-row">
 
         <div class="detail-iban-information">
-
           <span>IBAN</span>
 
           <strong class="iban-value">
             {{ seciliHesap.iban }}
           </strong>
-
         </div>
 
         <button type="button"
                 class="secondary-button"
                 (click)="hesapDetaylariniAcKapat()">
-
           Hesap Detayları
-
         </button>
 
       </div>
@@ -524,13 +444,11 @@
       <div class="detail-movements">
 
         <div class="movements-heading">
-
           <span class="panel-label">
             Hesap hareketleri
           </span>
 
           <h3>Son işlemler</h3>
-
         </div>
 
         @if (hareketlerHataMesaji !== '') {
@@ -559,49 +477,33 @@
             <div class="movement-icon"
                  [class.movement-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
                  [class.movement-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
-
               {{
                 hareketGirisMi(hareket.hesapHareketiTipi)
                   ? '↓'
                   : '↑'
               }}
-
             </div>
 
             <div class="movement-information">
-
               <strong>
                 {{ hareketAciklamasiniGetir(hareket.hesapHareketiTipi) }}
               </strong>
 
               <span>
-                {{
-                  hareket.islemTarihi
-                    | date:'dd.MM.yyyy HH:mm'
-                }}
+                {{ hareket.islemTarihi | date:'dd.MM.yyyy HH:mm' }}
               </span>
-
             </div>
 
             <strong class="movement-amount"
                     [class.amount-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
                     [class.amount-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
-
               {{
                 hareketGirisMi(hareket.hesapHareketiTipi)
                   ? '+'
                   : '-'
               }}
-              {{
-                hareket.tutar
-                  | number:'1.2-2'
-              }}
-              {{
-                dovizSembolunuGetir(
-                  seciliHesap.dovizCinsi
-                )
-              }}
-
+              {{ hareket.tutar | number:'1.2-2' }}
+              {{ dovizSembolunuGetir(seciliHesap.dovizCinsi) }}
             </strong>
 
           </div>
@@ -611,15 +513,11 @@
         </div>
 
         <div class="movements-footer">
-
           <button type="button"
                   class="movements-all-button"
                   (click)="tumHareketleriAc()">
-
             Tüm hesap hareketleri
-
           </button>
-
         </div>
 
         }
@@ -637,17 +535,13 @@
              (click)="$event.stopPropagation()">
 
           <div class="detail-modal-heading">
-
             <h3>Tüm Hesap Hareketleri</h3>
 
             <button type="button"
                     class="modal-close-button"
                     (click)="tumHareketleriKapat()">
-
               ×
-
             </button>
-
           </div>
 
           <div class="movement-list">
@@ -662,49 +556,33 @@
               <div class="movement-icon"
                    [class.movement-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
                    [class.movement-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
-
                 {{
                   hareketGirisMi(hareket.hesapHareketiTipi)
                     ? '↓'
                     : '↑'
                 }}
-
               </div>
 
               <div class="movement-information">
-
                 <strong>
                   {{ hareketAciklamasiniGetir(hareket.hesapHareketiTipi) }}
                 </strong>
 
                 <span>
-                  {{
-                    hareket.islemTarihi
-                      | date:'dd.MM.yyyy HH:mm'
-                  }}
+                  {{ hareket.islemTarihi | date:'dd.MM.yyyy HH:mm' }}
                 </span>
-
               </div>
 
               <strong class="movement-amount"
                       [class.amount-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
                       [class.amount-out]="!hareketGirisMi(hareket.hesapHareketiTipi)">
-
                 {{
                   hareketGirisMi(hareket.hesapHareketiTipi)
                     ? '+'
                     : '-'
                 }}
-                {{
-                  hareket.tutar
-                    | number:'1.2-2'
-                }}
-                {{
-                  dovizSembolunuGetir(
-                    seciliHesap.dovizCinsi
-                  )
-                }}
-
+                {{ hareket.tutar | number:'1.2-2' }}
+                {{ dovizSembolunuGetir(seciliHesap.dovizCinsi) }}
               </strong>
 
             </div>
@@ -718,11 +596,9 @@
           <div class="pagination">
 
             <span class="page-number">
-
               Sayfa
               {{ hareketlerMevcutSayfa }} /
               {{ hareketlerToplamSayfa }}
-
             </span>
 
             <div class="pagination-controls">
@@ -731,18 +607,14 @@
                       class="pagination-button"
                       [disabled]="hareketlerMevcutSayfa === 1"
                       (click)="hareketlerOncekiSayfa()">
-
                 Önceki
-
               </button>
 
               <button type="button"
                       class="pagination-button"
                       [disabled]="hareketlerMevcutSayfa === hareketlerToplamSayfa"
                       (click)="hareketlerSonrakiSayfa()">
-
                 Sonraki
-
               </button>
 
             </div>
@@ -768,90 +640,63 @@
              (click)="$event.stopPropagation()">
 
           <div class="detail-modal-heading">
-
             <h3>Hesap Detayları</h3>
 
             <button type="button"
                     class="modal-close-button"
                     (click)="hesapDetaylariniAcKapat()">
-
               ×
-
             </button>
-
           </div>
 
           <div class="detail-information-list">
 
             <div class="detail-information-item">
-
               <span>IBAN</span>
 
               <strong class="iban-value">
                 {{ seciliHesap.iban }}
               </strong>
-
             </div>
 
             <div class="detail-information-item">
-
               <span>Hesap numarası</span>
 
               <strong>
                 {{ seciliHesap.hesapNo }}
               </strong>
-
             </div>
 
             <div class="detail-information-item">
-
               <span>Hesap türü</span>
 
               <strong>
-                {{
-                  hesapTipiAdiniGetir(
-                    seciliHesap.hesapTipi
-                  )
-                }}
+                {{ hesapTipiAdiniGetir(seciliHesap.hesapTipi) }}
               </strong>
-
             </div>
 
             <div class="detail-information-item">
-
               <span>Şube kodu</span>
 
               <strong>
                 {{ seciliHesap.subeSubeKodu }}
               </strong>
-
             </div>
 
             <div class="detail-information-item">
-
               <span>Açılış tarihi</span>
 
               <strong>
-                {{
-                  seciliHesap.hesapAcilisTarihi
-                    | date:'dd.MM.yyyy'
-                }}
+                {{ seciliHesap.hesapAcilisTarihi | date:'dd.MM.yyyy' }}
               </strong>
-
             </div>
 
             <div class="detail-information-item">
-
               <span>Döviz cinsi</span>
 
               <strong>
-                {{
-                  dovizKodunuGetir(
-                    seciliHesap.dovizCinsi
-                  )
-                }}
+                {{ dovizKodunuGetir(seciliHesap.dovizCinsi) }}
               </strong>
-
             </div>
 
           </div>
@@ -865,7 +710,6 @@
       } @else {
 
       <div class="detail-empty-state">
-
         <strong>
           Hesap seçiniz
         </strong>
@@ -873,7 +717,6 @@
         <p>
           Bilgilerini görüntülemek için listeden bir hesap seçiniz.
         </p>
-
       </div>
 
       }
@@ -887,7 +730,6 @@
   <div class="account-operations">
 
     <div class="operations-heading">
-
       <span class="panel-label">
         Hesap işlemleri
       </span>
@@ -897,9 +739,7 @@
       <p>
         İşlem seçildiğinde seçili hesap üzerinden devam edilir.
       </p>
-
     </div>
-
 
     <div class="operation-grid">
 
@@ -912,7 +752,6 @@
         </span>
 
         <div>
-
           <strong>
             Para Transferleri
           </strong>
@@ -920,7 +759,6 @@
           <span>
             Havale, EFT ve diğer transfer işlemleri
           </span>
-
         </div>
 
         <span class="operation-arrow">
@@ -928,7 +766,6 @@
         </span>
 
       </button>
-
 
       <button type="button"
               class="operation-card"
@@ -940,7 +777,6 @@
         </span>
 
         <div>
-
           <strong>
             Para Çek / Yatır
           </strong>
@@ -948,7 +784,6 @@
           <span>
             Hesaba para yatırma ve hesaptan para çekme
           </span>
-
         </div>
 
         <span class="operation-arrow">
@@ -956,6 +791,27 @@
         </span>
 
       </button>
+
+    </div>
+
+  </div>
+
+  }
+
+
+  <!-- YENİ HESAP OLUŞTURMA POPUP -->
+  @if (hesapFormuAcikMi) {
+
+  <div class="detail-modal-backdrop"
+       (click)="hesapFormunuKapat()">
+
+    <div class="detail-modal account-form-modal"
+         (click)="$event.stopPropagation()">
+
+      <app-hesap-formu [musteriId]="musteriId"
+                       (kapat)="hesapFormunuKapat()"
+                       (kaydedildi)="hesapOlusturuldu($event)">
+      </app-hesap-formu>
 
     </div>
 

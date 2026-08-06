@@ -26,6 +26,8 @@ import { ProfilDuzenle } from './features/profil/profil-duzenle/profil-duzenle';
 import { SifreDegistir } from './features/profil/sifre-degistir/sifre-degistir';
 import { ParaTransferComponent } from './features/hesaplar/para-transfer/para-transfer';
 
+import { HesapFormu } from './features/hesaplar/hesap-formu/hesap-formu';
+
 @NgModule({
   declarations: [
     App,
@@ -42,6 +44,7 @@ import { ParaTransferComponent } from './features/hesaplar/para-transfer/para-tr
     MusteriFormu,
     MusteriIletisim,
     HesapListesi,
+    HesapFormu,
     ParaCekYatir,
     ProfilDuzenle,
     SifreDegistir,

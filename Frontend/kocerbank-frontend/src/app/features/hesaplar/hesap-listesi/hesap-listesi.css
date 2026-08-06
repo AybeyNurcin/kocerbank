@@ -1206,3 +1206,89 @@
     height: 38px;
   }
 }
+
+/* YENİ HESAP OLUŞTURMA */
+
+.new-account-button {
+  padding: 11px 19px;
+  border: none;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background-color: #d2a900;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+  .new-account-button span {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .new-account-button:hover:not(:disabled) {
+    background-color: #b99200;
+  }
+
+  .new-account-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+
+/* HESABI OLMAYAN MÜŞTERİ BUTONU */
+
+.first-account-button {
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d2a900;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+  .first-account-button:hover {
+    background-color: #b99200;
+  }
+
+
+/* HESAP OLUŞTURMA POPUP'I */
+
+.account-form-modal {
+  width: min(620px, calc(100vw - 32px));
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
+}
+
+
+/* MOBİL UYUMLULUK */
+
+@media (max-width: 650px) {
+  .page-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 17px;
+  }
+
+  .new-account-button {
+    width: 100%;
+  }
+
+  .account-form-modal {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+  }
+}
