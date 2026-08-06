@@ -67,6 +67,12 @@ namespace kocerbank_backend.Services
             _hesapRepository.Guncelle(dto);
         }
 
+        // DASHBOARD ÖZETİ
+        public HesapDashboardDTO GetirDashboardOzet()
+        {
+            return _hesapRepository.GetirDashboardOzet();
+        }
+
         // 5. PARA ÇEKME / YATIRMA
         public HesapCekYatirDTO ParaCekYatir(HesapCekYatirDTO dto)
         {

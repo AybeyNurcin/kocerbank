@@ -303,5 +303,10 @@ namespace kocerbank_backend.Services
 
             return kurDosyasi.KurTarihi;
         }
+
+        public DovizKuruDosyasiDTO GuncelKurlariGetir()
+        {
+            return KurDosyasiniOku();
+        }
     }
 }

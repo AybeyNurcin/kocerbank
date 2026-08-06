@@ -30,4 +30,14 @@ namespace kocerbank_backend.Models.DTOs
         public long? MusteriBilgileriId { get; set; }
         public HesapTipiDurumlari? HesapTipi { get; set; }
     }
+
+    public class HesapDashboardDTO
+    {
+        public long ToplamHesap { get; set; }
+        public long AktifSayi { get; set; }
+        public long PasifSayi { get; set; }
+        public long TlSayi { get; set; }
+        public long UsdSayi { get; set; }
+        public long EurSayi { get; set; }
+    }
 }

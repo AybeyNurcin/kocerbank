@@ -28,6 +28,29 @@ import {
   PersonelDashboard
 } from '../../personeller/models/personel-dashboard-model';
 
+import {
+  HesapApi
+} from '../../hesaplar/services/hesap-api';
+
+import {
+  HesapDashboard
+} from '../../hesaplar/models/hesap-dashboard-model';
+
+import {
+  DovizKuruApi
+} from '../../doviz-kuru/services/doviz-kuru-api';
+
+import {
+  DovizKurulari
+} from '../../doviz-kuru/models/doviz-kuru-model';
+
+interface DovizKuruSatiri {
+  kod: string;
+  ad: string;
+  alis: number;
+  satis: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: false,
@@ -61,27 +84,34 @@ export class Dashboard
   personelHataMesaji: string = '';
 
 
-  // HESAPLAR VE DÖVİZ KURU
-  // Backend ve veritabanı bu bölümler için henüz hazır olmadığından
-  // örnek/sabit verilerle gösterilir.
+  // HESAPLAR (CANLI VERİ)
 
-  hesapOzet = {
-    toplam: 1284,
-    aktif: 1190,
-    pasif: 94
+  hesapOzet: HesapDashboard | null = null;
+
+  hesapYukleniyorMu: boolean = false;
+  hesapHataMesaji: string = '';
+
+
+  // DÖVİZ KURU (CANLI VERİ - TCMB)
+
+  private readonly dovizAdlari: { [kod: string]: string } = {
+    USD: 'Amerikan Doları',
+    EUR: 'Euro'
   };
 
-  dovizKurlari = [
-    { kod: 'USD', ad: 'Amerikan Doları', alis: 34.12, satis: 34.48 },
-    { kod: 'EUR', ad: 'Euro', alis: 36.85, satis: 37.24 },
-    { kod: 'GRAM ALTIN', ad: 'Gram Altın', alis: 2854.30, satis: 2861.75 }
-  ];
+  dovizKurlari: DovizKuruSatiri[] = [];
+  dovizKuruTarihi: string | null = null;
+
+  dovizKuruYukleniyorMu: boolean = false;
+  dovizKuruHataMesaji: string = '';
 
 
   constructor(
     private musteriApi: MusteriApi,
     private subeApi: SubeApi,
     private personelApi: PersonelApi,
+    private hesapApi: HesapApi,
+    private dovizKuruApi: DovizKuruApi,
     private changeDetector: ChangeDetectorRef
   ) {
   }
@@ -92,6 +122,8 @@ export class Dashboard
     this.musteriOzetGetir();
     this.subeOzetGetir();
     this.personelOzetGetir();
+    this.hesapOzetGetir();
+    this.dovizKurlariGetir();
 
   }
 
@@ -213,6 +245,100 @@ export class Dashboard
             'Personel özet bilgileri getirilirken bir hata oluştu.';
 
           this.personelYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        }
+
+      });
+  }
+
+
+  hesapOzetGetir(): void {
+
+    this.hesapYukleniyorMu = true;
+    this.hesapHataMesaji = '';
+
+    this.hesapApi
+      .dashboardOzet()
+      .subscribe({
+
+        next: (
+          ozet: HesapDashboard
+        ) => {
+
+          this.hesapOzet = ozet;
+          this.hesapYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Hesap dashboard özeti getirilirken hata:',
+            hata
+          );
+
+          this.hesapOzet = null;
+
+          this.hesapHataMesaji =
+            'Hesap özet bilgileri getirilirken bir hata oluştu.';
+
+          this.hesapYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        }
+
+      });
+  }
+
+
+  dovizKurlariGetir(): void {
+
+    this.dovizKuruYukleniyorMu = true;
+    this.dovizKuruHataMesaji = '';
+
+    this.dovizKuruApi
+      .guncelKurlar()
+      .subscribe({
+
+        next: (
+          kurlar: DovizKurulari
+        ) => {
+
+          this.dovizKuruTarihi = kurlar.kurTarihi;
+
+          this.dovizKurlari = Object.keys(kurlar.kurlar).map(
+            (kod) => ({
+              kod: kod,
+              ad: this.dovizAdlari[kod] ?? kod,
+              alis: kurlar.kurlar[kod].alis,
+              satis: kurlar.kurlar[kod].satis
+            })
+          );
+
+          this.dovizKuruYukleniyorMu = false;
+
+          this.changeDetector.markForCheck();
+
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Döviz kurları getirilirken hata:',
+            hata
+          );
+
+          this.dovizKurlari = [];
+
+          this.dovizKuruHataMesaji =
+            'Döviz kurları getirilirken bir hata oluştu.';
+
+          this.dovizKuruYukleniyorMu = false;
 
           this.changeDetector.markForCheck();
 

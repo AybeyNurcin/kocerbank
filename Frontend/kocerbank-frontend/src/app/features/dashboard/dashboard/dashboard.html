@@ -176,30 +176,57 @@
 
         <h2>Hesaplar</h2>
 
-        <span class="data-source sample-source">
-          Örnek veri
-        </span>
-
       </div>
+
+      @if (hesapYukleniyorMu) {
+
+      <div class="card-information-message">
+        Yükleniyor...
+      </div>
+
+      } @else if (hesapHataMesaji !== '') {
+
+      <div class="card-error-message">
+        {{ hesapHataMesaji }}
+      </div>
+
+      } @else if (hesapOzet !== null) {
 
       <div class="stat-list">
 
         <div class="stat-row-item">
           <span class="stat-label">Aktif</span>
-          <span class="stat-value stat-value-accent">{{ hesapOzet.aktif }}</span>
+          <span class="stat-value stat-value-accent">{{ hesapOzet.aktifSayi }}</span>
         </div>
 
         <div class="stat-row-item">
           <span class="stat-label">Pasif</span>
-          <span class="stat-value">{{ hesapOzet.pasif }}</span>
+          <span class="stat-value">{{ hesapOzet.pasifSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">TL</span>
+          <span class="stat-value">{{ hesapOzet.tlSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Dolar</span>
+          <span class="stat-value">{{ hesapOzet.usdSayi }}</span>
+        </div>
+
+        <div class="stat-row-item">
+          <span class="stat-label">Euro</span>
+          <span class="stat-value">{{ hesapOzet.eurSayi }}</span>
         </div>
 
         <div class="stat-row-item">
           <span class="stat-label">Toplam</span>
-          <span class="stat-value">{{ hesapOzet.toplam }}</span>
+          <span class="stat-value">{{ hesapOzet.toplamHesap }}</span>
         </div>
 
       </div>
+
+      }
 
     </div>
 
@@ -211,11 +238,29 @@
 
         <h2>Döviz Kuru</h2>
 
-        <span class="data-source sample-source">
-          Örnek veri
+        @if (dovizKuruTarihi !== null) {
+
+        <span class="data-source live-source">
+          TCMB · {{ dovizKuruTarihi | date:'dd.MM.yyyy' }}
         </span>
 
+        }
+
       </div>
+
+      @if (dovizKuruYukleniyorMu) {
+
+      <div class="card-information-message">
+        Yükleniyor...
+      </div>
+
+      } @else if (dovizKuruHataMesaji !== '') {
+
+      <div class="card-error-message">
+        {{ dovizKuruHataMesaji }}
+      </div>
+
+      } @else {
 
       <table class="exchange-rate-table">
 
@@ -255,6 +300,8 @@
         </tbody>
 
       </table>
+
+      }
 
     </div>
 

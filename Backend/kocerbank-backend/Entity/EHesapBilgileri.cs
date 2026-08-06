@@ -265,6 +265,39 @@ namespace kocerbank_backend.DataAccess
             }
         }
 
+        // 6. DASHBOARD ÖZETİ
+        public HesapDashboardDTO GetirDashboardOzet()
+        {
+            HesapDashboardDTO ozet = new HesapDashboardDTO();
+
+            using (OracleConnection conn = new OracleConnection(_connectionString))
+            {
+                using (OracleCommand KB = new OracleCommand("KB_HESAPDASHBOARD", conn))
+                {
+                    KB.CommandType = CommandType.StoredProcedure;
+
+                    KB.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    conn.Open();
+
+                    using (OracleDataReader reader = KB.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            ozet.ToplamHesap = Convert.ToInt64(reader["HESAP_SAYISI"]);
+                            ozet.AktifSayi   = Convert.ToInt64(reader["AKTIFSAYI"]);
+                            ozet.PasifSayi   = Convert.ToInt64(reader["PASIFSAYI"]);
+                            ozet.TlSayi      = Convert.ToInt64(reader["TLSAYI"]);
+                            ozet.UsdSayi     = Convert.ToInt64(reader["USDSAYI"]);
+                            ozet.EurSayi     = Convert.ToInt64(reader["EURSAYI"]);
+                        }
+                    }
+                }
+            }
+
+            return ozet;
+        }
+
         // YARDIMCI METOT: Veritabanı satırını DTO nesnesine dönüştürür (Kod tekrarını önler)
         private HesapDTO MapReaderToDTO(OracleDataReader reader)
         {

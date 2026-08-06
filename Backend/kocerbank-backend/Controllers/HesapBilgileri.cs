@@ -84,6 +84,20 @@ namespace kocerbank_backend.Controllers
             }
         }
 
+        [HttpPost("DashboardOzet")]
+        public IActionResult GetirDashboardOzet()
+        {
+            try
+            {
+                HesapDashboardDTO ozet = _hesapService.GetirDashboardOzet();
+                return Ok(ozet);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = ex.Message });
+            }
+        }
+
         [HttpPost("ParaCekYatir")]
         public IActionResult ParaCekYatir([FromBody] HesapCekYatirDTO dto)
         {

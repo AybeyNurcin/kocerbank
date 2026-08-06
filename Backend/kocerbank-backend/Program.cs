@@ -27,6 +27,14 @@ builder.Services.AddScoped<ParaTransferRepository>();
 builder.Services.AddScoped<ParaTransferServis>();
 builder.Services.AddScoped<DovizKuruServis>();
 
+builder.Services.AddHttpClient<TcmbKurServisi>(client =>
+{
+    client.BaseAddress = new Uri("https://www.tcmb.gov.tr/");
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
+
+builder.Services.AddHostedService<DovizKuruGuncellemeArkaPlanServisi>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>

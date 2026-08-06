@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { Hesap } from '../models/hesap-model';
 import { HesapCekYatir } from '../models/hesap-cek-yatir-model';
+import { HesapDashboard } from '../models/hesap-dashboard-model';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,13 @@ export class HesapApi {
     return this.http.put<void>(
       `${this.apiUrl}/Guncelle/${hesapId}`,
       dto
+    );
+  }
+
+  dashboardOzet(): Observable<HesapDashboard> {
+    return this.http.post<HesapDashboard>(
+      `${this.apiUrl}/DashboardOzet`,
+      null
     );
   }
 }
