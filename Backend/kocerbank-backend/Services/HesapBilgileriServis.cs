@@ -16,7 +16,33 @@ namespace kocerbank_backend.Services
         // 1. EKLEME
         public HesapDTO Ekle(HesapDTO dto)
         {
-            RealityCheck(dto);
+            HesapEklemeRealityCheck(dto);
+
+            /*
+            * Yeni oluşturulan bütün hesaplar
+            * otomatik olarak aktif ve sıfır bakiyeli açılır.
+            */
+            dto.HesapDurumKodu =
+                HesapDurumKodlari.Aktif;
+
+            dto.Bakiye = 0;
+
+            /*
+            * Kullanıcının yazdığı metinlerdeki
+            * baştaki ve sondaki boşlukları temizler.
+            */
+            dto.HesapAdi =
+                dto.HesapAdi.Trim();
+
+            dto.SubeSubeKodu =
+                dto.SubeSubeKodu
+                    .Trim()
+                    .ToUpperInvariant();
+
+            dto.RecordUser =
+                string.IsNullOrWhiteSpace(dto.RecordUser)
+                    ? null
+                    : dto.RecordUser.Trim();
 
             return _hesapRepository.Ekle(dto);
         }
@@ -53,7 +79,7 @@ namespace kocerbank_backend.Services
         // 4. GÜNCELLEME
         public void Guncelle(HesapDTO dto)
         {
-            RealityCheck(dto);
+            HesapGuncellemeRealityCheck(dto);
 
             HesapDTO? mevcutHesap =
                 _hesapRepository.GetirById(dto.Id);
@@ -100,8 +126,148 @@ namespace kocerbank_backend.Services
             return _hesapRepository.ParaCekYatir(dto);
         }
 
-                // ORTAK DOĞRULAMA METODU
-        private void RealityCheck(HesapDTO dto)
+        private void HesapEklemeRealityCheck(
+            HesapDTO dto
+        )
+        {
+            if (dto is null)
+            {
+                throw new ArgumentNullException(
+                    nameof(dto),
+                    "Hesap bilgileri gönderilmelidir."
+                );
+            }
+
+
+            // HESAP ADI
+
+            if (string.IsNullOrWhiteSpace(dto.HesapAdi))
+            {
+                throw new ArgumentException(
+                    "Hesap adı girilmesi zorunludur."
+                );
+            }
+
+            if (dto.HesapAdi.Trim().Length > 50)
+            {
+                throw new ArgumentException(
+                    "Hesap adı en fazla 50 karakter olabilir."
+                );
+            }
+
+
+            // ŞUBE KODU
+
+            if (string.IsNullOrWhiteSpace(
+                dto.SubeSubeKodu
+            ))
+            {
+                throw new ArgumentException(
+                    "Şube seçilmesi zorunludur."
+                );
+            }
+
+            string subeKodu =
+                dto.SubeSubeKodu
+                    .Trim()
+                    .ToUpperInvariant();
+
+            if (subeKodu.Length > 20)
+            {
+                throw new ArgumentException(
+                    "Şube kodu en fazla 20 karakter olabilir."
+                );
+            }
+
+            if (
+                subeKodu.Length != 5 ||
+                subeKodu[0] != 'S' ||
+                !subeKodu
+                    .Substring(1)
+                    .All(char.IsDigit)
+            )
+            {
+                throw new ArgumentException(
+                    "Şube kodu S ve ardından dört rakam içermelidir."
+                );
+            }
+
+
+            // DÖVİZ CİNSİ
+
+            if (
+                dto.DovizCinsi ==
+                DovizCinsiDurumlari.None
+            )
+            {
+                throw new ArgumentException(
+                    "Döviz cinsi seçilmelidir."
+                );
+            }
+
+            if (
+                !Enum.IsDefined(
+                    typeof(DovizCinsiDurumlari),
+                    dto.DovizCinsi
+                )
+            )
+            {
+                throw new ArgumentException(
+                    "Geçersiz döviz cinsi."
+                );
+            }
+
+
+            // HESAP TİPİ
+
+            if (
+                dto.HesapTipi ==
+                HesapTipiDurumlari.None
+            )
+            {
+                throw new ArgumentException(
+                    "Hesap tipi seçilmelidir."
+                );
+            }
+
+            if (
+                !Enum.IsDefined(
+                    typeof(HesapTipiDurumlari),
+                    dto.HesapTipi
+                )
+            )
+            {
+                throw new ArgumentException(
+                    "Geçersiz hesap tipi."
+                );
+            }
+
+
+            // MÜŞTERİ ID
+
+            if (dto.MusteriBilgileriId <= 0)
+            {
+                throw new ArgumentException(
+                    "Geçersiz müşteri ID bilgisi."
+                );
+            }
+
+
+            // RECORD USER
+
+            if (
+                dto.RecordUser is not null &&
+                dto.RecordUser.Trim().Length > 10
+            )
+            {
+                throw new ArgumentException(
+                    "İşlemi yapan kullanıcı en fazla 10 karakter olabilir."
+                );
+            }
+        }
+
+                // HESAP GÜNCELLEME DOĞRULAMA METODU
+        private void HesapGuncellemeRealityCheck(HesapDTO dto)
         {
             if (dto is null)
             {

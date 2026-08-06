@@ -1,0 +1,336 @@
+<div class="form-header">
+
+  <div>
+
+    @if (olusturulanHesap === null) {
+
+    <h2>Yeni Hesap Oluştur</h2>
+
+    <p>
+      {{ musteriId }} numaralı müşteri için
+      hesap bilgilerini giriniz.
+    </p>
+
+    } @else {
+
+    <h2>Hesap Oluşturuldu</h2>
+
+    <p>
+      Yeni hesap başarıyla oluşturuldu.
+    </p>
+
+    }
+
+  </div>
+
+  <button type="button"
+          class="close-button"
+          [disabled]="kaydediliyorMu"
+          (click)="formuKapat()">
+    ×
+  </button>
+
+</div>
+
+
+@if (olusturulanHesap === null) {
+
+@if (hataMesaji !== '') {
+
+<div class="form-error-message">
+  {{ hataMesaji }}
+</div>
+
+}
+
+
+<form (ngSubmit)="hesapOlustur()">
+
+  <div class="popup-fields">
+
+
+    <!-- HESAP ADI -->
+    <div class="popup-field full-field">
+
+      <label for="hesapAdi">
+        Hesap adı
+      </label>
+
+      <input id="hesapAdi"
+             name="hesapAdi"
+             type="text"
+             [(ngModel)]="formModel.hesapAdi"
+             [disabled]="kaydediliyorMu"
+             maxlength="50"
+             placeholder="Örnek: Maaş Hesabım"
+             required />
+
+    </div>
+
+
+    <!-- ŞUBE -->
+    <div class="popup-field full-field">
+
+      <label>
+        Şube
+      </label>
+
+      <app-sube-secici [(seciliSubeKodu)]="
+          formModel.subeSubeKodu
+        "
+                       [devreDisiMi]="kaydediliyorMu"
+                       placeholder="Şube kodu veya adı yazınız">
+      </app-sube-secici>
+
+    </div>
+
+
+    <!-- DÖVİZ CİNSİ -->
+    <div class="popup-field">
+
+      <label for="dovizCinsi">
+        Döviz cinsi
+      </label>
+
+      <select id="dovizCinsi"
+              name="dovizCinsi"
+              [(ngModel)]="formModel.dovizCinsi"
+              [disabled]="kaydediliyorMu"
+              required>
+
+        <option [ngValue]="null">
+          Seçiniz
+        </option>
+
+        <option [ngValue]="DovizCinsi.TL">
+          Türk Lirası
+        </option>
+
+        <option [ngValue]="DovizCinsi.USD">
+          Amerikan Doları
+        </option>
+
+        <option [ngValue]="DovizCinsi.EUR">
+          Euro
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- HESAP TİPİ -->
+    <div class="popup-field">
+
+      <label for="hesapTipi">
+        Hesap tipi
+      </label>
+
+      <select id="hesapTipi"
+              name="hesapTipi"
+              [(ngModel)]="formModel.hesapTipi"
+              [disabled]="kaydediliyorMu"
+              required>
+
+        <option [ngValue]="null">
+          Seçiniz
+        </option>
+
+        <option [ngValue]="HesapTipi.Vadesiz">
+          Vadesiz
+        </option>
+
+        <option [ngValue]="HesapTipi.Vadeli">
+          Vadeli
+        </option>
+
+        <option [ngValue]="HesapTipi.Yatirim">
+          Yatırım
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <div class="form-actions">
+
+    <button type="button"
+            class="cancel-button"
+            [disabled]="kaydediliyorMu"
+            (click)="formuKapat()">
+      İptal
+    </button>
+
+    <button type="submit"
+            class="save-button"
+            [disabled]="kaydediliyorMu">
+
+      @if (kaydediliyorMu) {
+      Hesap oluşturuluyor...
+      } @else {
+      Hesap Oluştur
+      }
+
+    </button>
+
+  </div>
+
+</form>
+
+} @else {
+
+
+<!-- BAŞARI EKRANI -->
+<div class="success-content">
+
+  <div class="success-icon">
+    ✓
+  </div>
+
+  <h3>
+    Hesap başarıyla oluşturuldu
+  </h3>
+
+  <p class="success-description">
+    Yeni hesap kullanıma hazır.
+  </p>
+
+
+  <div class="account-result-card">
+
+    <div class="result-item full-result-item">
+
+      <span>Hesap adı</span>
+
+      <strong>
+        {{ olusturulanHesap.hesapAdi }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item">
+
+      <span>Hesap numarası</span>
+
+      <strong>
+        {{ olusturulanHesap.hesapNo }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item">
+
+      <span>Bakiye</span>
+
+      <strong>
+        {{
+          olusturulanHesap.bakiye
+            | number:'1.2-2'
+        }}
+        {{
+          dovizSembolunuGetir(
+            olusturulanHesap.dovizCinsi
+          )
+        }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item full-result-item">
+
+      <span>IBAN</span>
+
+      <strong class="iban-value">
+        {{ olusturulanHesap.iban }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item">
+
+      <span>Şube kodu</span>
+
+      <strong>
+        {{ olusturulanHesap.subeSubeKodu }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item">
+
+      <span>Döviz cinsi</span>
+
+      <strong>
+        {{
+          dovizAdiniGetir(
+            olusturulanHesap.dovizCinsi
+          )
+        }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item">
+
+      <span>Hesap tipi</span>
+
+      <strong>
+        {{
+          hesapTipiAdiniGetir(
+            olusturulanHesap.hesapTipi
+          )
+        }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item">
+
+      <span>Açılış tarihi</span>
+
+      <strong>
+        {{
+          olusturulanHesap.hesapAcilisTarihi
+            | date:'dd.MM.yyyy HH:mm'
+        }}
+      </strong>
+
+    </div>
+
+
+    <div class="result-item">
+
+      <span>Durum</span>
+
+      <strong class="active-status">
+        Aktif
+      </strong>
+
+    </div>
+
+  </div>
+
+
+  <div class="success-actions">
+
+    <button type="button"
+            class="save-button"
+            (click)="hesaplaraDon()">
+      Hesaplara Dön
+    </button>
+
+  </div>
+
+</div>
+
+}

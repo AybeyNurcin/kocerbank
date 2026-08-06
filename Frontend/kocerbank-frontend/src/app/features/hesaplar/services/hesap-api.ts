@@ -15,6 +15,13 @@ export class HesapApi {
   constructor(private http: HttpClient) {
   }
 
+  ekle(dto: Partial<Hesap>): Observable<Hesap> {
+    return this.http.post<Hesap>(
+      `${this.apiUrl}/Ekle`,
+      dto
+    );
+  }
+
   musteriyeGoreListele(musteriId: number): Observable<Hesap[]> {
     return this.http.post<Hesap[]>(
       `${this.apiUrl}/listele`,

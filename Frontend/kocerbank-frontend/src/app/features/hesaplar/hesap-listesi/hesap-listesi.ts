@@ -37,6 +37,7 @@ import {
   HesapHareketi
 } from '../models/hesap-hareket-model';
 
+
 interface HesapTipiSecenegi {
   tip: HesapTipi;
   ad: string;
@@ -46,6 +47,7 @@ interface DovizToplami {
   dovizCinsi: DovizCinsi;
   toplam: number;
 }
+
 
 @Component({
   selector: 'app-hesap-listesi',
@@ -70,32 +72,55 @@ export class HesapListesi
   yukleniyorMu: boolean = false;
   hataMesaji: string = '';
 
+
+  // YENİ HESAP FORMU
+
+  hesapFormuAcikMi: boolean = false;
+
+  /*
+   * Hesap oluşturulduktan sonra liste yenilenirken
+   * yeni hesabın otomatik seçilmesi için tutulur.
+   */
+  yeniOlusturulanHesapId: number | null = null;
+
+
+  // HESAP ADI DÜZENLEME
+
   hesapAdiDuzenleniyorMu: boolean = false;
   duzenlenenHesapAdi: string = '';
   hesapAdiKaydediliyorMu: boolean = false;
   hesapAdiHataMesaji: string = '';
 
+
+  // HESAP HAREKETLERİ
+
   hesapHareketleri: HesapHareketi[] = [];
   hareketlerHataMesaji: string = '';
 
   tumHareketlerPopupAcikMi: boolean = false;
-  hareketlerMevcutSayfa: number = 1;
-  readonly hareketlerSayfaBasinaKayit: number = 10;
 
-  readonly hesapTipleri: HesapTipiSecenegi[] = [
-    {
-      tip: HesapTipi.Vadesiz,
-      ad: 'Vadesiz'
-    },
-    {
-      tip: HesapTipi.Vadeli,
-      ad: 'Vadeli'
-    },
-    {
-      tip: HesapTipi.Yatirim,
-      ad: 'Yatırım'
-    }
-  ];
+  hareketlerMevcutSayfa: number = 1;
+
+  readonly hareketlerSayfaBasinaKayit:
+    number = 10;
+
+
+  readonly hesapTipleri:
+    HesapTipiSecenegi[] = [
+      {
+        tip: HesapTipi.Vadesiz,
+        ad: 'Vadesiz'
+      },
+      {
+        tip: HesapTipi.Vadeli,
+        ad: 'Vadeli'
+      },
+      {
+        tip: HesapTipi.Yatirim,
+        ad: 'Yatırım'
+      }
+    ];
+
 
   constructor(
     private route: ActivatedRoute,
@@ -105,6 +130,7 @@ export class HesapListesi
     private changeDetector: ChangeDetectorRef
   ) {
   }
+
 
   ngOnInit(): void {
 
@@ -125,12 +151,11 @@ export class HesapListesi
         'Geçersiz müşteri ID bilgisi.';
 
       return;
-
     }
 
     this.hesaplariGetir();
-
   }
+
 
   private hesaplariGetir(): void {
 
@@ -150,13 +175,48 @@ export class HesapListesi
           this.hesaplar =
             gelenHesaplar;
 
-          this.ilkSecimiYap();
+          /*
+           * Yeni bir hesap oluşturulmuşsa
+           * yenilenen listede onu bulup seçer.
+           */
+          if (
+            this.yeniOlusturulanHesapId !==
+            null
+          ) {
+
+            const yeniHesap =
+              this.hesaplar.find(
+                (hesap: Hesap) =>
+                  hesap.id ===
+                  this.yeniOlusturulanHesapId
+              );
+
+            if (yeniHesap) {
+
+              this.seciliHesapTipi =
+                yeniHesap.hesapTipi;
+
+              this.hesapSec(
+                yeniHesap
+              );
+
+            } else {
+
+              this.ilkSecimiYap();
+            }
+
+            this.yeniOlusturulanHesapId =
+              null;
+
+          } else {
+
+            this.ilkSecimiYap();
+          }
 
           this.yukleniyorMu = false;
 
           this.changeDetector
             .markForCheck();
-
         },
 
         error: (hata) => {
@@ -168,6 +228,10 @@ export class HesapListesi
 
           this.hesaplar = [];
           this.seciliHesap = null;
+          this.hesapHareketleri = [];
+
+          this.yeniOlusturulanHesapId =
+            null;
 
           this.yukleniyorMu = false;
 
@@ -177,12 +241,11 @@ export class HesapListesi
 
           this.changeDetector
             .markForCheck();
-
         }
 
       });
-
   }
+
 
   private ilkSecimiYap(): void {
 
@@ -192,7 +255,6 @@ export class HesapListesi
       this.hesapHareketleri = [];
 
       return;
-
     }
 
     const ilkHesap =
@@ -205,24 +267,61 @@ export class HesapListesi
       ilkHesap;
 
     this.detayAcikMi = false;
-    this.tumHareketlerPopupAcikMi = false;
+
+    this.tumHareketlerPopupAcikMi =
+      false;
+
     this.hesapAdiDuzenlemesiniSifirla();
 
     this.hesapHareketleriniGetir(
       ilkHesap.id
     );
-
   }
 
-  get seciliTiptekiHesaplar(): Hesap[] {
+
+  // YENİ HESAP FORMU
+
+  hesapFormunuAc(): void {
+
+    if (this.musteriId <= 0) {
+      return;
+    }
+
+    this.hesapFormuAcikMi = true;
+  }
+
+
+  hesapFormunuKapat(): void {
+
+    this.hesapFormuAcikMi = false;
+  }
+
+
+  hesapOlusturuldu(
+    eklenenHesap: Hesap
+  ): void {
+
+    /*
+     * Başarı ekranı popup içerisinde açık kalır.
+     * Arkadaki hesap listesi yenilenir.
+     */
+    this.yeniOlusturulanHesapId =
+      eklenenHesap.id;
+
+    this.hesaplariGetir();
+  }
+
+
+  get seciliTiptekiHesaplar():
+    Hesap[] {
 
     return this.hesaplar.filter(
       (hesap: Hesap) =>
         hesap.hesapTipi ===
         this.seciliHesapTipi
     );
-
   }
+
 
   hesapTipindekiHesapSayisi(
     hesapTipi: HesapTipi
@@ -233,8 +332,8 @@ export class HesapListesi
         hesap.hesapTipi ===
         hesapTipi
     ).length;
-
   }
+
 
   hesapTipiToplamlariniGetir(
     hesapTipi: HesapTipi
@@ -262,7 +361,6 @@ export class HesapListesi
             mevcutToplam +
             hesap.bakiye
           );
-
         }
       );
 
@@ -279,8 +377,8 @@ export class HesapListesi
         toplam
       })
     );
-
   }
+
 
   hesapTipiniSec(
     hesapTipi: HesapTipi
@@ -294,16 +392,24 @@ export class HesapListesi
       null;
 
     this.detayAcikMi = false;
-    this.tumHareketlerPopupAcikMi = false;
+
+    this.tumHareketlerPopupAcikMi =
+      false;
+
     this.hesapAdiDuzenlemesiniSifirla();
 
     if (this.seciliHesap !== null) {
-      this.hesapHareketleriniGetir(this.seciliHesap.id);
+
+      this.hesapHareketleriniGetir(
+        this.seciliHesap.id
+      );
+
     } else {
+
       this.hesapHareketleri = [];
     }
-
   }
+
 
   hesapSec(
     hesap: Hesap
@@ -313,19 +419,26 @@ export class HesapListesi
       hesap;
 
     this.detayAcikMi = false;
-    this.tumHareketlerPopupAcikMi = false;
+
+    this.tumHareketlerPopupAcikMi =
+      false;
+
     this.hesapAdiDuzenlemesiniSifirla();
 
-    this.hesapHareketleriniGetir(hesap.id);
-
+    this.hesapHareketleriniGetir(
+      hesap.id
+    );
   }
+
 
   hesapDetaylariniAcKapat(): void {
 
     this.detayAcikMi =
       !this.detayAcikMi;
-
   }
+
+
+  // HESAP ADI DÜZENLEME
 
   hesapAdiniDuzenlemeyeBasla(): void {
 
@@ -337,15 +450,17 @@ export class HesapListesi
       this.seciliHesap.hesapAdi;
 
     this.hesapAdiHataMesaji = '';
-    this.hesapAdiDuzenleniyorMu = true;
 
+    this.hesapAdiDuzenleniyorMu =
+      true;
   }
+
 
   hesapAdiDuzenlemeyiIptalEt(): void {
 
     this.hesapAdiDuzenlemesiniSifirla();
-
   }
+
 
   hesapAdiniKaydet(): void {
 
@@ -362,7 +477,6 @@ export class HesapListesi
         'Hesap adı boş bırakılamaz.';
 
       return;
-
     }
 
     if (yeniHesapAdi.length > 50) {
@@ -371,23 +485,27 @@ export class HesapListesi
         'Hesap adı en fazla 50 karakter olabilir.';
 
       return;
-
     }
 
-    if (yeniHesapAdi === this.seciliHesap.hesapAdi) {
+    if (
+      yeniHesapAdi ===
+      this.seciliHesap.hesapAdi
+    ) {
 
       this.hesapAdiDuzenlemesiniSifirla();
 
       return;
-
     }
 
-    const guncellenecekHesap: Hesap = {
+    const guncellenecekHesap:
+      Hesap = {
       ...this.seciliHesap,
       hesapAdi: yeniHesapAdi
     };
 
-    this.hesapAdiKaydediliyorMu = true;
+    this.hesapAdiKaydediliyorMu =
+      true;
+
     this.hesapAdiHataMesaji = '';
 
     this.hesapApi
@@ -399,25 +517,33 @@ export class HesapListesi
 
         next: () => {
 
-          if (this.seciliHesap !== null) {
-            this.seciliHesap.hesapAdi = yeniHesapAdi;
+          if (
+            this.seciliHesap !== null
+          ) {
+            this.seciliHesap.hesapAdi =
+              yeniHesapAdi;
           }
 
           const listedekiHesap =
             this.hesaplar.find(
               (hesap: Hesap) =>
-                hesap.id === guncellenecekHesap.id
+                hesap.id ===
+                guncellenecekHesap.id
             );
 
           if (listedekiHesap) {
-            listedekiHesap.hesapAdi = yeniHesapAdi;
+            listedekiHesap.hesapAdi =
+              yeniHesapAdi;
           }
 
-          this.hesapAdiKaydediliyorMu = false;
-          this.hesapAdiDuzenleniyorMu = false;
+          this.hesapAdiKaydediliyorMu =
+            false;
 
-          this.changeDetector.markForCheck();
+          this.hesapAdiDuzenleniyorMu =
+            false;
 
+          this.changeDetector
+            .markForCheck();
         },
 
         error: (hata) => {
@@ -427,28 +553,37 @@ export class HesapListesi
             hata
           );
 
-          this.hesapAdiKaydediliyorMu = false;
+          this.hesapAdiKaydediliyorMu =
+            false;
 
           this.hesapAdiHataMesaji =
             hata?.error?.mesaj ??
             'Hesap adı güncellenirken bir hata oluştu.';
 
-          this.changeDetector.markForCheck();
-
+          this.changeDetector
+            .markForCheck();
         }
 
       });
-
   }
 
-  private hesapAdiDuzenlemesiniSifirla(): void {
 
-    this.hesapAdiDuzenleniyorMu = false;
-    this.hesapAdiKaydediliyorMu = false;
+  private hesapAdiDuzenlemesiniSifirla():
+    void {
+
+    this.hesapAdiDuzenleniyorMu =
+      false;
+
+    this.hesapAdiKaydediliyorMu =
+      false;
+
     this.duzenlenenHesapAdi = '';
-    this.hesapAdiHataMesaji = '';
 
+    this.hesapAdiHataMesaji = '';
   }
+
+
+  // HESAP HAREKETLERİ
 
   private hesapHareketleriniGetir(
     hesapId: number
@@ -461,17 +596,18 @@ export class HesapListesi
       .subscribe({
 
         next: (
-          gelenHareketler: HesapHareketi[]
+          gelenHareketler:
+            HesapHareketi[]
         ) => {
 
           this.hesapHareketleri =
             gelenHareketler;
 
-          this.hareketlerMevcutSayfa = 1;
+          this.hareketlerMevcutSayfa =
+            1;
 
           this.changeDetector
             .markForCheck();
-
         },
 
         error: (hata) => {
@@ -489,43 +625,61 @@ export class HesapListesi
 
           this.changeDetector
             .markForCheck();
-
         }
 
       });
-
   }
 
-  private get siraliHesapHareketleri(): HesapHareketi[] {
 
-    return [...this.hesapHareketleri].sort(
-      (a: HesapHareketi, b: HesapHareketi) =>
-        new Date(b.islemTarihi).getTime() -
-        new Date(a.islemTarihi).getTime()
+  private get siraliHesapHareketleri():
+    HesapHareketi[] {
+
+    return [
+      ...this.hesapHareketleri
+    ].sort(
+      (
+        a: HesapHareketi,
+        b: HesapHareketi
+      ) =>
+        new Date(
+          b.islemTarihi
+        ).getTime() -
+        new Date(
+          a.islemTarihi
+        ).getTime()
     );
-
   }
 
-  get sonBesHesapHareketi(): HesapHareketi[] {
 
-    return this.siraliHesapHareketleri.slice(0, 5);
+  get sonBesHesapHareketi():
+    HesapHareketi[] {
 
+    return this.siraliHesapHareketleri
+      .slice(0, 5);
   }
 
-  get sayfadakiHesapHareketleri(): HesapHareketi[] {
+
+  get sayfadakiHesapHareketleri():
+    HesapHareketi[] {
 
     const baslangicIndeksi =
-      (this.hareketlerMevcutSayfa - 1) *
+      (
+        this.hareketlerMevcutSayfa -
+        1
+      ) *
       this.hareketlerSayfaBasinaKayit;
 
-    return this.siraliHesapHareketleri.slice(
-      baslangicIndeksi,
-      baslangicIndeksi + this.hareketlerSayfaBasinaKayit
-    );
-
+    return this.siraliHesapHareketleri
+      .slice(
+        baslangicIndeksi,
+        baslangicIndeksi +
+        this.hareketlerSayfaBasinaKayit
+      );
   }
 
-  get hareketlerToplamSayfa(): number {
+
+  get hareketlerToplamSayfa():
+    number {
 
     return Math.max(
       1,
@@ -534,48 +688,58 @@ export class HesapListesi
         this.hareketlerSayfaBasinaKayit
       )
     );
-
   }
+
 
   tumHareketleriAc(): void {
 
     this.hareketlerMevcutSayfa = 1;
-    this.tumHareketlerPopupAcikMi = true;
 
+    this.tumHareketlerPopupAcikMi =
+      true;
   }
+
 
   tumHareketleriKapat(): void {
 
-    this.tumHareketlerPopupAcikMi = false;
-
+    this.tumHareketlerPopupAcikMi =
+      false;
   }
+
 
   hareketlerOncekiSayfa(): void {
 
-    if (this.hareketlerMevcutSayfa > 1) {
+    if (
+      this.hareketlerMevcutSayfa > 1
+    ) {
       this.hareketlerMevcutSayfa--;
     }
-
   }
+
 
   hareketlerSonrakiSayfa(): void {
 
-    if (this.hareketlerMevcutSayfa < this.hareketlerToplamSayfa) {
+    if (
+      this.hareketlerMevcutSayfa <
+      this.hareketlerToplamSayfa
+    ) {
       this.hareketlerMevcutSayfa++;
     }
-
   }
+
 
   hareketGirisMi(
     tip: HesapHareketTipleri
   ): boolean {
 
     return (
-      tip === HesapHareketTipleri.ParaYatirma ||
-      tip === HesapHareketTipleri.GelenTransfer
+      tip ===
+      HesapHareketTipleri.ParaYatirma ||
+      tip ===
+      HesapHareketTipleri.GelenTransfer
     );
-
   }
+
 
   hareketAciklamasiniGetir(
     tip: HesapHareketTipleri
@@ -583,24 +747,31 @@ export class HesapListesi
 
     switch (tip) {
 
-      case HesapHareketTipleri.ParaYatirma:
+      case HesapHareketTipleri
+        .ParaYatirma:
+
         return 'Para Yatırma';
 
-      case HesapHareketTipleri.ParaCekme:
+      case HesapHareketTipleri
+        .ParaCekme:
+
         return 'Para Çekme';
 
-      case HesapHareketTipleri.GelenTransfer:
+      case HesapHareketTipleri
+        .GelenTransfer:
+
         return 'Gelen Transfer';
 
-      case HesapHareketTipleri.GidenTransfer:
+      case HesapHareketTipleri
+        .GidenTransfer:
+
         return 'Giden Transfer';
 
       default:
         return '-';
-
     }
-
   }
+
 
   dovizSembolunuGetir(
     dovizCinsi: DovizCinsi
@@ -619,10 +790,9 @@ export class HesapListesi
 
       default:
         return '';
-
     }
-
   }
+
 
   dovizKodunuGetir(
     dovizCinsi: DovizCinsi
@@ -641,10 +811,9 @@ export class HesapListesi
 
       default:
         return '-';
-
     }
-
   }
+
 
   hesapTipiAdiniGetir(
     hesapTipi: HesapTipi
@@ -652,12 +821,15 @@ export class HesapListesi
 
     return (
       this.hesapTipleri.find(
-        (secenek: HesapTipiSecenegi) =>
+        (
+          secenek:
+            HesapTipiSecenegi
+        ) =>
           secenek.tip === hesapTipi
       )?.ad ?? 'Hesap'
     );
-
   }
+
 
   hesapDurumuAdiniGetir(
     durumKodu: number
@@ -676,18 +848,17 @@ export class HesapListesi
 
       default:
         return '-';
-
     }
-
   }
+
 
   musteriListesineDon(): void {
 
     this.router.navigate([
       '/musteriler'
     ]);
-
   }
+
 
   paraCekYatirEkraninaGit(): void {
 
@@ -696,13 +867,15 @@ export class HesapListesi
     }
 
     this.router.navigate(
-      ['/para-cek-yatir'],
+      [
+        '/para-cek-yatir'
+      ],
       {
         queryParams: {
-          iban: this.seciliHesap.iban
+          iban:
+            this.seciliHesap.iban
         }
       }
     );
-
   }
 }
