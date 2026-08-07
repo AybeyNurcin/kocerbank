@@ -1,4 +1,5 @@
 using System;
+using Oracle.ManagedDataAccess.Types;
 
 namespace kocerbank_backend.DataAccess
 {
@@ -22,8 +23,23 @@ namespace kocerbank_backend.DataAccess
     {
         public static DateTime UtcOlarakOku(object deger)
         {
+            // OracleParameter.Value, DataReader indexer'ının aksine
+            // native DateTime yerine OracleDate/OracleTimeStamp gibi
+            // Oracle'a özgü tipler döndürür. Bu tipler IConvertible
+            // uygulamadığı için Convert.ToDateTime doğrudan çağrılamaz.
+            DateTime tarih = deger switch
+            {
+                OracleDate oracleTarih =>
+                    oracleTarih.Value,
+
+                OracleTimeStamp oracleZamanDamgasi =>
+                    oracleZamanDamgasi.Value,
+
+                _ => Convert.ToDateTime(deger)
+            };
+
             return DateTime.SpecifyKind(
-                Convert.ToDateTime(deger),
+                tarih,
                 DateTimeKind.Utc
             );
         }
