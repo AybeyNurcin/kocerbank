@@ -88,8 +88,14 @@ const routes: Routes = [
         component: SifreDegistir
       },
       {
-        path: 'para-transfer',
-        component: ParaTransferComponent
+        path: 'havale-eft',
+        component: ParaTransferComponent,
+        data: { transferKanali: 'havale-eft' }
+      },
+      {
+        path: 'swift',
+        component: ParaTransferComponent,
+        data: { transferKanali: 'swift' }
       },
 
       // Ana adrese gidilirse Dashboard açılır.

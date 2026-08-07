@@ -310,6 +310,71 @@ namespace kocerbank_backend.Services
 
 
         /*
+         * TEK HESABIN BİLGİLERİNİ GETİR
+         *
+         * Karşı taraf IBAN'ı beklenmeden,
+         * bir IBAN'ın hesap sahibi kontrolü
+         * için kullanılır.
+         *
+         * Bu metot prosedür çağırmaz.
+         * Bakiye değiştirmez.
+         * Transfer kaydı oluşturmaz.
+         */
+
+        public TransferHesapDTO TekHesapBilgisiGetir(
+            string iban
+        )
+        {
+            IbanKontrolEt(
+                iban,
+                "IBAN"
+            );
+
+            string temizIban =
+                IbanTemizle(iban);
+
+            HesapDTO? hesap =
+                _hesapRepository.GetirByIBAN(
+                    temizIban
+                );
+
+            if (hesap is null)
+            {
+                throw new KeyNotFoundException(
+                    "IBAN'a ait hesap bulunamadı."
+                );
+            }
+
+            if (
+                hesap.HesapDurumKodu !=
+                HesapDurumKodlari.Aktif
+            )
+            {
+                throw new InvalidOperationException(
+                    "Hesap aktif değildir."
+                );
+            }
+
+            MusteriDTO? musteri =
+                _musteriRepository.GetirById(
+                    hesap.MusteriBilgileriId
+                );
+
+            if (musteri is null)
+            {
+                throw new KeyNotFoundException(
+                    "Hesap sahibi bulunamadı."
+                );
+            }
+
+            return TransferHesabaDonustur(
+                hesap,
+                musteri
+            );
+        }
+
+
+        /*
          * GERÇEK PARA TRANSFERİ
          *
          * Bu metot repository ve prosedür çağırır.
@@ -431,6 +496,13 @@ namespace kocerbank_backend.Services
                 aliciHesap.DovizCinsi;
 
 
+            DovizKanalKuraliniKontrolEt(
+                dto.TransferKanali,
+                gonderenHesap.DovizCinsi,
+                aliciHesap.DovizCinsi
+            );
+
+
             dto.DovizKuru =
                 _dovizKuruService
                     .TransferKuruGetir(
@@ -456,6 +528,45 @@ namespace kocerbank_backend.Services
 
             return _paraTransferRepository
                 .ParaTransferiYap(dto);
+        }
+
+
+        /*
+         * DÖVİZ CİNSİ / TRANSFER KANALI KURALI
+         *
+         * Havale/EFT yalnızca TL hesaplar arasında yapılabilir.
+         * SWIFT ile TL hesaptan TL hesaba transfer yapılamaz.
+         */
+
+        private void DovizKanalKuraliniKontrolEt(
+            TransferKanallari kanal,
+            DovizCinsiDurumlari gonderenDoviz,
+            DovizCinsiDurumlari aliciDoviz
+        )
+        {
+            bool ikisiDeTL =
+                gonderenDoviz == DovizCinsiDurumlari.TL &&
+                aliciDoviz == DovizCinsiDurumlari.TL;
+
+            if (
+                kanal == TransferKanallari.HavaleEft &&
+                !ikisiDeTL
+            )
+            {
+                throw new ArgumentException(
+                    "Havale/EFT işlemi yalnızca TL hesaplar arasında yapılabilir."
+                );
+            }
+
+            if (
+                kanal == TransferKanallari.Swift &&
+                ikisiDeTL
+            )
+            {
+                throw new ArgumentException(
+                    "SWIFT işleminde TL hesaptan TL hesaba transfer yapılamaz."
+                );
+            }
         }
 
 

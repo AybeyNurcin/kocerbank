@@ -20,6 +20,12 @@ namespace kocerbank_backend.Models.DTOs
             set;
         }
 
+        public TransferKanallari TransferKanali
+        {
+            get;
+            set;
+        }
+
         public decimal GonderenTutar
         {
             get;
