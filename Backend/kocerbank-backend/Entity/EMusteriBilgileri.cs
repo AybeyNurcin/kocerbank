@@ -609,7 +609,7 @@ namespace kocerbank_backend.DataAccess
         }
 
         // DASHBOARD ÖZETİ
-        public MusteriDashboardDTO GetirDashboardOzet()
+        public MusteriDashboardDTO GetirDashboardOzet(DateTime? baslangicTarihi, DateTime? bitisTarihi)
         {
             MusteriDashboardDTO ozet = new();
 
@@ -625,6 +625,14 @@ namespace kocerbank_backend.DataAccess
                 CommandType.StoredProcedure;
 
             command.BindByName = true;
+
+            command.Parameters
+                .Add("P_BASLANGICTARIHI", OracleDbType.Date)
+                .Value = (object?)baslangicTarihi ?? DBNull.Value;
+
+            command.Parameters
+                .Add("P_BITISTARIHI", OracleDbType.Date)
+                .Value = (object?)bitisTarihi ?? DBNull.Value;
 
             command.Parameters
                 .Add("P_SONUC", OracleDbType.RefCursor)

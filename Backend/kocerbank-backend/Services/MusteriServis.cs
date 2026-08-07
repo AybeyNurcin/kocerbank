@@ -151,10 +151,10 @@ namespace kocerbank_backend.Services
         }
 
         // DASHBOARD ÖZETİ
-        public MusteriDashboardDTO GetirDashboardOzet()
+        public MusteriDashboardDTO GetirDashboardOzet(DashboardFiltreDTO? filtre)
         {
             return _musteriRepository
-                .GetirDashboardOzet();
+                .GetirDashboardOzet(filtre?.BaslangicTarihi, filtre?.BitisTarihi);
         }
 
         // ORTAK DOĞRULAMA METODU

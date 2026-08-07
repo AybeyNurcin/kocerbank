@@ -44,6 +44,10 @@ import {
   DovizKurulari
 } from '../../doviz-kuru/models/doviz-kuru-model';
 
+import {
+  DashboardFiltre
+} from '../../../shared/models/dashboard-filtre-model';
+
 interface DovizKuruSatiri {
   kod: string;
   ad: string;
@@ -106,6 +110,12 @@ export class Dashboard
   dovizKuruHataMesaji: string = '';
 
 
+  // TARİH ARALIĞI FİLTRESİ
+
+  baslangicTarihi: string = '';
+  bitisTarihi: string = '';
+
+
   constructor(
     private musteriApi: MusteriApi,
     private subeApi: SubeApi,
@@ -134,7 +144,7 @@ export class Dashboard
     this.musteriHataMesaji = '';
 
     this.musteriApi
-      .dashboardOzet()
+      .dashboardOzet(this.filtreOlustur())
       .subscribe({
 
         next: (
@@ -176,7 +186,7 @@ export class Dashboard
     this.subeHataMesaji = '';
 
     this.subeApi
-      .dashboardOzet()
+      .dashboardOzet(this.filtreOlustur())
       .subscribe({
 
         next: (
@@ -218,7 +228,7 @@ export class Dashboard
     this.personelHataMesaji = '';
 
     this.personelApi
-      .dashboardOzet()
+      .dashboardOzet(this.filtreOlustur())
       .subscribe({
 
         next: (
@@ -260,7 +270,7 @@ export class Dashboard
     this.hesapHataMesaji = '';
 
     this.hesapApi
-      .dashboardOzet()
+      .dashboardOzet(this.filtreOlustur())
       .subscribe({
 
         next: (
@@ -345,5 +355,35 @@ export class Dashboard
         }
 
       });
+  }
+
+
+  filtreOlustur(): DashboardFiltre {
+
+    return {
+      baslangicTarihi: this.baslangicTarihi || null,
+      bitisTarihi: this.bitisTarihi || null
+    };
+
+  }
+
+
+  filtreUygula(): void {
+
+    this.musteriOzetGetir();
+    this.subeOzetGetir();
+    this.personelOzetGetir();
+    this.hesapOzetGetir();
+
+  }
+
+
+  filtreTemizle(): void {
+
+    this.baslangicTarihi = '';
+    this.bitisTarihi = '';
+
+    this.filtreUygula();
+
   }
 }

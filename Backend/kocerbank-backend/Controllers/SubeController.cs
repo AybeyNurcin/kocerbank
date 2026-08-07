@@ -122,11 +122,11 @@ namespace kocerbank_backend.Controllers
         }
         
         [HttpPost("DashboardOzet")]
-        public IActionResult GetirDashboardOzet()
+        public IActionResult GetirDashboardOzet([FromBody] DashboardFiltreDTO? filtre)
         {
             try
             {
-                SubeDashboardDTO ozet = _subeService.GetirDashboardOzet();
+                SubeDashboardDTO ozet = _subeService.GetirDashboardOzet(filtre);
                 return Ok(ozet);
             }
             catch (Exception ex)

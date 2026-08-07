@@ -199,9 +199,9 @@ namespace kocerbank_backend.Services
             _personelRepository.Sil(id);
         }
 
-        public PersonelDashboardDTO GetirDashboardOzet()
+        public PersonelDashboardDTO GetirDashboardOzet(DashboardFiltreDTO? filtre)
     {
-        return _personelRepository.GetirDashboardOzet();
+        return _personelRepository.GetirDashboardOzet(filtre?.BaslangicTarihi, filtre?.BitisTarihi);
     }
 
         // EKLEME VE GÜNCELLEMEDE ORTAK KONTROLLER

@@ -15,6 +15,7 @@ namespace kocerbank_backend.Models.DTOs
         public string Email { get; set; } = string.Empty;
         public string TelefonNo { get; set; } = string.Empty;
         public AktifPasifDurumlari DurumKodu { get; set; }
+        public DateTime KayitOlusturmaTarihi { get; set; }
     }
     public class PersonelAramaKriterleriDTO
     {

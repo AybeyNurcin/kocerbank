@@ -9,6 +9,7 @@ namespace kocerbank_backend.Models.DTOs
         public string SubeTelefonNo { get; set; } = string.Empty;
         public string SubeAdres { get; set; } = string.Empty;
         public AktifPasifDurumlari SubeDurumKodu { get; set; }
+        public DateTime KayitOlusturmaTarihi { get; set; }
     }
 
     public class SubeAramaKriterleriDTO

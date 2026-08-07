@@ -10,6 +10,7 @@ import {
 import { Personel } from '../models/personel-model';
 import { PersonelFiltre } from '../models/personel-filtre-model';
 import { PersonelDashboard } from '../models/personel-dashboard-model';
+import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
 
 @Injectable({
   providedIn: 'root'
@@ -80,11 +81,11 @@ export class PersonelApi {
     );
   }
 
-  dashboardOzet(): Observable<PersonelDashboard> {
+  dashboardOzet(filtre?: DashboardFiltre): Observable<PersonelDashboard> {
 
     return this.http.post<PersonelDashboard>(
       `${this.apiUrl}/DashboardOzet`,
-      null
+      filtre ?? null
     );
   }
 
