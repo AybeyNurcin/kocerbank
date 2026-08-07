@@ -1,33 +1,104 @@
-import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  NgModule,
+  provideBrowserGlobalErrorListeners
+} from '@angular/core';
 
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import {
+  BrowserModule
+} from '@angular/platform-browser';
 
-import { AppRoutingModule } from './app-routing-module';
-import { App } from './app';
+import {
+  FormsModule
+} from '@angular/forms';
 
-import { PersonelGiris } from './features/auth/personel-giris/personel-giris';
-import { Dashboard } from './features/dashboard/dashboard/dashboard';
-import { SubeListesi } from './features/subeler/sube-listesi/sube-listesi';
-import { PersonelListesi } from './features/personeller/personel-listesi/personel-listesi';
-import { MusteriListesi } from './features/musteriler/musteri-listesi/musteri-listesi';
-import { AdminLayout } from './layouts/admin-layout/admin-layout';
-import { Navbar } from './shared/components/navbar/navbar';
-import { SubeFormu } from './features/subeler/sube-formu/sube-formu';
-import { PersonelFormu } from './features/personeller/personel-formu/personel-formu';
-import { SubeSecici } from './shared/components/sube-secici/sube-secici';
-import { MusteriFormu } from './features/musteriler/musteri-formu/musteri-formu';
-import { MusteriIletisim } from './features/musteriler/musteri-iletisim/musteri-iletisim';
+import {
+  provideHttpClient,
+  withInterceptors
+} from '@angular/common/http';
 
-import { provideHttpClient } from '@angular/common/http';
-import { HesapListesi } from './features/hesaplar/hesap-listesi/hesap-listesi';
-import { ParaCekYatir } from './features/hesaplar/para-cek-yatir/para-cek-yatir';
-import { ProfilDuzenle } from './features/profil/profil-duzenle/profil-duzenle';
-import { SifreDegistir } from './features/profil/sifre-degistir/sifre-degistir';
-import { ParaTransferComponent } from './features/hesaplar/para-transfer/para-transfer';
-import { VirmanComponent } from './features/hesaplar/virman/virman';
+import {
+  AppRoutingModule
+} from './app-routing-module';
 
-import { HesapFormu } from './features/hesaplar/hesap-formu/hesap-formu';
+import {
+  App
+} from './app';
+
+import {
+  PersonelGiris
+} from './features/auth/personel-giris/personel-giris';
+
+import {
+  Dashboard
+} from './features/dashboard/dashboard/dashboard';
+
+import {
+  SubeListesi
+} from './features/subeler/sube-listesi/sube-listesi';
+
+import {
+  PersonelListesi
+} from './features/personeller/personel-listesi/personel-listesi';
+
+import {
+  MusteriListesi
+} from './features/musteriler/musteri-listesi/musteri-listesi';
+
+import {
+  AdminLayout
+} from './layouts/admin-layout/admin-layout';
+
+import {
+  Navbar
+} from './shared/components/navbar/navbar';
+
+import {
+  SubeFormu
+} from './features/subeler/sube-formu/sube-formu';
+
+import {
+  PersonelFormu
+} from './features/personeller/personel-formu/personel-formu';
+
+import {
+  SubeSecici
+} from './shared/components/sube-secici/sube-secici';
+
+import {
+  MusteriFormu
+} from './features/musteriler/musteri-formu/musteri-formu';
+
+import {
+  MusteriIletisim
+} from './features/musteriler/musteri-iletisim/musteri-iletisim';
+
+import {
+  HesapListesi
+} from './features/hesaplar/hesap-listesi/hesap-listesi';
+
+import {
+  HesapFormu
+} from './features/hesaplar/hesap-formu/hesap-formu';
+
+import {
+  ParaCekYatir
+} from './features/hesaplar/para-cek-yatir/para-cek-yatir';
+
+import {
+  ProfilDuzenle
+} from './features/profil/profil-duzenle/profil-duzenle';
+
+import {
+  SifreDegistir
+} from './features/profil/sifre-degistir/sifre-degistir';
+
+import {
+  ParaTransferComponent
+} from './features/hesaplar/para-transfer/para-transfer';
+
+import {
+  personelSicilInterceptor
+} from './core/interceptors/personel-sicil-interceptor';
 
 @NgModule({
   declarations: [
@@ -49,11 +120,28 @@ import { HesapFormu } from './features/hesaplar/hesap-formu/hesap-formu';
     ParaCekYatir,
     ProfilDuzenle,
     SifreDegistir,
-    ParaTransferComponent,
-    VirmanComponent,
+    ParaTransferComponent
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule],
-  providers: [provideBrowserGlobalErrorListeners(), provideHttpClient()],
-  bootstrap: [App],
+
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule
+  ],
+
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+
+    provideHttpClient(
+      withInterceptors([
+        personelSicilInterceptor
+      ])
+    )
+  ],
+
+  bootstrap: [
+    App
+  ]
 })
-export class AppModule {}
+export class AppModule {
+}

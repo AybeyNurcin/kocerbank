@@ -7,139 +7,138 @@ namespace kocerbank_backend.Services
     public class SubeService
     {
         private readonly SubeRepository _subeRepository;
+        private readonly AktifPersonelServis _aktifPersonelServis;
 
-        public SubeService(SubeRepository subeRepository)
+        public SubeService(
+            SubeRepository subeRepository,
+            AktifPersonelServis aktifPersonelServis)
         {
             _subeRepository = subeRepository;
+            _aktifPersonelServis = aktifPersonelServis;
         }
 
         // 1. ŞUBE EKLEME
-    public SubeDTO Ekle(SubeDTO dto)
-    {
-        if (dto is null)
+        public SubeDTO Ekle(SubeDTO dto)
         {
-            throw new ArgumentException(
-                "Şube bilgileri gönderilmelidir.");
+            if (dto is null)
+            {
+                throw new ArgumentException(
+                    "Şube bilgileri gönderilmelidir.");
+            }
+
+            SubeBilgileriniKontrolEt(dto);
+
+            SubeAramaKriterleriDTO aramaKriterleri =
+                new SubeAramaKriterleriDTO
+                {
+                    SubeAdi = dto.SubeAdi,
+                    SubeTelefonNo = dto.SubeTelefonNo,
+                    SubeAdres = dto.SubeAdres
+                };
+
+            List<SubeDTO> bulunanSubeler =
+                Listele(aramaKriterleri);
+
+            if (bulunanSubeler.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    "Girilen bilgilere sahip bir şube zaten bulunmaktadır.");
+            }
+
+            // Frontend'den gelen RecordUser dikkate alınmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
+            dto.RecordUser =
+                _aktifPersonelServis.SicilNoGetir();
+
+            return _subeRepository.Ekle(dto);
         }
-
-        // Önce zorunlu alanlar ve uzunluklar kontrol edilir.
-        SubeBilgileriniKontrolEt(dto);
-
-        // Kullanıcının girdiği bilgilerle listeleme filtresi hazırlanır.
-        SubeAramaKriterleriDTO aramaKriterleri = new SubeAramaKriterleriDTO
-        {
-            SubeAdi = dto.SubeAdi,
-            SubeTelefonNo = dto.SubeTelefonNo,
-            SubeAdres = dto.SubeAdres,
-        };
-
-        // Aynı Service içindeki Listele metodu çağrılır.
-        List<SubeDTO> bulunanSubeler =
-            Listele(aramaKriterleri);
-
-        // Bu bilgilerle eşleşen kayıt varsa INSERT yapılmaz.
-        if (bulunanSubeler.Count > 0)
-        {
-            throw new InvalidOperationException(
-                "Girilen bilgilere sahip bir şube zaten bulunmaktadır.");
-        }
-
-        // Eşleşen kayıt yoksa INSERT işlemi yapılır.
-        return _subeRepository.Ekle(dto);
-    }
 
         // 2. ID'YE GÖRE ŞUBE GETİRME
-    public SubeDTO GetirById(long id)
-    {
-        IdKontrolEt(id);
-
-        SubeDTO? sube =
-            _subeRepository.GetirById(id);
-
-        if (sube is null)
+        public SubeDTO GetirById(long id)
         {
-            throw new KeyNotFoundException(
-                "Bu ID değerine ait şube bulunamadı.");
+            IdKontrolEt(id);
+
+            SubeDTO? sube =
+                _subeRepository.GetirById(id);
+
+            if (sube is null)
+            {
+                throw new KeyNotFoundException(
+                    "Bu ID değerine ait şube bulunamadı.");
+            }
+
+            return sube;
         }
 
-        return sube;
-    }
-
         // 3. KRİTERE GÖRE ŞUBE LİSTELEME
-        public List<SubeDTO> Listele(SubeAramaKriterleriDTO aramaKriterleri)
+        public List<SubeDTO> Listele(
+            SubeAramaKriterleriDTO aramaKriterleri)
         {
-            return _subeRepository.GetirListele(aramaKriterleri);
+            return _subeRepository.GetirListele(
+                aramaKriterleri);
         }
 
         // 4. ŞUBE GÜNCELLEME
-    public void Guncelle(SubeDTO dto)
-    {
-        if (dto is null)
+        public void Guncelle(SubeDTO dto)
         {
-            throw new ArgumentException(
-                "Güncellenecek şube bilgileri gönderilmelidir.");
+            if (dto is null)
+            {
+                throw new ArgumentException(
+                    "Güncellenecek şube bilgileri gönderilmelidir.");
+            }
+
+            IdKontrolEt(dto.Id);
+            SubeBilgileriniKontrolEt(dto);
+
+            SubeDTO? mevcutSube =
+                _subeRepository.GetirById(dto.Id);
+
+            if (mevcutSube is null)
+            {
+                throw new KeyNotFoundException(
+                    "Güncellenecek şube bulunamadı.");
+            }
+
+            SubeAramaKriterleriDTO aramaKriterleri =
+                new SubeAramaKriterleriDTO
+                {
+                    SubeAdi = dto.SubeAdi,
+                    SubeTelefonNo = dto.SubeTelefonNo,
+                    SubeAdres = dto.SubeAdres
+                };
+
+            List<SubeDTO> bulunanSubeler =
+                Listele(aramaKriterleri);
+
+            bool baskaSubeVarMi =
+                bulunanSubeler.Any(
+                    sube => sube.Id != dto.Id);
+
+            if (baskaSubeVarMi)
+            {
+                throw new InvalidOperationException(
+                    "Girilen bilgilere sahip başka bir şube zaten bulunmaktadır.");
+            }
+
+            dto.RecordUser =
+                _aktifPersonelServis.SicilNoGetir();
+
+            _subeRepository.Guncelle(dto);
         }
-
-        // ID geçerli mi?
-        IdKontrolEt(dto.Id);
-
-        // Şube adı, telefon, adres ve durum kontrolleri
-        SubeBilgileriniKontrolEt(dto);
-
-        // Güncellenecek şube gerçekten var mı?
-        SubeDTO? mevcutSube =
-            _subeRepository.GetirById(dto.Id);
-
-        if (mevcutSube is null)
-        {
-            throw new KeyNotFoundException(
-                "Güncellenecek şube bulunamadı.");
-        }
-
-        // Yeni bilgilerle aynı başka bir şube var mı?
-        // Şube kodu ve durum kodu duplicate kontrolüne dahil edilmez.
-        SubeAramaKriterleriDTO aramaKriterleri = new SubeAramaKriterleriDTO
-        {
-            SubeAdi = dto.SubeAdi,
-            SubeTelefonNo = dto.SubeTelefonNo,
-            SubeAdres = dto.SubeAdres
-        };
-
-        List<SubeDTO> bulunanSubeler =
-            Listele(aramaKriterleri);
-
-        // Kayıt kendi kendisini duplicate saymamalı.
-        bool baskaSubeVarMi =
-            bulunanSubeler.Any(
-                sube => sube.Id != dto.Id);
-
-        if (baskaSubeVarMi)
-        {
-            throw new InvalidOperationException(
-                "Girilen bilgilere sahip başka bir şube zaten bulunmaktadır.");
-        }
-
-        // Sorun yoksa güncelleme prosedürü çalıştırılır.
-        _subeRepository.Guncelle(dto);
-    }
 
         // 5. ŞUBE SİLME
-    public void Sil(long id)
-    {
-        // ID geçerli mi ve bu ID'ye ait şube var mı?
-        _ = GetirById(id);
+        public void Sil(long id)
+        {
+            _ = GetirById(id);
 
-        // Kayıt varsa silme prosedürü çalıştırılır.
-        _subeRepository.Sil(id);
-    }
+            _subeRepository.Sil(id);
+        }
 
-
-         public SubeDashboardDTO GetirDashboardOzet()
+        public SubeDashboardDTO GetirDashboardOzet()
         {
             return _subeRepository.GetirDashboardOzet();
         }
 
-        // EKLEME VE GÜNCELLEMEDE ORTAK KONTROLLER
         private static void SubeBilgileriniKontrolEt(
             SubeDTO dto)
         {
@@ -186,17 +185,15 @@ namespace kocerbank_backend.Services
                 throw new ArgumentException(
                     "Şube durumu Aktif veya Pasif olmalıdır.");
             }
-
         }
 
-        // ID KULLANAN METOTLARIN ORTAK KONTROLÜ
         private static void IdKontrolEt(long id)
         {
-            if (id <= 0) 
+            if (id <= 0)
             {
                 throw new ArgumentException(
-                    "Bu ID değerinde Şube değeri olamaz.");    
-            }    
+                    "Bu ID değerinde şube olamaz.");
+            }
         }
     }
 }
