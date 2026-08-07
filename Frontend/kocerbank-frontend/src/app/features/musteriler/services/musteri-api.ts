@@ -31,6 +31,10 @@ import {
   MusteriDashboard
 } from '../models/musteri-dashboard-model';
 
+import {
+  DashboardFiltre
+} from '../../../shared/models/dashboard-filtre-model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -92,11 +96,13 @@ export class MusteriApi {
     );
   }
 
-  dashboardOzet(): Observable<MusteriDashboard> {
+  dashboardOzet(
+    filtre?: DashboardFiltre
+  ): Observable<MusteriDashboard> {
 
     return this.http.post<MusteriDashboard>(
       `${this.apiUrl}/DashboardOzet`,
-      null
+      filtre ?? null
     );
   }
 }

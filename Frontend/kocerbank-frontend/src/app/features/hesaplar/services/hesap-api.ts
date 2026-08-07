@@ -6,6 +6,7 @@ import { Hesap } from '../models/hesap-model';
 import { HesapCekYatir } from '../models/hesap-cek-yatir-model';
 import { HesapDashboard } from '../models/hesap-dashboard-model';
 import { DovizCinsi } from '../../../shared/enums/doviz-cinsi-enum';
+import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
 
 @Injectable({
   providedIn: 'root'
@@ -73,10 +74,10 @@ export class HesapApi {
     );
   }
 
-  dashboardOzet(): Observable<HesapDashboard> {
+  dashboardOzet(filtre?: DashboardFiltre): Observable<HesapDashboard> {
     return this.http.post<HesapDashboard>(
       `${this.apiUrl}/DashboardOzet`,
-      null
+      filtre ?? null
     );
   }
 }

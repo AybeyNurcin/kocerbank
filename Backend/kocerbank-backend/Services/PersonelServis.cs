@@ -27,6 +27,16 @@ namespace kocerbank_backend.Services
         {
             PersonelBilgileriniKontrolEt(dto);
 
+                if (string.IsNullOrWhiteSpace(dto.Sifre))
+                {
+                    throw new ArgumentException("Şifre boş bırakılamaz.");
+                }
+
+                if (dto.Sifre.Length < 8)
+                {
+                    throw new ArgumentException("Şifre en az 8 karakter olmalıdır.");
+                }
+
                 dto.Sifre = _passwordHasher.HashPassword(dto, dto.Sifre);
 
                 // Frontend'den gelen RecordUser dikkate alınmaz.
@@ -189,9 +199,9 @@ namespace kocerbank_backend.Services
             _personelRepository.Sil(id);
         }
 
-        public PersonelDashboardDTO GetirDashboardOzet()
+        public PersonelDashboardDTO GetirDashboardOzet(DashboardFiltreDTO? filtre)
     {
-        return _personelRepository.GetirDashboardOzet();
+        return _personelRepository.GetirDashboardOzet(filtre?.BaslangicTarihi, filtre?.BitisTarihi);
     }
 
         // EKLEME VE GÜNCELLEMEDE ORTAK KONTROLLER
@@ -208,16 +218,6 @@ namespace kocerbank_backend.Services
             {
                 throw new ArgumentException(
                     "Personel soyadı boş bırakılamaz.");
-            }
-
-            if (string.IsNullOrWhiteSpace(dto.Sifre))
-            {
-                throw new ArgumentException("Şifre boş bırakılamaz.");
-            }
-
-            if (dto.Sifre.Length < 8)
-            {
-                throw new ArgumentException("Şifre en az 8 karakter olmalıdır.");
             }
 
             // TCKN kontrolü (Genelde 11 hane olmalıdır)

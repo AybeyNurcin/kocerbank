@@ -29,6 +29,68 @@
   }
 
 
+/* TARİH ARALIĞI FİLTRESİ */
+
+.dashboard-filter-bar {
+  margin-bottom: 22px;
+  padding: 18px 22px;
+  background-color: #ffffff;
+  border: 1px solid #ebebee;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(40, 40, 55, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+  .filter-field label {
+    color: #77777e;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .filter-field input[type="date"] {
+    padding: 9px 12px;
+    border: 1px solid #dcdce2;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #23232a;
+  }
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+}
+
+  .filter-actions button {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .filter-actions button:first-child {
+    background-color: #2563ec;
+    color: #ffffff;
+  }
+
+  .filter-actions button:last-child {
+    background-color: #f1f1f4;
+    color: #77777e;
+  }
+
+
 /* KART IZGARASI */
 
 .dashboard-grid {

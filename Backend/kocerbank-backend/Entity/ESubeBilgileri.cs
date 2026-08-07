@@ -37,9 +37,11 @@ namespace kocerbank_backend.DataAccess
                     // OUT Parametreleri
                     OracleParameter sId = new OracleParameter("P_ID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
                     OracleParameter sKodu = new OracleParameter("P_SUBEKODU", OracleDbType.Varchar2, 50) { Direction = ParameterDirection.Output };
-                    
+                    OracleParameter sKayitOlusturmaTarihi = new OracleParameter("P_KAYITOLUSTURMATARIHI", OracleDbType.Date) { Direction = ParameterDirection.Output };
+
                     kb.Parameters.Add(sId);
                     kb.Parameters.Add(sKodu);
+                    kb.Parameters.Add(sKayitOlusturmaTarihi);
 
                     conn.Open();
                     kb.ExecuteNonQuery();
@@ -47,6 +49,7 @@ namespace kocerbank_backend.DataAccess
                     // Üretilen değerleri DTO'ya geri yazıyoruz
                     dto.Id = Convert.ToInt64(sId.Value.ToString());
                     dto.SubeKodu = sKodu.Value.ToString()!;
+                    dto.KayitOlusturmaTarihi = OracleZamanDamgasi.UtcOlarakOku(sKayitOlusturmaTarihi.Value);
 
                     return dto;
                 }
@@ -159,7 +162,7 @@ namespace kocerbank_backend.DataAccess
             }
         }
 
-        public SubeDashboardDTO GetirDashboardOzet()
+        public SubeDashboardDTO GetirDashboardOzet(DateTime? baslangicTarihi, DateTime? bitisTarihi)
         {
             SubeDashboardDTO ozet = new SubeDashboardDTO();
 
@@ -169,6 +172,8 @@ namespace kocerbank_backend.DataAccess
                 {
                     KB.CommandType = CommandType.StoredProcedure;
 
+                    KB.Parameters.Add("P_BASLANGICTARIHI", OracleDbType.Date).Value = (object?)baslangicTarihi ?? DBNull.Value;
+                    KB.Parameters.Add("P_BITISTARIHI", OracleDbType.Date).Value = (object?)bitisTarihi ?? DBNull.Value;
                     KB.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();
@@ -200,7 +205,8 @@ namespace kocerbank_backend.DataAccess
                 SubeAdres = reader["SUBEADRES"].ToString()!,
                 SubeDurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["SUBEDURUMKODU"]),
                 RecordUser = reader["RECORDUSER"].ToString()!,
-                RecordDate = OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"])
+                RecordDate = OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"]),
+                KayitOlusturmaTarihi = OracleZamanDamgasi.UtcOlarakOku(reader["KAYITOLUSTURMATARIHI"])
             };
         }
     }

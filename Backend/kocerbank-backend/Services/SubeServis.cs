@@ -134,9 +134,9 @@ namespace kocerbank_backend.Services
             _subeRepository.Sil(id);
         }
 
-        public SubeDashboardDTO GetirDashboardOzet()
+        public SubeDashboardDTO GetirDashboardOzet(DashboardFiltreDTO? filtre)
         {
-            return _subeRepository.GetirDashboardOzet();
+            return _subeRepository.GetirDashboardOzet(filtre?.BaslangicTarihi, filtre?.BitisTarihi);
         }
 
         private static void SubeBilgileriniKontrolEt(

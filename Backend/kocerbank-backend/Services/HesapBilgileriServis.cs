@@ -103,9 +103,9 @@ namespace kocerbank_backend.Services
         }
 
         // DASHBOARD ÖZETİ
-        public HesapDashboardDTO GetirDashboardOzet()
+        public HesapDashboardDTO GetirDashboardOzet(DashboardFiltreDTO? filtre)
         {
-            return _hesapRepository.GetirDashboardOzet();
+            return _hesapRepository.GetirDashboardOzet(filtre?.BaslangicTarihi, filtre?.BitisTarihi);
         }
 
         // 5. PARA ÇEKME / YATIRMA

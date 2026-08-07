@@ -10,6 +10,7 @@ import {
 import { Sube } from '../models/sube-model';
 import { SubeFiltre } from '../models/sube-filtre-model';
 import { SubeDashboard } from '../models/sube-dashboard-model';
+import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
 
 @Injectable({
   providedIn: 'root'
@@ -61,11 +62,11 @@ export class SubeApi {
     );
   }
 
-  dashboardOzet(): Observable<SubeDashboard> {
+  dashboardOzet(filtre?: DashboardFiltre): Observable<SubeDashboard> {
 
     return this.http.post<SubeDashboard>(
       `${this.apiUrl}/DashboardOzet`,
-      null
+      filtre ?? null
     );
   }
 }

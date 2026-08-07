@@ -370,7 +370,7 @@ namespace kocerbank_backend.DataAccess
         }
 
         // 6. DASHBOARD ÖZETİ
-        public HesapDashboardDTO GetirDashboardOzet()
+        public HesapDashboardDTO GetirDashboardOzet(DateTime? baslangicTarihi, DateTime? bitisTarihi)
         {
             HesapDashboardDTO ozet = new HesapDashboardDTO();
 
@@ -380,6 +380,8 @@ namespace kocerbank_backend.DataAccess
                 {
                     KB.CommandType = CommandType.StoredProcedure;
 
+                    KB.Parameters.Add("P_BASLANGICTARIHI", OracleDbType.Date).Value = (object?)baslangicTarihi ?? DBNull.Value;
+                    KB.Parameters.Add("P_BITISTARIHI", OracleDbType.Date).Value = (object?)bitisTarihi ?? DBNull.Value;
                     KB.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();

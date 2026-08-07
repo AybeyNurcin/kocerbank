@@ -16,6 +16,37 @@
   </div>
 
 
+  <!-- TARİH ARALIĞI FİLTRESİ -->
+  <div class="dashboard-filter-bar">
+
+    <div class="filter-field">
+      <label for="baslangicTarihi">Başlangıç Tarihi</label>
+      <input
+        id="baslangicTarihi"
+        name="baslangicTarihi"
+        type="date"
+        [(ngModel)]="baslangicTarihi"
+      />
+    </div>
+
+    <div class="filter-field">
+      <label for="bitisTarihi">Bitiş Tarihi</label>
+      <input
+        id="bitisTarihi"
+        name="bitisTarihi"
+        type="date"
+        [(ngModel)]="bitisTarihi"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <button type="button" (click)="filtreUygula()">Uygula</button>
+      <button type="button" (click)="filtreTemizle()">Temizle</button>
+    </div>
+
+  </div>
+
+
   <div class="dashboard-grid">
 
     <!-- MÜŞTERİLER -->
