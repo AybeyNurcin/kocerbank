@@ -11,10 +11,14 @@ namespace kocerbank_backend.Services
     {
         private readonly PersonelRepository _personelRepository;
         private readonly PasswordHasher<PersonelDTO> _passwordHasher;
+        private readonly AktifPersonelServis _aktifPersonelServis;
 
-        public PersonelService(PersonelRepository personelRepository)
+        public PersonelService(
+            PersonelRepository personelRepository,
+            AktifPersonelServis aktifPersonelServis)
         {
             _personelRepository = personelRepository;
+            _aktifPersonelServis = aktifPersonelServis;
             _passwordHasher = new PasswordHasher<PersonelDTO>();
         }
 
@@ -24,6 +28,11 @@ namespace kocerbank_backend.Services
             PersonelBilgileriniKontrolEt(dto);
 
                 dto.Sifre = _passwordHasher.HashPassword(dto, dto.Sifre);
+
+                // Frontend'den gelen RecordUser dikkate alınmaz.
+                // Giriş yapan personelin sicili backend tarafından atanır.
+                dto.RecordUser =
+                    _aktifPersonelServis.SicilNoGetir();
 
                 return _personelRepository.Ekle(dto);
         }
@@ -109,6 +118,11 @@ namespace kocerbank_backend.Services
                     "Güncellenecek personel bulunamadı.");
             }
 
+            // Frontend'den gelen RecordUser dikkate alınmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
+            dto.RecordUser =
+                _aktifPersonelServis.SicilNoGetir();
+
             _personelRepository.Guncelle(dto);
         }
 
@@ -150,6 +164,11 @@ namespace kocerbank_backend.Services
             }
 
             mevcutPersonel.Sifre = _passwordHasher.HashPassword(mevcutPersonel, dto.YeniSifre);
+
+            // Şifre değişikliği de bir güncellemedir; işlemi yapan
+            // personelin sicili damgalanır.
+            mevcutPersonel.RecordUser =
+                _aktifPersonelServis.SicilNoGetir();
 
             _personelRepository.Guncelle(mevcutPersonel);
         }

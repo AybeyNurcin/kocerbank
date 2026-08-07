@@ -28,11 +28,6 @@ import {
   DovizCinsi
 } from '../../../shared/enums/doviz-cinsi-enum';
 
-import {
-  AuthService
-} from '../../../core/services/auth';
-
-
 type EkranTipi =
   'form' | 'onizleme' | 'basarili';
 
@@ -144,9 +139,6 @@ export class ParaTransferComponent
   constructor(
     private paraTransferApi:
       ParaTransferApi,
-
-    private authService:
-      AuthService,
 
     private route:
       ActivatedRoute,
@@ -1477,10 +1469,6 @@ export class ParaTransferComponent
     const dto =
       this.transferIstekDtoOlustur();
 
-    dto.recordUser =
-      this.authService
-        .personelSicilNoGetir();
-
     this.paraTransferApi
       .paraTransferiYap(dto)
       .subscribe({
@@ -1506,9 +1494,6 @@ export class ParaTransferComponent
 
             aciklama:
               this.transfer.aciklama,
-
-            recordUser:
-              dto.recordUser,
 
             gonderenHesap:
               sonuc.gonderenHesap ??
@@ -1616,10 +1601,7 @@ export class ParaTransferComponent
         this.transfer.gonderenTutar,
 
       aciklama:
-        this.transfer.aciklama,
-
-      recordUser:
-        this.transfer.recordUser
+        this.transfer.aciklama
     };
 
   }
@@ -1776,9 +1758,6 @@ export class ParaTransferComponent
         0,
 
       aciklama:
-        null,
-
-      recordUser:
         null,
 
       gonderenHesapId:

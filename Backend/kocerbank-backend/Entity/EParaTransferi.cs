@@ -114,11 +114,7 @@ namespace kocerbank_backend.DataAccess
                                 "P_RECORDUSER",
                                 OracleDbType.Varchar2
                             ).Value =
-                                string.IsNullOrWhiteSpace(
-                                    dto.RecordUser
-                                )
-                                    ? DBNull.Value
-                                    : dto.RecordUser.Trim();
+                                (object?)dto.RecordUser ?? DBNull.Value;
 
 
                             // OUT PARAMETRELERİ

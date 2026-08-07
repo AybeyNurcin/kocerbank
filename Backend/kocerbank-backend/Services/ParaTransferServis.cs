@@ -18,12 +18,16 @@ namespace kocerbank_backend.Services
         private readonly DovizKuruServis
             _dovizKuruService;
 
+        private readonly AktifPersonelServis
+            _aktifPersonelServis;
+
 
         public ParaTransferServis(
             HesapRepository hesapRepository,
             MusteriRepository musteriRepository,
             ParaTransferRepository paraTransferRepository,
-            DovizKuruServis dovizKuruService
+            DovizKuruServis dovizKuruService,
+            AktifPersonelServis aktifPersonelServis
         )
         {
             _hesapRepository =
@@ -37,6 +41,9 @@ namespace kocerbank_backend.Services
 
             _dovizKuruService =
                 dovizKuruService;
+
+            _aktifPersonelServis =
+                aktifPersonelServis;
         }
 
 
@@ -381,12 +388,10 @@ namespace kocerbank_backend.Services
                     ? null
                     : dto.Aciklama.Trim();
 
+            // Frontend'den gelen RecordUser dikkate alınmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                string.IsNullOrWhiteSpace(
-                    dto.RecordUser
-                )
-                    ? null
-                    : dto.RecordUser.Trim();
+                _aktifPersonelServis.SicilNoGetir();
 
 
             return _paraTransferRepository
@@ -630,17 +635,6 @@ namespace kocerbank_backend.Services
             {
                 throw new ArgumentException(
                     "Açıklama en fazla 100 karakter olabilir."
-                );
-            }
-
-
-            if (
-                dto.RecordUser is not null &&
-                dto.RecordUser.Trim().Length > 10
-            )
-            {
-                throw new ArgumentException(
-                    "İşlemi yapan kullanıcı en fazla 10 karakter olabilir."
                 );
             }
         }

@@ -29,6 +29,8 @@ export interface Hesap {
   musteriBilgileriId: number;
   hesapTipi: HesapTipi;
 
-  recordUser: string | null;
+  // Yalnızca okuma amaçlıdır. İstek gövdesinde gönderilmez;
+  // işlemi yapan personelin sicilini backend header'dan atar.
+  recordUser?: string | null;
   recordDate: string;
 }

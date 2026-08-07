@@ -26,6 +26,7 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_PERSONEL_EKLE", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     // IN Parametreleri
                     KB.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.Ad;
@@ -38,7 +39,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
                     KB.Parameters.Add("P_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
-                    KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
+                    KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = (object?)dto.RecordUser ?? DBNull.Value;
 
                     // OUT Parametreleri
                     OracleParameter pId = new OracleParameter("P_ID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
@@ -164,8 +165,10 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_PERSONEL_GUNCELLE", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = dto.Id;
+                    KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = (object?)dto.RecordUser ?? DBNull.Value;
                     KB.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.Ad;
                     KB.Parameters.Add("P_SOYAD", OracleDbType.Varchar2).Value = dto.Soyad;
                     KB.Parameters.Add("P_ROL", OracleDbType.Varchar2).Value = dto.Rol;
@@ -176,7 +179,6 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
                     KB.Parameters.Add("P_SUBEKODU", OracleDbType.Varchar2).Value = dto.SubeKodu;
                     KB.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = (byte)dto.DurumKodu;
-                    KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = dto.RecordUser;
 
                     conn.Open();
                     KB.ExecuteNonQuery();

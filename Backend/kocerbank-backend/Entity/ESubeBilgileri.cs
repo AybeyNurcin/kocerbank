@@ -130,6 +130,7 @@ namespace kocerbank_backend.DataAccess
                     kb.BindByName = true;
 
                     kb.Parameters.Add("P_ID", OracleDbType.Int64).Value = dto.Id;
+                    kb.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = (object?)dto.RecordUser ?? DBNull.Value;
                     kb.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = dto.SubeAdi;
                     kb.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.SubeTelefonNo;
                     kb.Parameters.Add("P_ADRES", OracleDbType.Varchar2).Value = dto.SubeAdres;

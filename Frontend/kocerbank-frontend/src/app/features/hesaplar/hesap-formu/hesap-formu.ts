@@ -137,9 +137,7 @@ export class HesapFormu {
         this.musteriId,
 
       hesapTipi:
-        this.formModel.hesapTipi,
-
-      recordUser: null
+        this.formModel.hesapTipi
     };
 
     this.hesapApi

@@ -28,10 +28,6 @@ import {
 } from '../models/para-transfer-model';
 
 import {
-  AuthService
-} from '../../../core/services/auth';
-
-import {
   MusteriTipi
 } from '../../../shared/enums/musteri-tipi-enum';
 
@@ -107,7 +103,6 @@ export class VirmanComponent {
     private musteriApi: MusteriApi,
     private hesapApi: HesapApi,
     private paraTransferApi: ParaTransferApi,
-    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {
   }
@@ -383,7 +378,6 @@ export class VirmanComponent {
       gonderenTutar: this.tutar,
 
       aciklama: this.aciklama,
-      recordUser: this.authService.personelSicilNoGetir(),
 
       gonderenHesapId: 0,
       aliciHesapId: 0,

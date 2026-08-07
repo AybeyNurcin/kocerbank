@@ -32,10 +32,6 @@ import {
   Musteri
 } from '../../musteriler/models/musteri-model';
 
-import {
-  AuthService
-} from '../../../core/services/auth';
-
 type IslemTipi = 'Cek' | 'Yatir';
 type EkranTipi = 'form' | 'onizleme' | 'basarili';
 
@@ -88,8 +84,7 @@ export class ParaCekYatir
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private hesapApi: HesapApi,
-    private musteriApi: MusteriApi,
-    private authService: AuthService
+    private musteriApi: MusteriApi
   ) {
   }
 
@@ -449,7 +444,6 @@ export class ParaCekYatir
           ? HesapHareketTipleri.ParaCekme
           : HesapHareketTipleri.ParaYatirma,
       tutar: this.onizlemeBilgisi.tutar,
-      recordUser: this.authService.personelSicilNoGetir(),
       hareketId: 0,
       yeniBakiye: 0
     };

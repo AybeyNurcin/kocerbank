@@ -39,7 +39,9 @@ export interface ParaTransfer {
   gonderenTutar: number;
 
   aciklama: string | null;
-  recordUser: string | null;
+  // Yalnızca okuma amaçlıdır. İstek gövdesinde gönderilmez;
+  // işlemi yapan personelin sicilini backend header'dan atar.
+  recordUser?: string | null;
 
 
   /*

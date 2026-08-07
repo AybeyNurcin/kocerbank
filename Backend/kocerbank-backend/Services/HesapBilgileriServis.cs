@@ -7,10 +7,14 @@ namespace kocerbank_backend.Services
     public class HesapService
     {
         private readonly HesapRepository _hesapRepository;
+        private readonly AktifPersonelServis _aktifPersonelServis;
 
-        public HesapService(HesapRepository hesapRepository)
+        public HesapService(
+            HesapRepository hesapRepository,
+            AktifPersonelServis aktifPersonelServis)
         {
             _hesapRepository = hesapRepository;
+            _aktifPersonelServis = aktifPersonelServis;
         }
 
         // 1. EKLEME
@@ -39,10 +43,10 @@ namespace kocerbank_backend.Services
                     .Trim()
                     .ToUpperInvariant();
 
+            // Frontend'den gelen RecordUser dikkate alınmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                string.IsNullOrWhiteSpace(dto.RecordUser)
-                    ? null
-                    : dto.RecordUser.Trim();
+                _aktifPersonelServis.SicilNoGetir();
 
             return _hesapRepository.Ekle(dto);
         }
@@ -90,6 +94,11 @@ namespace kocerbank_backend.Services
                     $"{dto.Id} ID'li hesap bulunamadı.");
             }
 
+            // Frontend'den gelen RecordUser dikkate alınmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
+            dto.RecordUser =
+                _aktifPersonelServis.SicilNoGetir();
+
             _hesapRepository.Guncelle(dto);
         }
 
@@ -122,12 +131,10 @@ namespace kocerbank_backend.Services
                 throw new ArgumentException("İşlem tutarı sıfırdan büyük olmalıdır.");
             }
 
-            if (dto.RecordUser is not null && dto.RecordUser.Length > 10)
-            {
-                throw new ArgumentException("İşlemi yapan kullanıcı en fazla 10 karakter olabilir.");
-            }
-
-            dto.RecordUser = string.IsNullOrWhiteSpace(dto.RecordUser) ? null : dto.RecordUser.Trim();
+            // Frontend'den gelen RecordUser dikkate alınmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
+            dto.RecordUser =
+                _aktifPersonelServis.SicilNoGetir();
 
             return _hesapRepository.ParaCekYatir(dto);
         }

@@ -83,9 +83,7 @@ namespace kocerbank_backend.DataAccess
                     "P_RECORDUSER",
                     OracleDbType.Varchar2
                 ).Value =
-                    string.IsNullOrWhiteSpace(dto.RecordUser)
-                        ? DBNull.Value
-                        : dto.RecordUser;
+                    (object?)dto.RecordUser ?? DBNull.Value;
 
 
                 // OUT PARAMETRELERİ
@@ -304,8 +302,10 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_HESAPBILGILERI_GUNCELLE", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = dto.Id;
+                    KB.Parameters.Add("P_RECORDUSER", OracleDbType.Varchar2).Value = (object?)dto.RecordUser ?? DBNull.Value;
                     KB.Parameters.Add("P_HESAPADI", OracleDbType.Varchar2).Value = dto.HesapAdi;
                     KB.Parameters.Add("P_HESAPNO", OracleDbType.Varchar2).Value = dto.HesapNo;
                     KB.Parameters.Add("P_IBAN", OracleDbType.Varchar2).Value = dto.IBAN;
