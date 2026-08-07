@@ -414,12 +414,12 @@ namespace kocerbank_backend.DataAccess
                 Bakiye = Convert.ToDecimal(reader["BAKIYE"]),
                 SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,
                 DovizCinsi = (DovizCinsiDurumlari)Convert.ToByte(reader["DOVIZCINSI"]),
-                HesapAcilisTarihi = Convert.ToDateTime(reader["HESAPACILISTARIHI"]),
+                HesapAcilisTarihi = OracleZamanDamgasi.UtcOlarakOku(reader["HESAPACILISTARIHI"]),
                 HesapDurumKodu = (HesapDurumKodlari)Convert.ToByte(reader["HESAPDURUMKODU"]),
                 MusteriBilgileriId = Convert.ToInt64(reader["MUSTERIBILGILERIID"]),
                 HesapTipi = (HesapTipiDurumlari)Convert.ToByte(reader["HESAPTIPI"]),
                 RecordUser = reader["RECORDUSER"].ToString()!,
-                RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
+                RecordDate = OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"])
             };
         }
 

@@ -61,122 +61,36 @@ namespace kocerbank_backend.Services
             }
 
 
-            /*
-             * IBAN KONTROLLERİ
-             */
-
-            IbanKontrolEt(
-                dto.GonderenIBAN,
-                "Gönderen"
-            );
-
-            IbanKontrolEt(
-                dto.AliciIBAN,
-                "Alıcı"
-            );
-
-
-            /*
-             * IBAN'LARI TEMİZLE
-             */
+            (
+                string gonderenIban,
+                string aliciIban,
+                HesapDTO gonderenHesap,
+                HesapDTO aliciHesap,
+                TransferTipleri transferTipi
+            ) =
+                HesaplariGetirVeDogrula(
+                    dto.GonderenIBAN,
+                    dto.AliciIBAN,
+                    dto.TransferKanali
+                );
 
             dto.GonderenIBAN =
-                IbanTemizle(
-                    dto.GonderenIBAN
-                );
+                gonderenIban;
 
             dto.AliciIBAN =
-                IbanTemizle(
-                    dto.AliciIBAN
-                );
+                aliciIban;
 
-
-            if (
-                dto.GonderenIBAN ==
-                dto.AliciIBAN
-            )
-            {
-                throw new ArgumentException(
-                    "Gönderen ve alıcı IBAN aynı olamaz."
-                );
-            }
-
-
-            /*
-             * HESAPLARI GETİR
-             */
-
-            HesapDTO? gonderenHesap =
-                _hesapRepository.GetirByIBAN(
-                    dto.GonderenIBAN
-                );
-
-            if (gonderenHesap is null)
-            {
-                throw new KeyNotFoundException(
-                    "Gönderen IBAN'a ait hesap bulunamadı."
-                );
-            }
-
-
-            HesapDTO? aliciHesap =
-                _hesapRepository.GetirByIBAN(
-                    dto.AliciIBAN
-                );
-
-            if (aliciHesap is null)
-            {
-                throw new KeyNotFoundException(
-                    "Alıcı IBAN'a ait hesap bulunamadı."
-                );
-            }
-
-
-            /*
-             * HESAP DURUMLARINI KONTROL ET
-             */
-
-            HesapDurumlariniKontrolEt(
-                gonderenHesap,
-                aliciHesap
-            );
-
-
-            /*
-             * TRANSFER TİPİ GÖNDERİLMİŞSE
-             * HAVALE/VİRMAN KONTROLÜ YAP
-             *
-             * TransferTipi 0 gelirse bilgi getirme
-             * işlemi yine çalışabilir.
-             */
-
-            if (
-                dto.TransferTipi ==
-                    TransferTipleri.Havale ||
-                dto.TransferTipi ==
-                    TransferTipleri.Virman
-            )
-            {
-                TransferTipiniKontrolEt(
-                    dto.TransferTipi,
-                    gonderenHesap,
-                    aliciHesap
-                );
-            }
-            else if (
-                dto.TransferTipi !=
-                TransferTipleri.None
-            )
-            {
-                throw new ArgumentException(
-                    "Transfer tipi geçersizdir."
-                );
-            }
+            dto.TransferTipi =
+                transferTipi;
 
 
             /*
              * TUTAR GÖNDERİLMİŞSE
              * BAKİYE VE TUTAR KONTROLLERİ
+             *
+             * Kullanıcı henüz tutar girmeden de
+             * hesap ve kural kontrolü yapılabilsin
+             * diye tutar 0 gelirse atlanır.
              */
 
             if (dto.GonderenTutar > 0)
@@ -314,7 +228,11 @@ namespace kocerbank_backend.Services
          *
          * Karşı taraf IBAN'ı beklenmeden,
          * bir IBAN'ın hesap sahibi kontrolü
-         * için kullanılır.
+         * için kullanılır. Karşı taraf henüz
+         * bilinmediğinden Havale/Virman/SWIFT
+         * kuralı burada değerlendirilemez;
+         * yalnızca IBAN biçimi ve hesabın
+         * varlığı/aktifliği kontrol edilir.
          *
          * Bu metot prosedür çağırmaz.
          * Bakiye değiştirmez.
@@ -322,12 +240,14 @@ namespace kocerbank_backend.Services
          */
 
         public TransferHesapDTO TekHesapBilgisiGetir(
-            string iban
+            string iban,
+            TransferKanallari kanal
         )
         {
             IbanKontrolEt(
                 iban,
-                "IBAN"
+                "IBAN",
+                kanal
             );
 
             string temizIban =
@@ -384,69 +304,30 @@ namespace kocerbank_backend.Services
             ParaTransferDTO dto
         )
         {
-            TransferBilgileriniKontrolEt(dto);
+            TransferIstegiGenelKontrolEt(dto);
 
+
+            (
+                string gonderenIban,
+                string aliciIban,
+                HesapDTO gonderenHesap,
+                HesapDTO aliciHesap,
+                TransferTipleri transferTipi
+            ) =
+                HesaplariGetirVeDogrula(
+                    dto.GonderenIBAN,
+                    dto.AliciIBAN,
+                    dto.TransferKanali
+                );
 
             dto.GonderenIBAN =
-                IbanTemizle(
-                    dto.GonderenIBAN
-                );
+                gonderenIban;
 
             dto.AliciIBAN =
-                IbanTemizle(
-                    dto.AliciIBAN
-                );
+                aliciIban;
 
-
-            if (
-                dto.GonderenIBAN ==
-                dto.AliciIBAN
-            )
-            {
-                throw new ArgumentException(
-                    "Gönderen ve alıcı IBAN aynı olamaz."
-                );
-            }
-
-
-            /*
-             * HESAPLARI GETİR
-             */
-
-            HesapDTO? gonderenHesap =
-                _hesapRepository.GetirByIBAN(
-                    dto.GonderenIBAN
-                );
-
-            if (gonderenHesap is null)
-            {
-                throw new KeyNotFoundException(
-                    "Gönderen IBAN'a ait hesap bulunamadı."
-                );
-            }
-
-
-            HesapDTO? aliciHesap =
-                _hesapRepository.GetirByIBAN(
-                    dto.AliciIBAN
-                );
-
-            if (aliciHesap is null)
-            {
-                throw new KeyNotFoundException(
-                    "Alıcı IBAN'a ait hesap bulunamadı."
-                );
-            }
-
-
-            /*
-             * HESAP DURUMLARI
-             */
-
-            HesapDurumlariniKontrolEt(
-                gonderenHesap,
-                aliciHesap
-            );
+            dto.TransferTipi =
+                transferTipi;
 
 
             /*
@@ -462,17 +343,6 @@ namespace kocerbank_backend.Services
                     "Gönderen hesap bakiyesi yetersizdir."
                 );
             }
-
-
-            /*
-             * HAVALE / VİRMAN
-             */
-
-            TransferTipiniKontrolEt(
-                dto.TransferTipi,
-                gonderenHesap,
-                aliciHesap
-            );
 
 
             /*
@@ -494,13 +364,6 @@ namespace kocerbank_backend.Services
 
             dto.AliciDovizTipi =
                 aliciHesap.DovizCinsi;
-
-
-            DovizKanalKuraliniKontrolEt(
-                dto.TransferKanali,
-                gonderenHesap.DovizCinsi,
-                aliciHesap.DovizCinsi
-            );
 
 
             dto.DovizKuru =
@@ -532,49 +395,217 @@ namespace kocerbank_backend.Services
 
 
         /*
-         * DÖVİZ CİNSİ / TRANSFER KANALI KURALI
+         * IBAN'LARI DOĞRULA, HESAPLARI GETİR,
+         * TRANSFER KURALINI UYGULA
          *
-         * Havale/EFT yalnızca TL hesaplar arasında yapılabilir.
-         * SWIFT ile TL hesaptan TL hesaba transfer yapılamaz.
+         * TransferBilgileriniGetir ve ParaTransferiYap
+         * tarafından ortak kullanılır. Gönderen/alıcı
+         * hesapları getirir, aktif olduklarını
+         * doğrular ve kanal + sahiplik + döviz
+         * bilgisine göre işlemin Havale/EFT, Virman
+         * veya SWIFT kuralına uygun olup olmadığını
+         * kontrol edip gerçek transfer tipini döner.
          */
 
-        private void DovizKanalKuraliniKontrolEt(
-            TransferKanallari kanal,
-            DovizCinsiDurumlari gonderenDoviz,
-            DovizCinsiDurumlari aliciDoviz
+        private (
+            string GonderenIBAN,
+            string AliciIBAN,
+            HesapDTO GonderenHesap,
+            HesapDTO AliciHesap,
+            TransferTipleri TransferTipi
+        ) HesaplariGetirVeDogrula(
+            string gonderenIbanHam,
+            string aliciIbanHam,
+            TransferKanallari kanal
         )
         {
-            bool ikisiDeTL =
-                gonderenDoviz == DovizCinsiDurumlari.TL &&
-                aliciDoviz == DovizCinsiDurumlari.TL;
+            IbanKontrolEt(
+                gonderenIbanHam,
+                "Gönderen",
+                kanal
+            );
 
-            if (
-                kanal == TransferKanallari.HavaleEft &&
-                !ikisiDeTL
-            )
+            IbanKontrolEt(
+                aliciIbanHam,
+                "Alıcı",
+                kanal
+            );
+
+            string gonderenIban =
+                IbanTemizle(gonderenIbanHam);
+
+            string aliciIban =
+                IbanTemizle(aliciIbanHam);
+
+            if (gonderenIban == aliciIban)
             {
                 throw new ArgumentException(
-                    "Havale/EFT işlemi yalnızca TL hesaplar arasında yapılabilir."
+                    "Gönderen ve alıcı IBAN aynı olamaz."
                 );
             }
 
-            if (
-                kanal == TransferKanallari.Swift &&
-                ikisiDeTL
-            )
+
+            HesapDTO? gonderenHesap =
+                _hesapRepository.GetirByIBAN(
+                    gonderenIban
+                );
+
+            if (gonderenHesap is null)
             {
-                throw new ArgumentException(
-                    "SWIFT işleminde TL hesaptan TL hesaba transfer yapılamaz."
+                throw new KeyNotFoundException(
+                    "Gönderen IBAN'a ait hesap bulunamadı."
                 );
             }
+
+
+            HesapDTO? aliciHesap =
+                _hesapRepository.GetirByIBAN(
+                    aliciIban
+                );
+
+            if (aliciHesap is null)
+            {
+                throw new KeyNotFoundException(
+                    "Alıcı IBAN'a ait hesap bulunamadı."
+                );
+            }
+
+
+            HesapDurumlariniKontrolEt(
+                gonderenHesap,
+                aliciHesap
+            );
+
+
+            TransferTipleri transferTipi =
+                TransferKuraliniDogrula(
+                    kanal,
+                    gonderenHesap,
+                    aliciHesap
+                );
+
+
+            return (
+                gonderenIban,
+                aliciIban,
+                gonderenHesap,
+                aliciHesap,
+                transferTipi
+            );
         }
 
 
         /*
-         * GERÇEK TRANSFER İSTEĞİ KONTROLLERİ
+         * TRANSFER KURALI
+         *
+         * Havale/EFT : Farklı müşterilerin TL
+         *              hesapları arasında yapılır.
+         *
+         * Virman     : Aynı müşterinin TL hesapları
+         *              arasında yapılır.
+         *
+         * SWIFT      : Yukarıdaki iki durumun
+         *              dışında kalan, yani TL-TL
+         *              olmayan tüm transferlerde
+         *              kullanılır (sahiplik fark
+         *              etmez).
+         *
+         * Bu metot, hesapların gerçek sahiplik ve
+         * döviz bilgisine göre işlemi doğrular ve
+         * prosedüre/DB'ye yazılacak gerçek transfer
+         * tipini (Havale/Virman) döner. Frontend'den
+         * gelen TransferTipi değerine güvenilmez.
          */
 
-        private void TransferBilgileriniKontrolEt(
+        private TransferTipleri TransferKuraliniDogrula(
+            TransferKanallari kanal,
+            HesapDTO gonderenHesap,
+            HesapDTO aliciHesap
+        )
+        {
+            bool ayniMusteri =
+                gonderenHesap.MusteriBilgileriId ==
+                aliciHesap.MusteriBilgileriId;
+
+            bool ikisiDeTL =
+                gonderenHesap.DovizCinsi ==
+                    DovizCinsiDurumlari.TL &&
+                aliciHesap.DovizCinsi ==
+                    DovizCinsiDurumlari.TL;
+
+
+            if (kanal == TransferKanallari.HavaleEft)
+            {
+                if (!ikisiDeTL)
+                {
+                    throw new ArgumentException(
+                        "Havale/EFT işlemi yalnızca TL hesaplar arasında yapılabilir. Farklı döviz cinsleri için SWIFT ekranını kullanınız."
+                    );
+                }
+
+                if (ayniMusteri)
+                {
+                    throw new InvalidOperationException(
+                        "Aynı müşterinin TL hesapları arasındaki transferler Virman işlemidir. Virman ekranını kullanınız."
+                    );
+                }
+
+                return TransferTipleri.Havale;
+            }
+
+
+            if (kanal == TransferKanallari.Virman)
+            {
+                if (!ikisiDeTL)
+                {
+                    throw new ArgumentException(
+                        "Virman işlemi yalnızca TL hesaplar arasında yapılabilir. Farklı döviz cinsleri için SWIFT ekranını kullanınız."
+                    );
+                }
+
+                if (!ayniMusteri)
+                {
+                    throw new InvalidOperationException(
+                        "Virman işlemi yalnızca aynı müşterinin hesapları arasında yapılabilir. Farklı müşteriler için Havale/EFT ekranını kullanınız."
+                    );
+                }
+
+                return TransferTipleri.Virman;
+            }
+
+
+            if (kanal == TransferKanallari.Swift)
+            {
+                if (ikisiDeTL)
+                {
+                    throw new ArgumentException(
+                        ayniMusteri
+                            ? "Aynı müşterinin TL hesapları arasındaki transferler Virman işlemidir. Virman ekranını kullanınız."
+                            : "Farklı müşterilerin TL hesapları arasındaki transferler Havale/EFT işlemidir. Havale/EFT ekranını kullanınız."
+                    );
+                }
+
+                return ayniMusteri
+                    ? TransferTipleri.Virman
+                    : TransferTipleri.Havale;
+            }
+
+
+            throw new ArgumentException(
+                "Transfer kanalı geçersizdir."
+            );
+        }
+
+
+        /*
+         * GERÇEK TRANSFER İSTEĞİNİN GENEL
+         * ALAN KONTROLLERİ
+         *
+         * Hesap/kural kontrolleri
+         * HesaplariGetirVeDogrula içinde yapılır.
+         */
+
+        private void TransferIstegiGenelKontrolEt(
             ParaTransferDTO dto
         )
         {
@@ -583,30 +614,6 @@ namespace kocerbank_backend.Services
                 throw new ArgumentNullException(
                     nameof(dto),
                     "Transfer bilgileri gönderilmelidir."
-                );
-            }
-
-
-            IbanKontrolEt(
-                dto.GonderenIBAN,
-                "Gönderen"
-            );
-
-            IbanKontrolEt(
-                dto.AliciIBAN,
-                "Alıcı"
-            );
-
-
-            if (
-                dto.TransferTipi !=
-                    TransferTipleri.Havale &&
-                dto.TransferTipi !=
-                    TransferTipleri.Virman
-            )
-            {
-                throw new ArgumentException(
-                    "Transfer tipi havale veya virman olmalıdır."
                 );
             }
 
@@ -713,11 +720,17 @@ namespace kocerbank_backend.Services
 
         /*
          * IBAN KONTROLÜ
+         *
+         * Havale/EFT yalnızca yurt içi TR IBAN
+         * kabul eder. SWIFT'te yabancı IBAN'lar
+         * da girilebildiği için genel IBAN
+         * biçimi yeterli kabul edilir.
          */
 
         private void IbanKontrolEt(
             string iban,
-            string alanAdi
+            string alanAdi,
+            TransferKanallari kanal
         )
         {
             if (string.IsNullOrWhiteSpace(iban))
@@ -730,6 +743,17 @@ namespace kocerbank_backend.Services
 
             string temizIban =
                 IbanTemizle(iban);
+
+
+            if (kanal == TransferKanallari.Swift)
+            {
+                GenelIbanKontrolEt(
+                    temizIban,
+                    alanAdi
+                );
+
+                return;
+            }
 
 
             if (temizIban.Length != 26)
@@ -767,6 +791,65 @@ namespace kocerbank_backend.Services
 
 
         /*
+         * GENEL (YABANCI) IBAN KONTROLÜ
+         *
+         * ISO 13616: 2 harfli ülke kodu +
+         * 2 haneli kontrol basamağı +
+         * 11-30 alfanümerik karakter (BBAN).
+         */
+
+        private void GenelIbanKontrolEt(
+            string temizIban,
+            string alanAdi
+        )
+        {
+            if (
+                temizIban.Length < 15 ||
+                temizIban.Length > 34
+            )
+            {
+                throw new ArgumentException(
+                    $"{alanAdi} IBAN 15-34 karakter arasında olmalıdır."
+                );
+            }
+
+
+            if (
+                !char.IsLetter(temizIban[0]) ||
+                !char.IsLetter(temizIban[1])
+            )
+            {
+                throw new ArgumentException(
+                    $"{alanAdi} IBAN, iki harfli bir ülke kodu ile başlamalıdır."
+                );
+            }
+
+
+            if (
+                !char.IsDigit(temizIban[2]) ||
+                !char.IsDigit(temizIban[3])
+            )
+            {
+                throw new ArgumentException(
+                    $"{alanAdi} IBAN, ülke kodundan sonra iki haneli kontrol basamağı içermelidir."
+                );
+            }
+
+
+            if (
+                !temizIban
+                    .Substring(4)
+                    .All(char.IsLetterOrDigit)
+            )
+            {
+                throw new ArgumentException(
+                    $"{alanAdi} IBAN yalnızca harf ve rakamlardan oluşmalıdır."
+                );
+            }
+        }
+
+
+        /*
          * IBAN TEMİZLEME
          */
 
@@ -778,46 +861,6 @@ namespace kocerbank_backend.Services
                 .Replace(" ", string.Empty)
                 .Trim()
                 .ToUpperInvariant();
-        }
-
-
-        /*
-         * HAVALE / VİRMAN KONTROLÜ
-         */
-
-        private void TransferTipiniKontrolEt(
-            TransferTipleri transferTipi,
-            HesapDTO gonderenHesap,
-            HesapDTO aliciHesap
-        )
-        {
-            bool ayniMusteri =
-                gonderenHesap.MusteriBilgileriId ==
-                aliciHesap.MusteriBilgileriId;
-
-
-            if (
-                transferTipi ==
-                    TransferTipleri.Havale &&
-                ayniMusteri
-            )
-            {
-                throw new InvalidOperationException(
-                    "Aynı müşterinin hesapları arasında havale yapılamaz. Virman seçiniz."
-                );
-            }
-
-
-            if (
-                transferTipi ==
-                    TransferTipleri.Virman &&
-                !ayniMusteri
-            )
-            {
-                throw new InvalidOperationException(
-                    "Farklı müşterilerin hesapları arasında virman yapılamaz."
-                );
-            }
         }
 
 

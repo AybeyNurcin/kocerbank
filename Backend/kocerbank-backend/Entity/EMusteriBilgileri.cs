@@ -51,7 +51,7 @@ namespace kocerbank_backend.DataAccess
                     KB.ExecuteNonQuery();
 
                     dto.Id = ((OracleDecimal)pId.Value).ToInt64();
-                    dto.KayitOlusturmaTarihi = ((OracleDate)pKayitOlusturmaTarihi.Value).Value;
+                    dto.KayitOlusturmaTarihi = OracleZamanDamgasi.UtcOlarakOku(((OracleDate)pKayitOlusturmaTarihi.Value).Value);
 
                     return dto;
                 }
@@ -297,9 +297,11 @@ namespace kocerbank_backend.DataAccess
                         .ToInt64(),
 
                     KayitOlusturmaTarihi =
-                        ((OracleDate)
-                            kayitTarihi.Value)
-                        .Value
+                        OracleZamanDamgasi.UtcOlarakOku(
+                            ((OracleDate)
+                                kayitTarihi.Value)
+                            .Value
+                        )
                 };
             }
         }
@@ -445,9 +447,9 @@ namespace kocerbank_backend.DataAccess
                 SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,
                 DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
                 Unvan = GetNullableString(reader, "UNVAN"),
-                KayitOlusturmaTarihi = Convert.ToDateTime(reader["KAYITOLUSTURMATARIHI"]),
+                KayitOlusturmaTarihi = OracleZamanDamgasi.UtcOlarakOku(reader["KAYITOLUSTURMATARIHI"]),
                 RecordUser = reader["RECORDUSER"].ToString()!,
-                RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
+                RecordDate = OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"])
             };
         }
         private string? GetNullableString(OracleDataReader reader, string columnName)

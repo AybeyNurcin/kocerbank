@@ -199,7 +199,7 @@ namespace kocerbank_backend.DataAccess
                 SubeAdres = reader["SUBEADRES"].ToString()!,
                 SubeDurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["SUBEDURUMKODU"]),
                 RecordUser = reader["RECORDUSER"].ToString()!,
-                RecordDate = Convert.ToDateTime(reader["RECORDDATE"])
+                RecordDate = OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"])
             };
         }
     }

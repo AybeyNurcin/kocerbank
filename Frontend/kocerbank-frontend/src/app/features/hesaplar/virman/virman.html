@@ -1,0 +1,513 @@
+<section class="virman-page">
+
+  <!-- SAYFA BAŞLIĞI -->
+
+  <div class="page-heading">
+
+    <h1>
+      Virman
+    </h1>
+
+    <p>
+      Aynı müşterinin TL hesapları arasında transfer işlemi başlatabilirsiniz.
+    </p>
+
+  </div>
+
+
+  <!-- FORM EKRANI -->
+  @if (ekran === 'form') {
+
+  <!-- TC ARAMA -->
+
+  <div class="tc-search-row">
+
+    <div class="form-field tc-search-field">
+
+      <label for="tc">
+        Müşteri TC Kimlik No
+        <span>*</span>
+      </label>
+
+      <input id="tc"
+             type="text"
+             inputmode="numeric"
+             maxlength="11"
+             autocomplete="off"
+             placeholder="11 haneli TCKN"
+             [ngModel]="tc"
+             (ngModelChange)="tcDegisti($event)"
+             (keyup.enter)="ara()" />
+
+    </div>
+
+    <button type="button"
+            class="primary-button search-button"
+            [disabled]="!tcGecerliMi || aramaYapiliyorMu"
+            (click)="ara()">
+      {{ aramaYapiliyorMu ? 'Aranıyor...' : 'Ara' }}
+    </button>
+
+  </div>
+
+
+  @if (aramaHataMesaji) {
+
+  <div class="error-message">
+    {{ aramaHataMesaji }}
+  </div>
+
+  }
+
+
+  @if (musteri) {
+
+  <div class="information-message customer-found-message">
+    Müşteri:
+    <strong>{{ musteriAdSoyad }}</strong>
+    (TC: {{ musteri.tckn }})
+  </div>
+
+  }
+
+
+  <!-- HESAP SEÇİM ALANLARI -->
+  @if (hesaplar.length > 0) {
+
+  <div class="account-select-grid">
+
+    <!-- GÖNDEREN HESAP -->
+
+    <div class="account-select-column">
+
+      <h3>
+        Gönderen Hesap
+      </h3>
+
+      <div class="account-select-list">
+
+        @for (hesap of hesaplar; track hesap.id) {
+
+        <button type="button"
+                class="account-list-item"
+                [class.selected-account]="gonderenHesap?.id === hesap.id"
+                (click)="gonderenHesapSec(hesap)">
+
+          <div class="account-item-main">
+
+            <div class="account-item-icon">
+              ₺
+            </div>
+
+            <div class="account-item-information">
+              <strong>
+                {{ hesap.hesapAdi }}
+              </strong>
+
+              <span>
+                •••• {{ hesap.iban.slice(-4) }}
+              </span>
+            </div>
+
+          </div>
+
+          <div class="account-item-balance">
+            <strong>
+              {{ hesap.bakiye | number:'1.2-2' }} TL
+            </strong>
+
+            <span>
+              Kullanılabilir bakiye
+            </span>
+          </div>
+
+        </button>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- ALICI HESAP -->
+
+    <div class="account-select-column">
+
+      <h3>
+        Alıcı Hesap
+      </h3>
+
+      @if (gonderenHesap === null) {
+
+      <div class="account-select-placeholder">
+        Önce gönderen hesabı seçiniz.
+      </div>
+
+      } @else if (digerHesaplar.length === 0) {
+
+      <div class="account-select-placeholder">
+        Bu müşterinin virman yapılabilecek başka TL hesabı yok.
+      </div>
+
+      } @else {
+
+      <div class="account-select-list">
+
+        @for (hesap of digerHesaplar; track hesap.id) {
+
+        <button type="button"
+                class="account-list-item"
+                [class.selected-account]="aliciHesap?.id === hesap.id"
+                (click)="aliciHesapSec(hesap)">
+
+          <div class="account-item-main">
+
+            <div class="account-item-icon">
+              ₺
+            </div>
+
+            <div class="account-item-information">
+              <strong>
+                {{ hesap.hesapAdi }}
+              </strong>
+
+              <span>
+                •••• {{ hesap.iban.slice(-4) }}
+              </span>
+            </div>
+
+          </div>
+
+          <div class="account-item-balance">
+            <strong>
+              {{ hesap.bakiye | number:'1.2-2' }} TL
+            </strong>
+
+            <span>
+              Kullanılabilir bakiye
+            </span>
+          </div>
+
+        </button>
+
+        }
+
+      </div>
+
+      }
+
+    </div>
+
+  </div>
+
+  }
+
+
+  <!-- TUTAR VE AÇIKLAMA -->
+  @if (gonderenHesap !== null && aliciHesap !== null) {
+
+  <div class="amount-section">
+
+    <label>
+      Gönderilecek Tutar
+    </label>
+
+
+    <div class="amount-buttons">
+
+      <button type="button"
+              (click)="tutarDegisti(200)">
+        200
+      </button>
+
+      <button type="button"
+              (click)="tutarDegisti(500)">
+        500
+      </button>
+
+      <button type="button"
+              (click)="tutarDegisti(1000)">
+        1000
+      </button>
+
+      <button type="button"
+              (click)="tutarDegisti(3000)">
+        3000
+      </button>
+
+    </div>
+
+
+    <div class="form-field">
+
+      <label for="tutar">
+        Diğer Tutar
+      </label>
+
+      <div class="amount-input">
+
+        <input id="tutar"
+               type="number"
+               min="0.01"
+               step="0.01"
+               placeholder="Gönderilecek tutarı giriniz"
+               [ngModel]="tutar || null"
+               (ngModelChange)="tutarDegisti($event)" />
+
+        <span>
+          TL
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  @if (bakiyeYetersizMi) {
+
+  <div class="error-message">
+    Gönderen hesabın bakiyesi yetersiz.
+  </div>
+
+  }
+
+
+  <!-- AÇIKLAMA -->
+
+  <div class="form-field description-field">
+
+    <label for="aciklama">
+      Açıklama
+    </label>
+
+    <input id="aciklama"
+           type="text"
+           maxlength="200"
+           placeholder="Transfer açıklaması giriniz"
+           [ngModel]="aciklama"
+           (ngModelChange)="aciklama = $event" />
+
+  </div>
+
+
+  @if (hataMesaji) {
+
+  <div class="error-message">
+    {{ hataMesaji }}
+  </div>
+
+  }
+
+
+  <!-- İLERİ BUTONU -->
+
+  <div class="form-actions">
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="!ileriAktifMi"
+            (click)="ileriGec()">
+      İleri →
+    </button>
+
+  </div>
+
+  }
+
+  }
+
+
+  <!-- İŞLEM ÖNİZLEMESİ -->
+  @if (ekran === 'onizleme' && gonderenHesap !== null && aliciHesap !== null) {
+
+  <div class="preview-heading">
+
+    <h2>
+      İşlem Önizlemesi
+    </h2>
+
+    <p>
+      Devam etmeden önce bilgileri kontrol ediniz.
+    </p>
+
+  </div>
+
+
+  <div class="preview-box">
+
+    <!-- HESAP SAHİBİ -->
+
+    <div class="preview-item">
+
+      <span>
+        Hesap Sahibi
+      </span>
+
+      <strong>
+        {{ musteriAdSoyad }}
+      </strong>
+
+    </div>
+
+
+    <!-- GÖNDERİLECEK TUTAR -->
+
+    <div class="preview-item">
+
+      <span>
+        Gönderilecek Tutar
+      </span>
+
+      <strong>
+        {{ tutar | number:'1.2-2' }} TL
+      </strong>
+
+    </div>
+
+
+    <!-- GÖNDEREN HESAP ADI -->
+
+    <div class="preview-item">
+
+      <span>
+        Gönderen Hesap
+      </span>
+
+      <strong>
+        {{ gonderenHesap.hesapAdi }}
+      </strong>
+
+    </div>
+
+
+    <!-- ALICI HESAP ADI -->
+
+    <div class="preview-item">
+
+      <span>
+        Alıcı Hesap
+      </span>
+
+      <strong>
+        {{ aliciHesap.hesapAdi }}
+      </strong>
+
+    </div>
+
+
+    <!-- GÖNDEREN IBAN -->
+
+    <div class="preview-item">
+
+      <span>
+        Gönderen IBAN
+      </span>
+
+      <strong>
+        {{ gonderenHesap.iban }}
+      </strong>
+
+    </div>
+
+
+    <!-- ALICI IBAN -->
+
+    <div class="preview-item">
+
+      <span>
+        Alıcı IBAN
+      </span>
+
+      <strong>
+        {{ aliciHesap.iban }}
+      </strong>
+
+    </div>
+
+
+    <!-- AÇIKLAMA -->
+
+    <div class="preview-item">
+
+      <span>
+        Açıklama
+      </span>
+
+      <strong>
+        {{ aciklama || '-' }}
+      </strong>
+
+    </div>
+
+  </div>
+
+
+  @if (hataMesaji) {
+
+  <div class="error-message">
+    {{ hataMesaji }}
+  </div>
+
+  }
+
+
+  <div class="form-actions">
+
+    <button type="button"
+            class="secondary-button"
+            [disabled]="transferYapiliyorMu"
+            (click)="geriDon()">
+      ← Geri
+    </button>
+
+    <button type="button"
+            class="primary-button"
+            [disabled]="transferYapiliyorMu"
+            (click)="onayla()">
+      {{
+          transferYapiliyorMu
+            ? 'İşlem yapılıyor...'
+            : 'Onayla'
+      }}
+    </button>
+
+  </div>
+
+  }
+
+
+  <!-- BAŞARILI EKRANI -->
+  @if (ekran === 'basarili') {
+
+  <div class="success-message">
+
+    <div class="success-icon">
+      ✓
+    </div>
+
+    <h2>
+      Virman işlemi başarıyla tamamlandı.
+    </h2>
+
+    <p>
+      Transfer numarası:
+
+      <strong>
+        {{ sonuc?.transferId }}
+      </strong>
+    </p>
+
+    <button type="button"
+            class="primary-button new-transfer-button"
+            (click)="yeniIslemYap()">
+      Yeni Virman İşlemi Yap
+    </button>
+
+  </div>
+
+  }
+
+</section>

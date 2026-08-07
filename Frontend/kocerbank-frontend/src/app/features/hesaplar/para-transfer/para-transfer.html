@@ -35,9 +35,9 @@
 
         <input id="gonderenIban"
                type="text"
-               maxlength="32"
+               [attr.maxlength]="ibanMaxLength"
                autocomplete="off"
-               placeholder="TR00 0000 0000 0000 0000 0000 00"
+               [placeholder]="ibanPlaceholder"
                [ngModel]="transfer.gonderenIBAN"
                (ngModelChange)="
               gonderenIbanDegisti($event)
@@ -91,26 +91,6 @@
 
       </div>
 
-
-      <!-- GÖNDEREN HESAP ADI -->
-
-      <div class="form-field">
-
-        <label for="gonderenHesapAdi">
-          Gönderen Hesap Adı
-        </label>
-
-        <input id="gonderenHesapAdi"
-               type="text"
-               readonly
-               placeholder="Hesap kontrolünden sonra gösterilecektir"
-               [value]="
-              transfer.gonderenHesap
-                ?.hesapAdi || ''
-            " />
-
-      </div>
-
     </div>
 
 
@@ -129,9 +109,9 @@
 
         <input id="aliciIban"
                type="text"
-               maxlength="32"
+               [attr.maxlength]="ibanMaxLength"
                autocomplete="off"
-               placeholder="TR00 0000 0000 0000 0000 0000 00"
+               [placeholder]="ibanPlaceholder"
                [ngModel]="transfer.aliciIBAN"
                (ngModelChange)="
               aliciIbanDegisti($event)
@@ -190,26 +170,6 @@
         </small>
 
         }
-
-      </div>
-
-
-      <!-- ALICI HESAP ADI -->
-
-      <div class="form-field">
-
-        <label for="aliciHesapAdi">
-          Alıcı Hesap Adı
-        </label>
-
-        <input id="aliciHesapAdi"
-               type="text"
-               readonly
-               placeholder="Hesap kontrolünden sonra gösterilecektir"
-               [value]="
-              transfer.aliciHesap
-                ?.hesapAdi || ''
-            " />
 
       </div>
 
@@ -365,11 +325,11 @@
   }
 
 
-  <!-- DÖVİZ KANALI UYARISI -->
-  @if (dovizKanalUyariMesaji) {
+  <!-- TRANSFER KURALI UYARISI -->
+  @if (transferKuraliUyariMesaji) {
 
   <div class="error-message">
-    {{ dovizKanalUyariMesaji }}
+    {{ transferKuraliUyariMesaji }}
   </div>
 
   }
@@ -449,42 +409,6 @@
         {{
             transfer.aliciHesap
               ?.hesapSahibi
-        }}
-      </strong>
-
-    </div>
-
-
-    <!-- GÖNDEREN HESAP ADI -->
-
-    <div class="preview-item">
-
-      <span>
-        Gönderen Hesap Adı
-      </span>
-
-      <strong>
-        {{
-            transfer.gonderenHesap
-              ?.hesapAdi
-        }}
-      </strong>
-
-    </div>
-
-
-    <!-- ALICI HESAP ADI -->
-
-    <div class="preview-item">
-
-      <span>
-        Alıcı Hesap Adı
-      </span>
-
-      <strong>
-        {{
-            transfer.aliciHesap
-              ?.hesapAdi
         }}
       </strong>
 

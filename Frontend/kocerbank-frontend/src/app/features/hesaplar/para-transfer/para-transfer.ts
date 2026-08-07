@@ -33,9 +33,6 @@ import {
 } from '../../../core/services/auth';
 
 
-type TransferSekmesi =
-  'Havale' | 'Virman';
-
 type EkranTipi =
   'form' | 'onizleme' | 'basarili';
 
@@ -56,16 +53,19 @@ const BILGI_GETIRME_GECIKMESI_MS =
 export class ParaTransferComponent
   implements OnDestroy {
 
-  transferSekmesi: TransferSekmesi =
-    'Havale';
-
   transferKanaliRotasi: TransferKanaliRotasi;
 
   ekran: EkranTipi =
     'form';
 
-  transfer: ParaTransfer =
-    this.bosTransferOlustur();
+  /*
+   * bosTransferOlustur() başlangıç IBAN
+   * değerini transferKanaliRotasi'na göre
+   * belirlediği için gerçek değeri
+   * constructor içinde, kanal atandıktan
+   * sonra verilir.
+   */
+  transfer!: ParaTransfer;
 
   transferBilgileriYukleniyorMu =
     false;
@@ -127,6 +127,19 @@ export class ParaTransferComponent
   private aliciHesapIstegiNo =
     0;
 
+  /*
+   * IBAN değişmediği sürece odak
+   * kaybında aynı hesap kontrolünün
+   * tekrar yapılmasını engeller.
+   */
+  private gonderenKontrolEdilenIban:
+    string | null =
+    null;
+
+  private aliciKontrolEdilenIban:
+    string | null =
+    null;
+
 
   constructor(
     private paraTransferApi:
@@ -148,6 +161,9 @@ export class ParaTransferComponent
         ? 'swift'
         : 'havale-eft';
 
+    this.transfer =
+      this.bosTransferOlustur();
+
   }
 
 
@@ -160,31 +176,6 @@ export class ParaTransferComponent
      * bilgi isteğini geçersiz hale getirir.
      */
     this.bilgiIstegiNo++;
-
-  }
-
-
-  /*
-   * HAVALE / VİRMAN SEKMESİ
-   */
-
-  sekmeSec(
-    sekme: TransferSekmesi
-  ): void {
-
-    if (
-      this.transferSekmesi === sekme
-    ) {
-      return;
-    }
-
-    this.transferSekmesi =
-      sekme;
-
-    this.formuSifirla();
-
-    this.ekran =
-      'form';
 
   }
 
@@ -300,6 +291,9 @@ export class ParaTransferComponent
 
     this.gonderenHesapIstegiNo++;
 
+    this.gonderenKontrolEdilenIban =
+      null;
+
     this.transfer.gonderenHesapId =
       0;
 
@@ -331,6 +325,9 @@ export class ParaTransferComponent
     void {
 
     this.aliciHesapIstegiNo++;
+
+    this.aliciKontrolEdilenIban =
+      null;
 
     this.transfer.aliciHesapId =
       0;
@@ -396,16 +393,33 @@ export class ParaTransferComponent
       return;
     }
 
-    const istekNo =
-      ++this.gonderenHesapIstegiNo;
-
     const iban =
       this.ibanTemizle(
         this.transfer.gonderenIBAN
       );
 
+    /*
+     * IBAN son kontrol edilenle aynıysa
+     * hesap sahibi tekrar sorgulanmaz.
+     */
+    if (
+      iban ===
+      this.gonderenKontrolEdilenIban
+    ) {
+      return;
+    }
+
+    this.gonderenKontrolEdilenIban =
+      iban;
+
+    const istekNo =
+      ++this.gonderenHesapIstegiNo;
+
     this.paraTransferApi
-      .tekHesapBilgisiGetir(iban)
+      .tekHesapBilgisiGetir(
+        iban,
+        this.transferKanaliEnum
+      )
       .subscribe({
 
         next: (hesap) => {
@@ -489,16 +503,33 @@ export class ParaTransferComponent
       return;
     }
 
-    const istekNo =
-      ++this.aliciHesapIstegiNo;
-
     const iban =
       this.ibanTemizle(
         this.transfer.aliciIBAN
       );
 
+    /*
+     * IBAN son kontrol edilenle aynıysa
+     * hesap sahibi tekrar sorgulanmaz.
+     */
+    if (
+      iban ===
+      this.aliciKontrolEdilenIban
+    ) {
+      return;
+    }
+
+    this.aliciKontrolEdilenIban =
+      iban;
+
+    const istekNo =
+      ++this.aliciHesapIstegiNo;
+
     this.paraTransferApi
-      .tekHesapBilgisiGetir(iban)
+      .tekHesapBilgisiGetir(
+        iban,
+        this.transferKanaliEnum
+      )
       .subscribe({
 
         next: (hesap) => {
@@ -622,7 +653,49 @@ export class ParaTransferComponent
 
 
   /*
+   * IBAN GİRİŞ ALANI PLACEHOLDER'I
+   */
+
+  get ibanPlaceholder():
+    string {
+
+    return this.transferKanaliRotasi ===
+      'havale-eft'
+      ? 'TR00 0000 0000 0000 0000 0000 00'
+      : 'Örn. DE00 0000 0000 0000 0000 00';
+
+  }
+
+
+  /*
+   * IBAN GİRİŞ ALANININ İZİN VERİLEN
+   * MAKSİMUM UZUNLUĞU
+   *
+   * TR IBAN: 26 karakter + 6 boşluk = 32.
+   * Genel IBAN: en fazla 34 karakter + 8
+   * boşluk = 42.
+   */
+
+  get ibanMaxLength():
+    number {
+
+    return this.transferKanaliRotasi ===
+      'havale-eft'
+      ? 32
+      : 42;
+
+  }
+
+
+  /*
    * IBAN BİÇİMLENDİRME
+   *
+   * Havale/EFT yalnızca yurt içi TR IBAN
+   * kabul ettiği için "TR" öneki zorlanır.
+   *
+   * SWIFT'te yabancı IBAN da girilebildiğinden
+   * öneki zorlamadan, yalnızca boşlukları
+   * temizleyip büyük harfe çevirir.
    */
 
   private ibanBicimlendir(
@@ -633,6 +706,21 @@ export class ParaTransferComponent
       (deger ?? '')
         .replace(/\s+/g, '')
         .toUpperCase();
+
+    if (
+      this.transferKanaliRotasi !==
+      'havale-eft'
+    ) {
+
+      return (
+        temiz
+          .slice(0, 34)
+          .match(/.{1,4}/g)
+          ?.join(' ') ??
+        temiz.slice(0, 34)
+      );
+
+    }
 
     if (
       temiz.length === 0 ||
@@ -706,6 +794,15 @@ export class ParaTransferComponent
   }
 
 
+  /*
+   * Havale/EFT yalnızca yurt içi TR IBAN
+   * kabul eder. SWIFT'te yabancı IBAN'lar
+   * da girilebildiği için genel IBAN
+   * biçimi (2 harf ülke kodu + 2 kontrol
+   * basamağı + 11-30 alfanümerik karakter)
+   * yeterli kabul edilir.
+   */
+
   private ibanGecerliMi(
     iban: string
   ): boolean {
@@ -713,7 +810,18 @@ export class ParaTransferComponent
     const temizIban =
       this.ibanTemizle(iban);
 
-    return /^TR\d{24}$/.test(
+    if (
+      this.transferKanaliRotasi ===
+      'havale-eft'
+    ) {
+
+      return /^TR\d{24}$/.test(
+        temizIban
+      );
+
+    }
+
+    return /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(
       temizIban
     );
 
@@ -812,7 +920,7 @@ export class ParaTransferComponent
       this.transfer.aliciTutar > 0 &&
       !this.transferBilgileriYukleniyorMu &&
       !this.transferYapiliyorMu &&
-      this.dovizKanalKuraliGecerliMi
+      this.transferKuraliGecerliMi
     );
 
   }
@@ -834,55 +942,107 @@ export class ParaTransferComponent
 
 
   /*
-   * DÖVİZ CİNSİ / TRANSFER KANALI KURALI
+   * TRANSFER KURALI
    *
-   * Havale/EFT yalnızca TL hesaplar arasında yapılabilir.
-   * SWIFT ile TL hesaptan TL hesaba transfer yapılamaz.
+   * Havale/EFT : Farklı müşterilerin TL
+   *              hesapları arasında yapılır.
+   *
+   * Virman     : Aynı müşterinin TL hesapları
+   *              arasında yapılır. Virman'ın
+   *              henüz kendi ekranı yoktur;
+   *              bu yüzden bu senaryo hiçbir
+   *              ekrandan kabul edilmez.
+   *
+   * SWIFT      : Yukarıdaki iki durumun
+   *              dışında kalan, yani TL-TL
+   *              olmayan tüm transferlerde
+   *              kullanılır (sahiplik fark
+   *              etmez).
+   *
+   * Backend'deki TransferKuraliniDogrula ile
+   * birebir aynı kuralı uygular; burada amaç
+   * sunucuya gitmeden erken/anlaşılır uyarı
+   * göstermektir. Son karar backend'e aittir.
    */
 
-  get dovizKanalKuraliGecerliMi():
+  private get ayniMusteriMi():
     boolean {
 
-    if (
-      this.transfer.gonderenDovizTipi ===
-      DovizCinsi.None ||
-      this.transfer.aliciDovizTipi ===
-      DovizCinsi.None
-    ) {
-      return true;
-    }
+    return (
+      !!this.transfer.gonderenHesap &&
+      !!this.transfer.aliciHesap &&
+      this.transfer.gonderenHesap
+        .musteriBilgileriId ===
+      this.transfer.aliciHesap
+        .musteriBilgileriId
+    );
 
-    const ikisiDeTL =
+  }
+
+
+  private get ikisiDeTLMi():
+    boolean {
+
+    return (
       this.transfer.gonderenDovizTipi ===
       DovizCinsi.TL &&
       this.transfer.aliciDovizTipi ===
-      DovizCinsi.TL;
+      DovizCinsi.TL
+    );
+
+  }
+
+
+  get transferKuraliGecerliMi():
+    boolean {
+
+    if (
+      !this.transfer.gonderenHesap ||
+      !this.transfer.aliciHesap
+    ) {
+      return true;
+    }
 
     if (
       this.transferKanaliRotasi ===
       'havale-eft'
     ) {
-      return ikisiDeTL;
+      return (
+        this.ikisiDeTLMi &&
+        !this.ayniMusteriMi
+      );
     }
 
-    return !ikisiDeTL;
+    return !this.ikisiDeTLMi;
 
   }
 
 
-  get dovizKanalUyariMesaji():
+  get transferKuraliUyariMesaji():
     string {
 
     if (
-      this.dovizKanalKuraliGecerliMi
+      this.transferKuraliGecerliMi
     ) {
       return '';
     }
 
-    return this.transferKanaliRotasi ===
+    if (
+      this.transferKanaliRotasi ===
       'havale-eft'
-      ? 'Havale/EFT işlemi yalnızca TL hesaplar arasında yapılabilir. Farklı döviz cinsleri için SWIFT ekranını kullanınız.'
-      : 'SWIFT işleminde TL hesaptan TL hesaba transfer yapılamaz. Bu işlem için Havale/EFT ekranını kullanınız.';
+    ) {
+
+      if (!this.ikisiDeTLMi) {
+        return 'Havale/EFT işlemi yalnızca TL hesaplar arasında yapılabilir. Farklı döviz cinsleri için SWIFT ekranını kullanınız.';
+      }
+
+      return 'Aynı müşterinin TL hesapları arasındaki transferler Virman işlemidir. Virman ekranı henüz kullanıma açılmamıştır.';
+
+    }
+
+    return this.ayniMusteriMi
+      ? 'Aynı müşterinin TL hesapları arasındaki transferler Virman işlemidir. Virman ekranı henüz kullanıma açılmamıştır.'
+      : 'Farklı müşterilerin TL hesapları arasındaki transferler Havale/EFT işlemidir. Havale/EFT ekranını kullanınız.';
 
   }
 
@@ -1440,11 +1600,14 @@ export class ParaTransferComponent
           this.transfer.aliciIBAN
         ),
 
+      /*
+       * Gerçek transfer tipi (Havale/Virman),
+       * hesapların sahiplik ve döviz bilgisine
+       * göre backend'de belirlenir; buradan
+       * gönderilen değere güvenilmez.
+       */
       transferTipi:
-        this.transferSekmesi ===
-          'Havale'
-          ? TransferTipleri.Havale
-          : TransferTipleri.Virman,
+        TransferTipleri.None,
 
       transferKanali:
         this.transferKanaliEnum,
@@ -1541,14 +1704,18 @@ export class ParaTransferComponent
 
     this.bilgiIstegiNo++;
 
+    this.gonderenHesapIstegiNo++;
+
+    this.aliciHesapIstegiNo++;
+
+    this.gonderenKontrolEdilenIban =
+      null;
+
+    this.aliciKontrolEdilenIban =
+      null;
+
     this.transfer =
       this.bosTransferOlustur();
-
-    this.transfer.transferTipi =
-      this.transferSekmesi ===
-        'Havale'
-        ? TransferTipleri.Havale
-        : TransferTipleri.Virman;
 
     this.gonderenIsimSoyisim =
       '';
@@ -1576,20 +1743,31 @@ export class ParaTransferComponent
 
   /*
    * BOŞ TRANSFER NESNESİ
+   *
+   * Havale/EFT yalnızca TR IBAN kabul
+   * ettiği için "TR" öneki ile başlar.
+   * SWIFT'te yabancı IBAN da girilebildiği
+   * için boş başlar.
    */
 
   private bosTransferOlustur():
     ParaTransfer {
 
+    const baslangicIban =
+      this.transferKanaliRotasi ===
+      'havale-eft'
+        ? 'TR'
+        : '';
+
     return {
       gonderenIBAN:
-        'TR',
+        baslangicIban,
 
       aliciIBAN:
-        'TR',
+        baslangicIban,
 
       transferTipi:
-        TransferTipleri.Havale,
+        TransferTipleri.None,
 
       transferKanali:
         TransferKanallari.None,

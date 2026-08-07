@@ -1,3 +1,4 @@
+using kocerbank_backend.Enums;
 using kocerbank_backend.Models.DTOs;
 using kocerbank_backend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -83,14 +84,15 @@ namespace kocerbank_backend.Controllers
 
         [HttpPost("TekHesapBilgisiGetir")]
         public IActionResult TekHesapBilgisiGetir(
-            [FromQuery] string iban
+            [FromQuery] string iban,
+            [FromQuery] TransferKanallari kanal
         )
         {
             try
             {
                 TransferHesapDTO sonuc =
                     _paraTransferServis
-                        .TekHesapBilgisiGetir(iban);
+                        .TekHesapBilgisiGetir(iban, kanal);
 
                 return Ok(sonuc);
             }

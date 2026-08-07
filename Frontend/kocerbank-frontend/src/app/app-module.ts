@@ -25,6 +25,7 @@ import { ParaCekYatir } from './features/hesaplar/para-cek-yatir/para-cek-yatir'
 import { ProfilDuzenle } from './features/profil/profil-duzenle/profil-duzenle';
 import { SifreDegistir } from './features/profil/sifre-degistir/sifre-degistir';
 import { ParaTransferComponent } from './features/hesaplar/para-transfer/para-transfer';
+import { VirmanComponent } from './features/hesaplar/virman/virman';
 
 import { HesapFormu } from './features/hesaplar/hesap-formu/hesap-formu';
 
@@ -49,6 +50,7 @@ import { HesapFormu } from './features/hesaplar/hesap-formu/hesap-formu';
     ProfilDuzenle,
     SifreDegistir,
     ParaTransferComponent,
+    VirmanComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideHttpClient()],

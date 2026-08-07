@@ -59,9 +59,9 @@ namespace kocerbank_backend.DataAccess
                 DovizCinsi = (DovizCinsiDurumlari)Convert.ToByte(reader["DOVIZCINSI"]),
                 OncekiBakiye = Convert.ToInt32(reader["ONCEKIBAKIYE"]),
                 SonrakiBakiye = Convert.ToInt32(reader["SONRAKIBAKIYE"]),
-                IslemTarihi = Convert.ToDateTime(reader["ISLEMTARIHI"]),
+                IslemTarihi = OracleZamanDamgasi.UtcOlarakOku(reader["ISLEMTARIHI"]),
                 RecordUser = reader["RECORDUSER"] == DBNull.Value ? null : reader["RECORDUSER"].ToString(),
-                RecordDate = reader["RECORDDATE"] == DBNull.Value ? null : Convert.ToDateTime(reader["RECORDDATE"])
+                RecordDate = reader["RECORDDATE"] == DBNull.Value ? null : OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"])
             };
         }
     }

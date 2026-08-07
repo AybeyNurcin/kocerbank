@@ -15,6 +15,10 @@ import {
   TransferHesap
 } from '../models/para-transfer-model';
 
+import {
+  TransferKanallari
+} from '../../../shared/enums/transfer-kanallari-enum';
+
 
 @Injectable({
   providedIn: 'root'
@@ -58,11 +62,14 @@ export class ParaTransferApi {
    */
 
   tekHesapBilgisiGetir(
-    iban: string
+    iban: string,
+    kanal: TransferKanallari
   ): Observable<TransferHesap> {
 
     return this.http.post<TransferHesap>(
-      `${this.apiUrl}/TekHesapBilgisiGetir?iban=${encodeURIComponent(iban)}`,
+      `${this.apiUrl}/TekHesapBilgisiGetir` +
+      `?iban=${encodeURIComponent(iban)}` +
+      `&kanal=${kanal}`,
       null
     );
 

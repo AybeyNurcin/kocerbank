@@ -36,6 +36,10 @@ import {
   ParaTransferComponent
 } from './features/hesaplar/para-transfer/para-transfer';
 
+import {
+  VirmanComponent
+} from './features/hesaplar/virman/virman';
+
 const routes: Routes = [
 
   // Giriş sayfası koruma altında değildir.
@@ -96,6 +100,10 @@ const routes: Routes = [
         path: 'swift',
         component: ParaTransferComponent,
         data: { transferKanali: 'swift' }
+      },
+      {
+        path: 'virman',
+        component: VirmanComponent
       },
 
       // Ana adrese gidilirse Dashboard açılır.

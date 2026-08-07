@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Hesap } from '../models/hesap-model';
 import { HesapCekYatir } from '../models/hesap-cek-yatir-model';
 import { HesapDashboard } from '../models/hesap-dashboard-model';
+import { DovizCinsi } from '../../../shared/enums/doviz-cinsi-enum';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,16 @@ export class HesapApi {
       `${this.apiUrl}/listele`,
       {
         musteriBilgileriId: musteriId
+      }
+    );
+  }
+
+  musterininTLHesaplariniGetir(musteriId: number): Observable<Hesap[]> {
+    return this.http.post<Hesap[]>(
+      `${this.apiUrl}/listele`,
+      {
+        musteriBilgileriId: musteriId,
+        dovizCinsi: DovizCinsi.TL
       }
     );
   }
