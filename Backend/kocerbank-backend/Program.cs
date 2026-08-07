@@ -10,11 +10,14 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddScoped<SubeRepository>();
 builder.Services.AddScoped<SubeService>();
 builder.Services.AddScoped<MusteriRepository>();
 builder.Services.AddScoped<MusteriService>();
+builder.Services.AddScoped<AktifPersonelServis>();
 builder.Services.AddScoped<PersonelRepository>();
 builder.Services.AddScoped<PersonelService>();
 builder.Services.AddScoped<MusteriIletisimRepository>();
