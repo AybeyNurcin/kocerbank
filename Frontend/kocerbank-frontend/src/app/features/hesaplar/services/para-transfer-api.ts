@@ -11,7 +11,8 @@ import {
 } from 'rxjs';
 
 import {
-  ParaTransfer
+  ParaTransfer,
+  TransferHesap
 } from '../models/para-transfer-model';
 
 
@@ -44,6 +45,25 @@ export class ParaTransferApi {
     return this.http.post<ParaTransfer>(
       `${this.apiUrl}/TransferBilgileriniGetir`,
       dto
+    );
+
+  }
+
+
+  /*
+   * KARŞI TARAF IBAN'I BEKLENMEDEN
+   * TEK BİR IBAN'IN HESAP BİLGİSİNİ GETİRİR.
+   *
+   * Para aktarmaz.
+   */
+
+  tekHesapBilgisiGetir(
+    iban: string
+  ): Observable<TransferHesap> {
+
+    return this.http.post<TransferHesap>(
+      `${this.apiUrl}/TekHesapBilgisiGetir?iban=${encodeURIComponent(iban)}`,
+      null
     );
 
   }

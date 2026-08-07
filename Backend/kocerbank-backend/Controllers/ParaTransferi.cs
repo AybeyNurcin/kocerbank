@@ -81,6 +81,57 @@ namespace kocerbank_backend.Controllers
             }
         }
 
+        [HttpPost("TekHesapBilgisiGetir")]
+        public IActionResult TekHesapBilgisiGetir(
+            [FromQuery] string iban
+        )
+        {
+            try
+            {
+                TransferHesapDTO sonuc =
+                    _paraTransferServis
+                        .TekHesapBilgisiGetir(iban);
+
+                return Ok(sonuc);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+        }
+
         [HttpPost("TransferBilgileriniGetir")]
         public IActionResult TransferBilgileriniGetir(
             [FromBody] ParaTransferDTO dto

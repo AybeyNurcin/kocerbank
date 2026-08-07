@@ -3,6 +3,10 @@ import {
 } from '../../../shared/enums/transfer-tipleri-enum';
 
 import {
+  TransferKanallari
+} from '../../../shared/enums/transfer-kanallari-enum';
+
+import {
   DovizCinsi
 } from '../../../shared/enums/doviz-cinsi-enum';
 
@@ -29,6 +33,8 @@ export interface ParaTransfer {
   aliciIBAN: string;
 
   transferTipi: TransferTipleri;
+
+  transferKanali: TransferKanallari;
 
   gonderenTutar: number;
 

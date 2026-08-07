@@ -5,6 +5,10 @@ import {
 } from '@angular/core';
 
 import {
+  ActivatedRoute
+} from '@angular/router';
+
+import {
   ParaTransferApi
 } from '../services/para-transfer-api';
 
@@ -15,6 +19,10 @@ import {
 import {
   TransferTipleri
 } from '../../../shared/enums/transfer-tipleri-enum';
+
+import {
+  TransferKanallari
+} from '../../../shared/enums/transfer-kanallari-enum';
 
 import {
   DovizCinsi
@@ -30,6 +38,9 @@ type TransferSekmesi =
 
 type EkranTipi =
   'form' | 'onizleme' | 'basarili';
+
+type TransferKanaliRotasi =
+  'havale-eft' | 'swift';
 
 
 const BILGI_GETIRME_GECIKMESI_MS =
@@ -47,6 +58,8 @@ export class ParaTransferComponent
 
   transferSekmesi: TransferSekmesi =
     'Havale';
+
+  transferKanaliRotasi: TransferKanaliRotasi;
 
   ekran: EkranTipi =
     'form';
@@ -103,6 +116,17 @@ export class ParaTransferComponent
   private bilgiIstegiNo =
     0;
 
+  /*
+   * Gönderen/alıcı için ayrı ayrı yapılan
+   * tekil hesap kontrollerinde eski bir API
+   * cevabının yenisini ezmesini engeller.
+   */
+  private gonderenHesapIstegiNo =
+    0;
+
+  private aliciHesapIstegiNo =
+    0;
+
 
   constructor(
     private paraTransferApi:
@@ -111,9 +135,19 @@ export class ParaTransferComponent
     private authService:
       AuthService,
 
+    private route:
+      ActivatedRoute,
+
     private cdr:
       ChangeDetectorRef
   ) {
+
+    this.transferKanaliRotasi =
+      this.route.snapshot.data['transferKanali'] ===
+        'swift'
+        ? 'swift'
+        : 'havale-eft';
+
   }
 
 
@@ -173,7 +207,7 @@ export class ParaTransferComponent
     this.gonderenIsimSoyisim =
       '';
 
-    this.formBilgileriDegisti();
+    this.gonderenBilgisiGecersizlesti();
 
   }
 
@@ -196,7 +230,7 @@ export class ParaTransferComponent
     this.aliciIsimSoyisim =
       '';
 
-    this.formBilgileriDegisti();
+    this.aliciBilgisiGecersizlesti();
 
   }
 
@@ -238,30 +272,317 @@ export class ParaTransferComponent
 
 
   /*
-   * FORMDA HESAPLAMAYI ETKİLEYEN
-   * BİR BİLGİ DEĞİŞTİ
+   * TUTAR DEĞİŞTİĞİNDE KUR VE ALICI
+   * TUTARI YENİDEN HESAPLANMALIDIR
    */
 
   private formBilgileriDegisti():
     void {
 
-    /*
-     * Önceki API isteğinin sonucunu
-     * geçersiz hale getirir.
-     */
+    this.kurBilgileriniSifirla();
+
+    this.bilgileriGetirmeyiPlanla();
+
+  }
+
+
+  /*
+   * GÖNDEREN IBAN'A AİT HESAP BİLGİSİ
+   * ARTIK GEÇERSİZ
+   *
+   * Kur, her iki hesaba da bağlı olduğu
+   * için o da sıfırlanır. Alıcı tarafındaki
+   * bilgiler korunur.
+   */
+
+  private gonderenBilgisiGecersizlesti():
+    void {
+
+    this.gonderenHesapIstegiNo++;
+
+    this.transfer.gonderenHesapId =
+      0;
+
+    this.transfer.gonderenDovizTipi =
+      DovizCinsi.None;
+
+    this.transfer.gonderenHesap =
+      null;
+
+    this.gonderenMaskelenmisAdSoyad =
+      '';
+
+    this.hataMesaji =
+      '';
+
+    this.kurBilgileriniSifirla();
+
+  }
+
+
+  /*
+   * ALICI IBAN'A AİT HESAP BİLGİSİ
+   * ARTIK GEÇERSİZ
+   *
+   * Gönderen tarafındaki bilgiler korunur.
+   */
+
+  private aliciBilgisiGecersizlesti():
+    void {
+
+    this.aliciHesapIstegiNo++;
+
+    this.transfer.aliciHesapId =
+      0;
+
+    this.transfer.aliciDovizTipi =
+      DovizCinsi.None;
+
+    this.transfer.aliciHesap =
+      null;
+
+    this.aliciMaskelenmisAdSoyad =
+      '';
+
+    this.hataMesaji =
+      '';
+
+    this.kurBilgileriniSifirla();
+
+  }
+
+
+  /*
+   * KUR VE ALICI TUTARI ARTIK GEÇERSİZ
+   */
+
+  private kurBilgileriniSifirla():
+    void {
+
+    this.bilgiGetirmeZamanlayicisiniTemizle();
+
     this.bilgiIstegiNo++;
 
-    /*
-     * Önceki istek devam ediyor olsa bile
-     * form değiştiği için yükleniyor durumu
-     * kapatılır.
-     */
     this.transferBilgileriYukleniyorMu =
       false;
 
-    this.transferSonucBilgileriniSifirla();
+    this.transfer.dovizKuru =
+      0;
 
-    this.bilgileriGetirmeyiPlanla();
+    this.transfer.kurAciklamasi =
+      null;
+
+    this.transfer.kurTarihi =
+      null;
+
+    this.transfer.aliciTutar =
+      0;
+
+  }
+
+
+  /*
+   * GÖNDEREN IBAN ALANI ODAK KAYBETTİ
+   *
+   * Alıcı IBAN'ın girilmesi beklenmeden,
+   * gönderen hesabın kontrolünü hemen yapar.
+   */
+
+  gonderenIbanOdakKaybetti(): void {
+
+    if (
+      !this.gonderenIbanGecerliMi
+    ) {
+      return;
+    }
+
+    const istekNo =
+      ++this.gonderenHesapIstegiNo;
+
+    const iban =
+      this.ibanTemizle(
+        this.transfer.gonderenIBAN
+      );
+
+    this.paraTransferApi
+      .tekHesapBilgisiGetir(iban)
+      .subscribe({
+
+        next: (hesap) => {
+
+          if (
+            istekNo !==
+            this.gonderenHesapIstegiNo
+          ) {
+            return;
+          }
+
+          this.transfer.gonderenHesapId =
+            hesap.id;
+
+          this.transfer.gonderenDovizTipi =
+            hesap.dovizCinsi;
+
+          this.transfer.gonderenHesap =
+            hesap;
+
+          this.gonderenMaskelenmisAdSoyad =
+            this.adiMaskele(
+              hesap.hesapSahibi
+            );
+
+          this.hataMesaji =
+            '';
+
+          this.cdr.detectChanges();
+
+          this.ikisiDeHazirsaKuruGetir();
+
+        },
+
+        error: (hata) => {
+
+          if (
+            istekNo !==
+            this.gonderenHesapIstegiNo
+          ) {
+            return;
+          }
+
+          this.transfer.gonderenHesapId =
+            0;
+
+          this.transfer.gonderenDovizTipi =
+            DovizCinsi.None;
+
+          this.transfer.gonderenHesap =
+            null;
+
+          this.gonderenMaskelenmisAdSoyad =
+            '';
+
+          this.hataMesaji =
+            hata?.error?.mesaj ??
+            'Gönderen hesap bilgisi getirilirken bir hata oluştu.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+
+  /*
+   * ALICI IBAN ALANI ODAK KAYBETTİ
+   *
+   * Gönderen IBAN'ın girilmesi beklenmeden,
+   * alıcı hesabın kontrolünü hemen yapar.
+   */
+
+  aliciIbanOdakKaybetti(): void {
+
+    if (
+      !this.aliciIbanGecerliMi
+    ) {
+      return;
+    }
+
+    const istekNo =
+      ++this.aliciHesapIstegiNo;
+
+    const iban =
+      this.ibanTemizle(
+        this.transfer.aliciIBAN
+      );
+
+    this.paraTransferApi
+      .tekHesapBilgisiGetir(iban)
+      .subscribe({
+
+        next: (hesap) => {
+
+          if (
+            istekNo !==
+            this.aliciHesapIstegiNo
+          ) {
+            return;
+          }
+
+          this.transfer.aliciHesapId =
+            hesap.id;
+
+          this.transfer.aliciDovizTipi =
+            hesap.dovizCinsi;
+
+          this.transfer.aliciHesap =
+            hesap;
+
+          this.aliciMaskelenmisAdSoyad =
+            this.adiMaskele(
+              hesap.hesapSahibi
+            );
+
+          this.hataMesaji =
+            '';
+
+          this.cdr.detectChanges();
+
+          this.ikisiDeHazirsaKuruGetir();
+
+        },
+
+        error: (hata) => {
+
+          if (
+            istekNo !==
+            this.aliciHesapIstegiNo
+          ) {
+            return;
+          }
+
+          this.transfer.aliciHesapId =
+            0;
+
+          this.transfer.aliciDovizTipi =
+            DovizCinsi.None;
+
+          this.transfer.aliciHesap =
+            null;
+
+          this.aliciMaskelenmisAdSoyad =
+            '';
+
+          this.hataMesaji =
+            hata?.error?.mesaj ??
+            'Alıcı hesap bilgisi getirilirken bir hata oluştu.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+
+  /*
+   * HER İKİ TARAFIN HESAP BİLGİSİ DE
+   * TEK TEK DOĞRULANDIYSA KURU GETİR
+   */
+
+  private ikisiDeHazirsaKuruGetir(): void {
+
+    if (
+      !this.bilgiGetirilebilirMi
+    ) {
+      return;
+    }
+
+    this.bilgiGetirmeZamanlayicisiniTemizle();
+
+    this.transferBilgileriniGetir();
 
   }
 
@@ -467,8 +788,7 @@ export class ParaTransferComponent
     return (
       this.gonderenIbanGecerliMi &&
       this.aliciIbanGecerliMi &&
-      !this.ibanlarAyniMi &&
-      this.tutarGecerliMi
+      !this.ibanlarAyniMi
     );
 
   }
@@ -491,8 +811,120 @@ export class ParaTransferComponent
       this.transfer.dovizKuru > 0 &&
       this.transfer.aliciTutar > 0 &&
       !this.transferBilgileriYukleniyorMu &&
-      !this.transferYapiliyorMu
+      !this.transferYapiliyorMu &&
+      this.dovizKanalKuraliGecerliMi
     );
+
+  }
+
+
+  /*
+   * TRANSFER KANALI (DTO'YA YAZILACAK ENUM)
+   */
+
+  get transferKanaliEnum():
+    TransferKanallari {
+
+    return this.transferKanaliRotasi ===
+      'swift'
+      ? TransferKanallari.Swift
+      : TransferKanallari.HavaleEft;
+
+  }
+
+
+  /*
+   * DÖVİZ CİNSİ / TRANSFER KANALI KURALI
+   *
+   * Havale/EFT yalnızca TL hesaplar arasında yapılabilir.
+   * SWIFT ile TL hesaptan TL hesaba transfer yapılamaz.
+   */
+
+  get dovizKanalKuraliGecerliMi():
+    boolean {
+
+    if (
+      this.transfer.gonderenDovizTipi ===
+      DovizCinsi.None ||
+      this.transfer.aliciDovizTipi ===
+      DovizCinsi.None
+    ) {
+      return true;
+    }
+
+    const ikisiDeTL =
+      this.transfer.gonderenDovizTipi ===
+      DovizCinsi.TL &&
+      this.transfer.aliciDovizTipi ===
+      DovizCinsi.TL;
+
+    if (
+      this.transferKanaliRotasi ===
+      'havale-eft'
+    ) {
+      return ikisiDeTL;
+    }
+
+    return !ikisiDeTL;
+
+  }
+
+
+  get dovizKanalUyariMesaji():
+    string {
+
+    if (
+      this.dovizKanalKuraliGecerliMi
+    ) {
+      return '';
+    }
+
+    return this.transferKanaliRotasi ===
+      'havale-eft'
+      ? 'Havale/EFT işlemi yalnızca TL hesaplar arasında yapılabilir. Farklı döviz cinsleri için SWIFT ekranını kullanınız.'
+      : 'SWIFT işleminde TL hesaptan TL hesaba transfer yapılamaz. Bu işlem için Havale/EFT ekranını kullanınız.';
+
+  }
+
+
+  /*
+   * KUR BİLGİSİ GÖSTERİLSİN Mİ?
+   *
+   * Havale/EFT'te döviz cinsleri her zaman TL-TL
+   * olacağı için kur bilgisi anlamsızdır.
+   */
+
+  get kurBilgisiGosterilsinMi():
+    boolean {
+
+    return this.transferKanaliRotasi ===
+      'swift';
+
+  }
+
+
+  /*
+   * SAYFA BAŞLIĞI VE AÇIKLAMASI
+   */
+
+  get sayfaBasligi():
+    string {
+
+    return this.transferKanaliRotasi ===
+      'swift'
+      ? 'SWIFT'
+      : 'Havale/EFT';
+
+  }
+
+
+  get sayfaAciklamasi():
+    string {
+
+    return this.transferKanaliRotasi ===
+      'swift'
+      ? 'Farklı döviz cinsleri arasında (TL hesaptan TL hesaba hariç) transfer işlemi başlatabilirsiniz.'
+      : 'TL hesaplar arasında transfer işlemi başlatabilirsiniz.';
 
   }
 
@@ -1014,6 +1446,9 @@ export class ParaTransferComponent
           ? TransferTipleri.Havale
           : TransferTipleri.Virman,
 
+      transferKanali:
+        this.transferKanaliEnum,
+
       gonderenTutar:
         this.transfer.gonderenTutar,
 
@@ -1155,6 +1590,9 @@ export class ParaTransferComponent
 
       transferTipi:
         TransferTipleri.Havale,
+
+      transferKanali:
+        TransferKanallari.None,
 
       gonderenTutar:
         0,

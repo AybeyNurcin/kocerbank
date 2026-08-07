@@ -5,71 +5,12 @@
   <div class="page-heading">
 
     <h1>
-      Para Transferi
+      {{ sayfaBasligi }}
     </h1>
 
     <p>
-      Gönderen ve alıcı hesap bilgilerini girerek
-      para transferi işlemi başlatabilirsiniz.
+      {{ sayfaAciklamasi }}
     </p>
-
-  </div>
-
-
-  <!-- TRANSFER TİPİ -->
-
-  <div class="transfer-type-tabs">
-
-    <button type="button"
-            class="transfer-type-button"
-            [class.selected-type]="
-        transferSekmesi === 'Havale'
-      "
-            (click)="sekmeSec('Havale')">
-
-      <span class="type-icon">
-        H
-      </span>
-
-      <span class="type-text">
-
-        <strong>
-          Başka Hesaba Havale
-        </strong>
-
-        <small>
-          Başka müşterinin hesabına transfer
-        </small>
-
-      </span>
-
-    </button>
-
-
-    <button type="button"
-            class="transfer-type-button"
-            [class.selected-type]="
-        transferSekmesi === 'Virman'
-      "
-            (click)="sekmeSec('Virman')">
-
-      <span class="type-icon">
-        V
-      </span>
-
-      <span class="type-text">
-
-        <strong>
-          Kendi Hesabıma Havale
-        </strong>
-
-        <small>
-          Kendi hesaplarınız arasında transfer
-        </small>
-
-      </span>
-
-    </button>
 
   </div>
 
@@ -103,6 +44,9 @@
             "
                (paste)="
               gonderenIbanYapistir($event)
+            "
+               (blur)="
+              gonderenIbanOdakKaybetti()
             " />
 
         @if (
@@ -194,6 +138,9 @@
             "
                (paste)="
               aliciIbanYapistir($event)
+            "
+               (blur)="
+              aliciIbanOdakKaybetti()
             " />
 
         @if (
@@ -382,7 +329,8 @@
   @if (
   transfer.gonderenHesap &&
   transfer.aliciHesap &&
-  !transferBilgileriYukleniyorMu
+  !transferBilgileriYukleniyorMu &&
+  kurBilgisiGosterilsinMi
   ) {
 
   <div class="rate-information">
@@ -412,6 +360,16 @@
       }}
     </strong>
 
+  </div>
+
+  }
+
+
+  <!-- DÖVİZ KANALI UYARISI -->
+  @if (dovizKanalUyariMesaji) {
+
+  <div class="error-message">
+    {{ dovizKanalUyariMesaji }}
   </div>
 
   }
@@ -612,6 +570,7 @@
 
 
     <!-- KUR -->
+    @if (kurBilgisiGosterilsinMi) {
 
     <div class="preview-item">
 
@@ -624,6 +583,8 @@
       </strong>
 
     </div>
+
+    }
 
 
     <!-- AÇIKLAMA -->
