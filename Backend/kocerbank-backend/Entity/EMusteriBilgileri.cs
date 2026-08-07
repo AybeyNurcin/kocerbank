@@ -136,11 +136,8 @@ namespace kocerbank_backend.DataAccess
                 .ToInt64();
 
             dto.KayitOlusturmaTarihi =
-                ((OracleDate)
-                    pKayitOlusturmaTarihi.Value)
-                .Value;
-                    dto.Id = ((OracleDecimal)pId.Value).ToInt64();
-                    dto.KayitOlusturmaTarihi = OracleZamanDamgasi.UtcOlarakOku(((OracleDate)pKayitOlusturmaTarihi.Value).Value);
+                OracleZamanDamgasi.UtcOlarakOku(
+                    pKayitOlusturmaTarihi.Value);
 
             return dto;
         }
@@ -355,20 +352,10 @@ namespace kocerbank_backend.DataAccess
                     .ToInt64(),
 
                 KayitOlusturmaTarihi =
-                    ((OracleDate)kayitTarihi.Value)
-                    .Value
+                    OracleZamanDamgasi.UtcOlarakOku(
+                        kayitTarihi.Value)
             };
         }
-                    KayitOlusturmaTarihi =
-                        OracleZamanDamgasi.UtcOlarakOku(
-                            ((OracleDate)
-                                kayitTarihi.Value)
-                            .Value
-                        )
-                };
-            }
-        }
-    }
 
         // 3. KRİTERE GÖRE MÜŞTERİ LİSTELEME
         public List<MusteriDTO> Listele(
@@ -739,9 +726,8 @@ namespace kocerbank_backend.DataAccess
                         "UNVAN"),
 
                 KayitOlusturmaTarihi =
-                    Convert.ToDateTime(
-                        reader[
-                            "KAYITOLUSTURMATARIHI"]),
+                    OracleZamanDamgasi.UtcOlarakOku(
+                        reader["KAYITOLUSTURMATARIHI"]),
 
                 RecordUser =
                     GetNullableString(
@@ -751,24 +737,8 @@ namespace kocerbank_backend.DataAccess
                 RecordDate =
                     reader["RECORDDATE"] == DBNull.Value
                         ? null
-                        : Convert.ToDateTime(
+                        : OracleZamanDamgasi.UtcOlarakOku(
                             reader["RECORDDATE"])
-                Id = Convert.ToInt64(reader["ID"]),
-                Ad = reader["AD"].ToString()!,
-                Soyad = reader["SOYAD"].ToString()!,
-                Eposta = reader["EPOSTA"].ToString()!,
-                DogumTarihi = reader["DOGUMTARIHI"] == DBNull.Value ? null : Convert.ToDateTime(reader["DOGUMTARIHI"]),
-                TelefonNo = reader["TELEFONNO"].ToString()!,
-                TCKN = GetNullableString(reader, "TCKN"),
-                Cinsiyet = reader["CINSIYET"] == DBNull.Value ? (CinsiyetDurumlari?) null : (CinsiyetDurumlari)Convert.ToByte(reader["CINSIYET"]),
-                VKN = GetNullableString(reader, "VKN"),
-                MusteriTipi = (MusteriTipiDurumlari)Convert.ToByte(reader["MUSTERITIPI"]),
-                SubeSubeKodu = reader["SUBESUBEKODU"].ToString()!,
-                DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
-                Unvan = GetNullableString(reader, "UNVAN"),
-                KayitOlusturmaTarihi = OracleZamanDamgasi.UtcOlarakOku(reader["KAYITOLUSTURMATARIHI"]),
-                RecordUser = reader["RECORDUSER"].ToString()!,
-                RecordDate = OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"])
             };
         }
 
