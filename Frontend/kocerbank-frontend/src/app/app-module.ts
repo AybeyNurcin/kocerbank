@@ -97,6 +97,10 @@ import {
 } from './features/hesaplar/para-transfer/para-transfer';
 
 import {
+  VirmanComponent
+} from './features/hesaplar/virman/virman';
+
+import {
   personelSicilInterceptor
 } from './core/interceptors/personel-sicil-interceptor';
 
@@ -120,7 +124,8 @@ import {
     ParaCekYatir,
     ProfilDuzenle,
     SifreDegistir,
-    ParaTransferComponent
+    ParaTransferComponent,
+    VirmanComponent
   ],
 
   imports: [
