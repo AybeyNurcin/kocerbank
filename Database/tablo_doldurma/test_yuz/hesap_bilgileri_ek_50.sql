@@ -1068,6 +1068,8 @@ BEGIN
 END;
 /
 
+select * from kb_hesapbilgileri;
+
 -- Kontrol: Eklenen 50 hesap ve sahiplerinin aktif hesap sayısı
 SELECT
     M.ID AS MUSTERI_ID,
