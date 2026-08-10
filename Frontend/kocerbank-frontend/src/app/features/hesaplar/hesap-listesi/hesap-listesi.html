@@ -472,7 +472,8 @@
           track hareket.id
           ) {
 
-          <div class="movement-item">
+          <div class="movement-item"
+               (click)="hareketDetayiniAc(hareket)">
 
             <div class="movement-icon"
                  [class.movement-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
@@ -551,7 +552,8 @@
             track hareket.id
             ) {
 
-            <div class="movement-item">
+            <div class="movement-item"
+                 (click)="hareketDetayiniAc(hareket)">
 
               <div class="movement-icon"
                    [class.movement-in]="hareketGirisMi(hareket.hesapHareketiTipi)"
@@ -700,6 +702,310 @@
             </div>
 
           </div>
+
+        </div>
+
+      </div>
+
+      }
+
+
+      <!-- HAREKET DETAYI POPUP -->
+      @if (hareketDetayAcikMi && seciliHareket) {
+
+      <div class="detail-modal-backdrop"
+           (click)="hareketDetayiniKapat()">
+
+        <div class="detail-modal"
+             (click)="$event.stopPropagation()">
+
+          <div class="detail-modal-heading">
+            <h3>İşlem Detayı</h3>
+
+            <button type="button"
+                    class="modal-close-button"
+                    (click)="hareketDetayiniKapat()">
+              ×
+            </button>
+          </div>
+
+          @if (!hareketTransferMi(seciliHareket.hesapHareketiTipi)) {
+
+          <!-- PARA YATIRMA / ÇEKME -->
+          <div class="hareket-detay-list">
+
+            <div class="hareket-detay-row">
+              <span>Gönderim türü</span>
+
+              <strong>
+                {{ hareketAciklamasiniGetir(seciliHareket.hesapHareketiTipi) }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Hesap adı</span>
+
+              <strong>
+                {{ seciliHesap.hesapAdi }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Hesap türü</span>
+
+              <strong>
+                {{ hesapTipiAdiniGetir(seciliHesap.hesapTipi) }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>{{ hareketGirisMi(seciliHareket.hesapHareketiTipi) ? 'Yatırılan IBAN' : 'Çekilen IBAN' }}</span>
+
+              <strong class="iban-value">
+                {{ seciliHesap.iban }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>{{ hareketGirisMi(seciliHareket.hesapHareketiTipi) ? 'Yatırılan tutar' : 'Çekilen tutar' }}</span>
+
+              <strong>
+                {{ seciliHareket.tutar | number:'1.2-2' }}
+                {{ dovizSembolunuGetir(seciliHareket.dovizCinsi) }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Tarih ve saat</span>
+
+              <strong>
+                {{ seciliHareket.islemTarihi | date:'dd.MM.yyyy HH:mm' }}
+              </strong>
+            </div>
+
+          </div>
+
+          } @else {
+
+          <!-- PARA TRANSFERİ -->
+
+          @if (transferDetayiYukleniyorMu) {
+
+          <p class="movements-message">
+            Transfer bilgileri getiriliyor...
+          </p>
+
+          } @else if (transferDetayiHataMesaji) {
+
+          <p class="movements-message">
+            {{ transferDetayiHataMesaji }}
+          </p>
+
+          } @else if (transferDetayi) {
+
+          <div class="hareket-detay-list">
+
+            <div class="hareket-detay-row">
+              <span>Gönderim türü</span>
+
+              <strong>
+                {{ gonderimTuruAdiniGetir() }}
+              </strong>
+            </div>
+
+            @if (kanalVirmanMi()) {
+
+            <!-- VİRMAN -->
+
+            <div class="hareket-detay-row">
+              <span>Ad Soyad</span>
+
+              <strong>
+                {{ transferDetayi.gonderenAdSoyad }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Gönderen IBAN</span>
+
+              <strong class="iban-value">
+                {{ transferDetayi.gonderenIBAN }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Tutar</span>
+
+              <strong>
+                {{ transferDetayi.tutar | number:'1.2-2' }}
+                {{ dovizSembolunuGetir(transferDetayi.gonderenDovizCinsi) }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alıcı IBAN</span>
+
+              <strong class="iban-value">
+                {{ transferDetayi.aliciIBAN }}
+              </strong>
+            </div>
+
+            } @else if (kanalSwiftMi()) {
+
+            <!-- SWIFT -->
+
+            <div class="hareket-detay-row">
+              <span>Gönderen Ad Soyad</span>
+
+              <strong>
+                {{ transferDetayi.gonderenAdSoyad }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Gönderen IBAN</span>
+
+              <strong class="iban-value">
+                {{ transferDetayi.gonderenIBAN }}
+              </strong>
+            </div>
+
+            @if (farkliDovizMi()) {
+
+            <div class="hareket-detay-row">
+              <span>Gönderilen tutar</span>
+
+              <strong>
+                {{ transferDetayi.tutar | number:'1.2-2' }}
+                {{ dovizSembolunuGetir(transferDetayi.gonderenDovizCinsi) }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alıcı Ad Soyad</span>
+
+              <strong>
+                {{ transferDetayi.aliciAdSoyad }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alıcı IBAN</span>
+
+              <strong class="iban-value">
+                {{ transferDetayi.aliciIBAN }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alınan tutar</span>
+
+              <strong>
+                {{ transferDetayi.aliciTutar | number:'1.2-2' }}
+                {{ dovizSembolunuGetir(transferDetayi.aliciDovizCinsi) }}
+                (1 {{ dovizKodunuGetir(transferDetayi.gonderenDovizCinsi) }}
+                = {{ transferDetayi.dovizKuru | number:'1.0-4' }}
+                {{ dovizKodunuGetir(transferDetayi.aliciDovizCinsi) }})
+              </strong>
+            </div>
+
+            } @else {
+
+            <div class="hareket-detay-row">
+              <span>Tutar</span>
+
+              <strong>
+                {{ transferDetayi.tutar | number:'1.2-2' }}
+                {{ dovizSembolunuGetir(transferDetayi.gonderenDovizCinsi) }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alıcı Ad Soyad</span>
+
+              <strong>
+                {{ transferDetayi.aliciAdSoyad }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alıcı IBAN</span>
+
+              <strong class="iban-value">
+                {{ transferDetayi.aliciIBAN }}
+              </strong>
+            </div>
+
+            }
+
+            <div class="hareket-detay-row">
+              <span>Açıklama</span>
+
+              <strong>
+                {{ transferDetayi.aciklama ?? '-' }}
+              </strong>
+            </div>
+
+            } @else {
+
+            <!-- HAVALE / EFT -->
+
+            <div class="hareket-detay-row">
+              <span>Gönderen Ad Soyad</span>
+
+              <strong>
+                {{ transferDetayi.gonderenAdSoyad }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Gönderen IBAN</span>
+
+              <strong class="iban-value">
+                {{ transferDetayi.gonderenIBAN }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Tutar</span>
+
+              <strong>
+                {{ transferDetayi.tutar | number:'1.2-2' }}
+                {{ dovizSembolunuGetir(transferDetayi.gonderenDovizCinsi) }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alıcı Ad Soyad</span>
+
+              <strong>
+                {{ transferDetayi.aliciAdSoyad }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Alıcı IBAN</span>
+
+              <strong class="iban-value">
+                {{ transferDetayi.aliciIBAN }}
+              </strong>
+            </div>
+
+            <div class="hareket-detay-row">
+              <span>Açıklama</span>
+
+              <strong>
+                {{ transferDetayi.aciklama ?? '-' }}
+              </strong>
+            </div>
+
+            }
+
+          </div>
+
+          }
+
+          }
 
         </div>
 

@@ -730,6 +730,42 @@
 }
 
 
+/* HAREKET DETAYI (İŞLEM DETAYI) */
+
+.hareket-detay-list {
+  margin-bottom: 17px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hareket-detay-row {
+  padding: 14px 0;
+  border-bottom: 1px solid #ececee;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.hareket-detay-row:last-child {
+  border-bottom: none;
+}
+
+  .hareket-detay-row span {
+    flex-shrink: 0;
+    color: #88888f;
+    font-size: 13px;
+  }
+
+  .hareket-detay-row strong {
+    color: #34343a;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+
 /* HESAP HAREKETLERİ */
 
 .detail-movements {
@@ -764,6 +800,13 @@
   align-items: center;
   gap: 11px;
   background-color: #fafafa;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.movement-item:hover {
+  background-color: #f0f0f2;
+  border-color: #d8d8dc;
 }
 
 .movement-icon {

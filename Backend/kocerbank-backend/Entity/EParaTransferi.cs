@@ -1,7 +1,9 @@
+using System;
 using System.Data;
 using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
+using kocerbank_backend.Enums;
 using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.DataAccess
@@ -251,7 +253,7 @@ namespace kocerbank_backend.DataAccess
                                 ).Value;
 
 
-                            transaction.Commit();
+    transaction.Commit();
 
                             return dto;
                         }
@@ -264,6 +266,109 @@ namespace kocerbank_backend.DataAccess
                     }
                 }
             }
+        }
+
+
+        // ID'YE GÖRE GETİR (TRANSFER DETAYI İÇİN)
+
+        public ParaTransferDTO? GetirById(
+            long id
+        )
+        {
+            ParaTransferDTO? transfer = null;
+
+            using (
+                OracleConnection conn =
+                    new OracleConnection(
+                        _connectionString
+                    )
+            )
+            {
+                using (
+                    OracleCommand KB =
+                        new OracleCommand(
+                            "KB_PARATRANSFERI_GETIRBYID",
+                            conn
+                        )
+                )
+                {
+                    KB.CommandType =
+                        CommandType.StoredProcedure;
+
+                    KB.Parameters.Add(
+                        "P_ID",
+                        OracleDbType.Int64
+                    ).Value = id;
+
+                    KB.Parameters.Add(
+                        "P_SONUC",
+                        OracleDbType.RefCursor
+                    ).Direction =
+                        ParameterDirection.Output;
+
+                    conn.Open();
+
+                    using (
+                        OracleDataReader reader =
+                            KB.ExecuteReader()
+                    )
+                    {
+                        if (reader.Read())
+                        {
+                            transfer =
+                                MapReaderToDTO(reader);
+                        }
+                    }
+                }
+            }
+
+            return transfer;
+        }
+
+
+        private ParaTransferDTO MapReaderToDTO(
+            OracleDataReader reader
+        )
+        {
+            return new ParaTransferDTO
+            {
+                TransferId =
+                    Convert.ToInt64(reader["ID"]),
+
+                GonderenHesapId =
+                    Convert.ToInt64(reader["GONDERENHESAPID"]),
+
+                AliciHesapId =
+                    Convert.ToInt64(reader["ALICIHESAPID"]),
+
+                TransferTipi =
+                    (TransferTipleri)
+                        Convert.ToByte(reader["TRANSFERTIPI"]),
+
+                GonderenTutar =
+                    Convert.ToDecimal(reader["GONDERENTUTAR"]),
+
+                GonderenDovizTipi =
+                    (DovizCinsiDurumlari)
+                        Convert.ToByte(reader["GONDERENDOVIZTIPI"]),
+
+                AliciDovizTipi =
+                    (DovizCinsiDurumlari)
+                        Convert.ToByte(reader["ALICIDOVIZTIPI"]),
+
+                DovizKuru =
+                    Convert.ToDecimal(reader["DOVIZKURU"]),
+
+                Aciklama =
+                    reader["ACIKLAMA"] == DBNull.Value
+                        ? null
+                        : reader["ACIKLAMA"].ToString(),
+
+                RecordUser =
+                    reader["RECORDUSER"] == DBNull.Value
+                        ? null
+                        : reader["RECORDUSER"].ToString()
+            };
         }
     }
 }

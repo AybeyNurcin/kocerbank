@@ -134,6 +134,39 @@ namespace kocerbank_backend.Controllers
             }
         }
 
+        [HttpPost("TransferDetayiGetir/{id:long}")]
+        public IActionResult TransferDetayiGetir(
+            long id
+        )
+        {
+            try
+            {
+                ParaTransferiDetayDTO sonuc =
+                    _paraTransferServis
+                        .TransferDetayiGetir(id);
+
+                return Ok(sonuc);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    }
+                );
+            }
+        }
+
         [HttpPost("TransferBilgileriniGetir")]
         public IActionResult TransferBilgileriniGetir(
             [FromBody] ParaTransferDTO dto

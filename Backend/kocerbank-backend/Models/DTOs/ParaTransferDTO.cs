@@ -144,4 +144,71 @@ namespace kocerbank_backend.Models.DTOs
             set;
         }
     }
+
+
+    /*
+     * HESAP HAREKETİ DETAY EKRANI İÇİN
+     *
+     * Bir KB_PARATRANSFERI kaydının, gönderen/alıcı
+     * ad-soyad ve IBAN bilgileriyle birlikte, hangi
+     * kanaldan (Havale/EFT, Swift, Virman) yapıldığı
+     * çözümlenmiş halidir.
+     */
+
+    public class ParaTransferiDetayDTO
+    {
+        public TransferKanallari TransferKanali
+        {
+            get;
+            set;
+        }
+
+        public string GonderenAdSoyad { get; set; } =
+            string.Empty;
+
+        public string GonderenIBAN { get; set; } =
+            string.Empty;
+
+        public string AliciAdSoyad { get; set; } =
+            string.Empty;
+
+        public string AliciIBAN { get; set; } =
+            string.Empty;
+
+        public decimal Tutar
+        {
+            get;
+            set;
+        }
+
+        public DovizCinsiDurumlari GonderenDovizCinsi
+        {
+            get;
+            set;
+        }
+
+        public DovizCinsiDurumlari AliciDovizCinsi
+        {
+            get;
+            set;
+        }
+
+        public decimal DovizKuru
+        {
+            get;
+            set;
+        }
+
+        public decimal AliciTutar
+        {
+            get;
+            set;
+        }
+
+        public string? Aciklama
+        {
+            get;
+            set;
+        }
+    }
 }

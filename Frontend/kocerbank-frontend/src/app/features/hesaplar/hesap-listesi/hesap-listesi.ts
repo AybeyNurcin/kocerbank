@@ -37,6 +37,18 @@ import {
   HesapHareketi
 } from '../models/hesap-hareket-model';
 
+import {
+  ParaTransferApi
+} from '../services/para-transfer-api';
+
+import {
+  ParaTransferiDetay
+} from '../models/para-transfer-model';
+
+import {
+  TransferKanallari
+} from '../../../shared/enums/transfer-kanallari-enum';
+
 
 interface HesapTipiSecenegi {
   tip: HesapTipi;
@@ -105,6 +117,17 @@ export class HesapListesi
     number = 10;
 
 
+  // HAREKET DETAYI
+
+  seciliHareket: HesapHareketi | null = null;
+
+  hareketDetayAcikMi: boolean = false;
+
+  transferDetayi: ParaTransferiDetay | null = null;
+  transferDetayiYukleniyorMu: boolean = false;
+  transferDetayiHataMesaji: string = '';
+
+
   readonly hesapTipleri:
     HesapTipiSecenegi[] = [
       {
@@ -127,6 +150,7 @@ export class HesapListesi
     private router: Router,
     private hesapApi: HesapApi,
     private hesapHareketiApi: HesapHareketiApi,
+    private paraTransferApi: ParaTransferApi,
     private changeDetector: ChangeDetectorRef
   ) {
   }
@@ -271,6 +295,8 @@ export class HesapListesi
     this.tumHareketlerPopupAcikMi =
       false;
 
+    this.hareketDetayiniKapat();
+
     this.hesapAdiDuzenlemesiniSifirla();
 
     this.hesapHareketleriniGetir(
@@ -396,6 +422,8 @@ export class HesapListesi
     this.tumHareketlerPopupAcikMi =
       false;
 
+    this.hareketDetayiniKapat();
+
     this.hesapAdiDuzenlemesiniSifirla();
 
     if (this.seciliHesap !== null) {
@@ -422,6 +450,8 @@ export class HesapListesi
 
     this.tumHareketlerPopupAcikMi =
       false;
+
+    this.hareketDetayiniKapat();
 
     this.hesapAdiDuzenlemesiniSifirla();
 
@@ -725,6 +755,149 @@ export class HesapListesi
     ) {
       this.hareketlerMevcutSayfa++;
     }
+  }
+
+
+  // HAREKET DETAYI
+
+  hareketDetayiniAc(
+    hareket: HesapHareketi
+  ): void {
+
+    this.seciliHareket = hareket;
+    this.hareketDetayAcikMi = true;
+
+    this.transferDetayi = null;
+    this.transferDetayiHataMesaji = '';
+
+    if (
+      !this.hareketTransferMi(
+        hareket.hesapHareketiTipi
+      ) ||
+      hareket.paraTransferiId === null
+    ) {
+      return;
+    }
+
+    this.transferDetayiYukleniyorMu = true;
+
+    this.paraTransferApi
+      .transferDetayiGetir(
+        hareket.paraTransferiId
+      )
+      .subscribe({
+
+        next: (
+          detay: ParaTransferiDetay
+        ) => {
+
+          this.transferDetayi = detay;
+
+          this.transferDetayiYukleniyorMu =
+            false;
+
+          this.changeDetector
+            .markForCheck();
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Transfer detayı getirme hatası:',
+            hata
+          );
+
+          this.transferDetayiYukleniyorMu =
+            false;
+
+          this.transferDetayiHataMesaji =
+            hata?.error?.mesaj ??
+            'Transfer detayı getirilirken bir hata oluştu.';
+
+          this.changeDetector
+            .markForCheck();
+        }
+
+      });
+  }
+
+
+  hareketDetayiniKapat(): void {
+
+    this.hareketDetayAcikMi = false;
+    this.seciliHareket = null;
+
+    this.transferDetayi = null;
+    this.transferDetayiYukleniyorMu = false;
+    this.transferDetayiHataMesaji = '';
+  }
+
+
+  hareketTransferMi(
+    tip: HesapHareketTipleri
+  ): boolean {
+
+    return (
+      tip ===
+      HesapHareketTipleri.GelenTransfer ||
+      tip ===
+      HesapHareketTipleri.GidenTransfer
+    );
+  }
+
+
+  kanalHavaleEftMi(): boolean {
+
+    return (
+      this.transferDetayi?.transferKanali ===
+      TransferKanallari.HavaleEft
+    );
+  }
+
+
+  kanalSwiftMi(): boolean {
+
+    return (
+      this.transferDetayi?.transferKanali ===
+      TransferKanallari.Swift
+    );
+  }
+
+
+  kanalVirmanMi(): boolean {
+
+    return (
+      this.transferDetayi?.transferKanali ===
+      TransferKanallari.Virman
+    );
+  }
+
+
+  gonderimTuruAdiniGetir(): string {
+
+    if (this.kanalVirmanMi()) {
+      return 'Virman';
+    }
+
+    if (this.kanalSwiftMi()) {
+      return 'SWIFT';
+    }
+
+    if (this.kanalHavaleEftMi()) {
+      return 'Havale/EFT';
+    }
+
+    return '-';
+  }
+
+
+  farkliDovizMi(): boolean {
+
+    return (
+      this.transferDetayi !== null &&
+      this.transferDetayi.gonderenDovizCinsi !==
+      this.transferDetayi.aliciDovizCinsi
+    );
   }
 
 

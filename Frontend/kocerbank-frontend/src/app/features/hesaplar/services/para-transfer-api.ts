@@ -12,6 +12,7 @@ import {
 
 import {
   ParaTransfer,
+  ParaTransferiDetay,
   TransferHesap
 } from '../models/para-transfer-model';
 
@@ -89,6 +90,25 @@ export class ParaTransferApi {
     return this.http.post<ParaTransfer>(
       `${this.apiUrl}/ParaTransferiYap`,
       dto
+    );
+
+  }
+
+
+  /*
+   * HESAP HAREKETİ DETAY EKRANI İÇİN
+   * TRANSFER BİLGİLERİNİ GETİRİR.
+   *
+   * Para aktarmaz.
+   */
+
+  transferDetayiGetir(
+    id: number
+  ): Observable<ParaTransferiDetay> {
+
+    return this.http.post<ParaTransferiDetay>(
+      `${this.apiUrl}/TransferDetayiGetir/${id}`,
+      null
     );
 
   }

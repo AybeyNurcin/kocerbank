@@ -400,6 +400,165 @@ namespace kocerbank_backend.Services
 
 
         /*
+         * HESAP HAREKETİ DETAYI İÇİN
+         * TRANSFER BİLGİLERİNİ GETİR
+         *
+         * Bu metot yalnızca okuma amaçlıdır.
+         * Bakiye/kayıt değiştirmez.
+         */
+
+        public ParaTransferiDetayDTO TransferDetayiGetir(
+            long transferId
+        )
+        {
+            ParaTransferDTO? transfer =
+                _paraTransferRepository.GetirById(
+                    transferId
+                );
+
+            if (transfer is null)
+            {
+                throw new KeyNotFoundException(
+                    "Transfer kaydı bulunamadı."
+                );
+            }
+
+
+            HesapDTO? gonderenHesap =
+                _hesapRepository.GetirById(
+                    transfer.GonderenHesapId
+                );
+
+            if (gonderenHesap is null)
+            {
+                throw new KeyNotFoundException(
+                    "Gönderen hesap bulunamadı."
+                );
+            }
+
+
+            HesapDTO? aliciHesap =
+                _hesapRepository.GetirById(
+                    transfer.AliciHesapId
+                );
+
+            if (aliciHesap is null)
+            {
+                throw new KeyNotFoundException(
+                    "Alıcı hesap bulunamadı."
+                );
+            }
+
+
+            MusteriDTO? gonderenMusteri =
+                _musteriRepository.GetirById(
+                    gonderenHesap.MusteriBilgileriId
+                );
+
+            if (gonderenMusteri is null)
+            {
+                throw new KeyNotFoundException(
+                    "Gönderen hesap sahibi bulunamadı."
+                );
+            }
+
+
+            MusteriDTO? aliciMusteri =
+                _musteriRepository.GetirById(
+                    aliciHesap.MusteriBilgileriId
+                );
+
+            if (aliciMusteri is null)
+            {
+                throw new KeyNotFoundException(
+                    "Alıcı hesap sahibi bulunamadı."
+                );
+            }
+
+
+            /*
+             * KANALI TÜRET
+             *
+             * TransferKuraliniDogrula'nın simetriğidir.
+             * DB'de kanal saklanmaz; yalnızca TransferTipi
+             * (Havale/Virman) ve gönderen/alıcı döviz
+             * cinsi saklanır. İkisi de TL değilse SWIFT'ten
+             * gelmiştir.
+             */
+
+            bool ikisiDeTL =
+                transfer.GonderenDovizTipi ==
+                    DovizCinsiDurumlari.TL &&
+                transfer.AliciDovizTipi ==
+                    DovizCinsiDurumlari.TL;
+
+            TransferKanallari kanal;
+
+            if (!ikisiDeTL)
+            {
+                kanal = TransferKanallari.Swift;
+            }
+            else if (
+                transfer.TransferTipi ==
+                TransferTipleri.Virman
+            )
+            {
+                kanal = TransferKanallari.Virman;
+            }
+            else
+            {
+                kanal = TransferKanallari.HavaleEft;
+            }
+
+
+            decimal aliciTutar =
+                decimal.Round(
+                    transfer.GonderenTutar *
+                    transfer.DovizKuru,
+                    2,
+                    MidpointRounding.AwayFromZero
+                );
+
+
+            return new ParaTransferiDetayDTO
+            {
+                TransferKanali =
+                    kanal,
+
+                GonderenAdSoyad =
+                    AdSoyadGetir(gonderenMusteri),
+
+                GonderenIBAN =
+                    gonderenHesap.IBAN,
+
+                AliciAdSoyad =
+                    AdSoyadGetir(aliciMusteri),
+
+                AliciIBAN =
+                    aliciHesap.IBAN,
+
+                Tutar =
+                    transfer.GonderenTutar,
+
+                GonderenDovizCinsi =
+                    transfer.GonderenDovizTipi,
+
+                AliciDovizCinsi =
+                    transfer.AliciDovizTipi,
+
+                DovizKuru =
+                    transfer.DovizKuru,
+
+                AliciTutar =
+                    aliciTutar,
+
+                Aciklama =
+                    transfer.Aciklama
+            };
+        }
+
+
+        /*
          * IBAN'LARI DOĞRULA, HESAPLARI GETİR,
          * TRANSFER KURALINI UYGULA
          *
@@ -862,14 +1021,10 @@ namespace kocerbank_backend.Services
          * HESAP DTO → TRANSFER HESAP DTO
          */
 
-        private TransferHesapDTO TransferHesabaDonustur(
-            HesapDTO hesap,
+        private string AdSoyadGetir(
             MusteriDTO musteri
         )
         {
-            string hesapSahibi;
-
-
             if (
                 musteri.MusteriTipi ==
                     MusteriTipiDurumlari.Kurumsal &&
@@ -878,15 +1033,21 @@ namespace kocerbank_backend.Services
                 )
             )
             {
-                hesapSahibi =
-                    musteri.Unvan.Trim();
+                return musteri.Unvan.Trim();
             }
-            else
-            {
-                hesapSahibi =
-                    $"{musteri.Ad} {musteri.Soyad}"
-                        .Trim();
-            }
+
+            return $"{musteri.Ad} {musteri.Soyad}"
+                .Trim();
+        }
+
+
+        private TransferHesapDTO TransferHesabaDonustur(
+            HesapDTO hesap,
+            MusteriDTO musteri
+        )
+        {
+            string hesapSahibi =
+                AdSoyadGetir(musteri);
 
 
             return new TransferHesapDTO

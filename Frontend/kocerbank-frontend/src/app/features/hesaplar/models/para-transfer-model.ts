@@ -23,6 +23,29 @@ export interface TransferHesap
 }
 
 
+export interface ParaTransferiDetay {
+
+  transferKanali: TransferKanallari;
+
+  gonderenAdSoyad: string;
+  gonderenIBAN: string;
+
+  aliciAdSoyad: string;
+  aliciIBAN: string;
+
+  tutar: number;
+
+  gonderenDovizCinsi: DovizCinsi;
+  aliciDovizCinsi: DovizCinsi;
+
+  dovizKuru: number;
+  aliciTutar: number;
+
+  aciklama: string | null;
+
+}
+
+
 export interface ParaTransfer {
 
   /*
