@@ -312,7 +312,7 @@ WHERE EPOSTA LIKE '%@test.com';
 
 update kb_personel set sifre = 'AQAAAAIAAYagAAAAEDNIwmceaM3D2dQTaqjXbCQSxMc/kTMftZQjFjv0gaTHX6KNczZa7KI6WF6Sd8RcKw==' where sicil = 'KB0036';
 
-select * from kb_personel where sicil = 'KB0036';
+select * from kb_personel order by sicil;
 
 SELECT
     SICIL,
