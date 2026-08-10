@@ -105,6 +105,73 @@ BEGIN
 END ;
 /
 
+CREATE OR REPLACE PROCEDURE KB_PERSONEL_LISTELE
+(
+    P_ID          IN  KB_PERSONEL.ID%TYPE,
+    P_AD          IN  KB_PERSONEL.AD%TYPE,
+    P_SOYAD       IN  KB_PERSONEL.SOYAD%TYPE,
+    P_ROL         IN  KB_PERSONEL.ROL%TYPE,
+    P_TCKN        IN  KB_PERSONEL.TCKN%TYPE,
+    P_TELEFONNO   IN  KB_PERSONEL.TELEFONNO%TYPE,
+    P_SUBEKODU    IN  KB_PERSONEL.SUBESUBEKODU%TYPE,
+    P_ADRES       IN  KB_PERSONEL.ADRES%TYPE,
+    P_EPOSTA      IN  KB_PERSONEL.EPOSTA%TYPE,
+    P_DURUMKODU   IN  KB_PERSONEL.DURUMKODU%TYPE,
+
+    P_CURSOR      OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN P_CURSOR FOR
+        SELECT *
+        FROM KB_PERSONEL
+        WHERE
+                (P_ID IS NULL OR ID = P_ID)
+            AND (
+                P_AD IS NULL
+                OR UPPER(AD) LIKE
+                    '%' || UPPER(P_AD) || '%'
+            )
+            AND (
+                P_SOYAD IS NULL
+                OR UPPER(SOYAD) LIKE
+                    '%' || UPPER(P_SOYAD) || '%'
+            )
+            AND (
+                P_ROL IS NULL
+                OR ROL = P_ROL
+            )
+            AND (
+                P_TCKN IS NULL
+                OR TCKN = P_TCKN
+            )
+            AND (
+                P_TELEFONNO IS NULL
+                OR TELEFONNO = P_TELEFONNO
+            )
+            AND (
+                P_SUBEKODU IS NULL
+                OR SUBESUBEKODU = P_SUBEKODU
+            )
+            AND (
+                P_ADRES IS NULL
+                OR UPPER(ADRES) LIKE
+                    '%' || UPPER(P_ADRES) || '%'
+            )
+            AND (
+                P_EPOSTA IS NULL
+                OR UPPER(EPOSTA) = UPPER(P_EPOSTA)
+            )
+            AND (
+                P_DURUMKODU IS NULL
+                OR DURUMKODU = P_DURUMKODU
+            )
+        ORDER BY
+            KAYITOLUSTURMATARIHI DESC,
+            ID DESC;
+END KB_PERSONEL_LISTELE;
+/
+
 
 CREATE OR REPLACE PROCEDURE KB_PERSONEL_GUNCELLE(
     P_ID            IN KB_PERSONEL.ID%TYPE,

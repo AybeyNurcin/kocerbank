@@ -68,29 +68,58 @@ END KB_SUBE_GETIRBYID;
 
 
 
-CREATE OR REPLACE PROCEDURE KB_SUBE_LISTELE(
-   P_ID             IN KB_SUBE.ID%TYPE,
-   P_AD             IN KB_SUBE.SUBEADI%TYPE,
-   P_SUBEKODU       IN KB_SUBE.SUBEKODU%TYPE,
-   P_TELEFONNO      IN KB_SUBE.SUBETELEFONNO%TYPE,
-   P_ADRES          IN KB_SUBE.SUBEADRES%TYPE,
-   P_DURUMKODU      IN KB_SUBE.SUBEDURUMKODU%TYPE,
-   
-    P_SONUC         OUT SYS_REFCURSOR
+CREATE OR REPLACE PROCEDURE KB_SUBE_LISTELE
+(
+    P_ID          IN  KB_SUBE.ID%TYPE,
+    P_AD          IN  KB_SUBE.SUBEADI%TYPE,
+    P_SUBEKODU    IN  KB_SUBE.SUBEKODU%TYPE,
+    P_TELEFONNO   IN  KB_SUBE.SUBETELEFONNO%TYPE,
+    P_ADRES       IN  KB_SUBE.SUBEADRES%TYPE,
+    P_DURUMKODU   IN  KB_SUBE.SUBEDURUMKODU%TYPE,
+
+    P_SONUC       OUT SYS_REFCURSOR
 )
 AS
 BEGIN
-    OPEN P_SONUC FOR SELECT * FROM KB_SUBE
-    WHERE 
-        (P_ID IS NULL OR ID = P_ID)
-    AND (P_AD IS NULL OR UPPER(SUBEADI) LIKE '%' || UPPER(P_AD) || '%')
-    AND (P_SUBEKODU IS NULL OR SUBEKODU = P_SUBEKODU)
-    AND (P_TELEFONNO IS NULL OR SUBETELEFONNO = P_TELEFONNO)
-    AND (P_ADRES IS NULL OR UPPER(SUBEADRES) LIKE '%' || UPPER(P_ADRES) || '%')
-    AND (P_DURUMKODU IS NULL OR SUBEDURUMKODU = P_DURUMKODU);
-END;
+    OPEN P_SONUC FOR
+        SELECT
+            ID,
+            SUBEADI,
+            SUBEKODU,
+            SUBETELEFONNO,
+            SUBEADRES,
+            SUBEDURUMKODU,
+            RECORDUSER,
+            RECORDDATE,
+            KAYITOLUSTURMATARIHI
+        FROM KB_SUBE
+        WHERE
+                (P_ID IS NULL OR ID = P_ID)
+            AND (
+                P_AD IS NULL
+                OR UPPER(SUBEADI) LIKE '%' || UPPER(P_AD) || '%'
+            )
+            AND (
+                P_SUBEKODU IS NULL
+                OR SUBEKODU = P_SUBEKODU
+            )
+            AND (
+                P_TELEFONNO IS NULL
+                OR SUBETELEFONNO = P_TELEFONNO
+            )
+            AND (
+                P_ADRES IS NULL
+                OR UPPER(SUBEADRES) LIKE '%' || UPPER(P_ADRES) || '%'
+            )
+            AND (
+                P_DURUMKODU IS NULL
+                OR SUBEDURUMKODU = P_DURUMKODU
+            )
+        ORDER BY
+            KAYITOLUSTURMATARIHI DESC,
+            ID DESC;
+END KB_SUBE_LISTELE;
 /
-
 
 /*---------------------------------------------------------------------------------------------------------------*/
 

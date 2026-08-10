@@ -171,6 +171,7 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_SUBEDASHBOARD", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     KB.Parameters.Add("P_BASLANGICTARIHI", OracleDbType.Date).Value = (object?)baslangicTarihi ?? DBNull.Value;
                     KB.Parameters.Add("P_BITISTARIHI", OracleDbType.Date).Value = (object?)bitisTarihi ?? DBNull.Value;
@@ -182,9 +183,9 @@ namespace kocerbank_backend.DataAccess
                     {
                         if (reader.Read())
                         {
-                            ozet.ToplamSube = Convert.ToInt32(reader["SUBE_SAYISI"]);
-                            ozet.AktifSayi     = Convert.ToInt32(reader["AKTIFSAYI"]);
-                            ozet.PasifSayi     = Convert.ToInt32(reader["PASIFSAYI"]);
+                            ozet.ToplamSube = Convert.ToInt64(reader["SUBE_SAYISI"]);
+                            ozet.AktifSayi  = Convert.ToInt64(reader["AKTIFSAYI"]);
+                            ozet.PasifSayi  = Convert.ToInt64(reader["PASIFSAYI"]);
                         }
                     }
                 }

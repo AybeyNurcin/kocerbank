@@ -33,7 +33,7 @@ namespace kocerbank_backend.DataAccess
                     KB.Parameters.Add("P_SOYAD", OracleDbType.Varchar2).Value = dto.Soyad;
                     KB.Parameters.Add("P_ROL", OracleDbType.Varchar2).Value = dto.Rol;
                     KB.Parameters.Add("P_SIFRE", OracleDbType.Varchar2).Value = dto.Sifre;
-                    KB.Parameters.Add("P_TCKN", OracleDbType.Int32).Value = dto.TCKN;
+                    KB.Parameters.Add("P_TCKN", OracleDbType.Varchar2).Value = dto.TCKN;
                     KB.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = dto.TelefonNo;
                     KB.Parameters.Add("P_ADRES", OracleDbType.Varchar2).Value = dto.Adres;
                     KB.Parameters.Add("P_EPOSTA", OracleDbType.Varchar2).Value = dto.Email;
@@ -43,7 +43,7 @@ namespace kocerbank_backend.DataAccess
 
                     // OUT Parametreleri
                     OracleParameter pId = new OracleParameter("P_ID", OracleDbType.Int64) { Direction = ParameterDirection.Output };
-                    OracleParameter pSicil = new OracleParameter("P_SICIL", OracleDbType.Varchar2, 50) { Direction = ParameterDirection.Output };
+                    OracleParameter pSicil = new OracleParameter("P_SICIL", OracleDbType.Varchar2, 20) { Direction = ParameterDirection.Output };
                     OracleParameter pKayitOlusturmaTarihi = new OracleParameter("P_KAYITOLUSTURMATARIHI", OracleDbType.Date) { Direction = ParameterDirection.Output };
 
                     KB.Parameters.Add(pId);
@@ -73,6 +73,7 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_PERSONEL_GETIRBYID", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = id;
                     
@@ -103,6 +104,7 @@ namespace kocerbank_backend.DataAccess
                  using (OracleCommand KB = new OracleCommand("KB_PERSONEL_GETIRBYSICIL", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     KB.Parameters.Add("P_SICIL", OracleDbType.Varchar2).Value = sicil;
                     KB.Parameters.Add("P_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -132,6 +134,7 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_PERSONEL_LISTELE", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     // Arama parametrelerinde NULL olabilme ihtimaline karşı DBNull.Value kullanıyoruz
                     KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = aramaKriterleri.Id.HasValue ? (object)aramaKriterleri.Id.Value : DBNull.Value;
@@ -197,6 +200,7 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_PERSONEL_SIL", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
                     KB.Parameters.Add("P_ID", OracleDbType.Int64).Value = id;
 
                     conn.Open();
@@ -214,6 +218,7 @@ namespace kocerbank_backend.DataAccess
                 using (OracleCommand KB = new OracleCommand("KB_PERSONELDASHBOARD", conn))
                 {
                     KB.CommandType = CommandType.StoredProcedure;
+                    KB.BindByName = true;
 
                     KB.Parameters.Add("P_BASLANGICTARIHI", OracleDbType.Date).Value = (object?)baslangicTarihi ?? DBNull.Value;
                     KB.Parameters.Add("P_BITISTARIHI", OracleDbType.Date).Value = (object?)bitisTarihi ?? DBNull.Value;
@@ -225,9 +230,9 @@ namespace kocerbank_backend.DataAccess
                     {
                         if (reader.Read())
                         {
-                            ozet.ToplamPersonel = Convert.ToInt32(reader["PERSONEL_SAYISI"]);
-                            ozet.AktifSayi     = Convert.ToInt32(reader["AKTIFSAYI"]);
-                            ozet.PasifSayi     = Convert.ToInt32(reader["PASIFSAYI"]);
+                            ozet.ToplamPersonel = Convert.ToInt64(reader["PERSONEL_SAYISI"]);
+                            ozet.AktifSayi      = Convert.ToInt64(reader["AKTIFSAYI"]);
+                            ozet.PasifSayi      = Convert.ToInt64(reader["PASIFSAYI"]);
                         }
                     }
                 }
@@ -254,7 +259,8 @@ namespace kocerbank_backend.DataAccess
                 Email = reader["EPOSTA"].ToString()!,
                 SubeKodu = reader["SUBESUBEKODU"].ToString()!,
                 DurumKodu = (AktifPasifDurumlari)Convert.ToByte(reader["DURUMKODU"]),
-                RecordUser = reader["RECORDUSER"].ToString(),
+                RecordUser = reader["RECORDUSER"] == DBNull.Value ? null : reader["RECORDUSER"].ToString(),
+                RecordDate = reader["RECORDDATE"] == DBNull.Value ? null : OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"]),
                 KayitOlusturmaTarihi = OracleZamanDamgasi.UtcOlarakOku(reader["KAYITOLUSTURMATARIHI"])
             };
         }

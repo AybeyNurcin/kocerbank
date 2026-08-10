@@ -41,14 +41,8 @@ namespace kocerbank_backend.Controllers
         {
             try
             {
-                SubeDTO? sube =
+                SubeDTO sube =
                     _subeService.GetirById(id);
-
-                if (sube is null)
-                {
-                    throw new KeyNotFoundException(
-                        "Şube bulunamadı.");
-                }
 
                 return Ok(sube);
             }
@@ -63,7 +57,8 @@ namespace kocerbank_backend.Controllers
         // 3. KRİTERE GÖRE ŞUBE LİSTELEME
         [HttpPost("Listele")]
         public IActionResult Listele(
-            [FromBody] SubeAramaKriterleriDTO aramaKriterleri)
+            [FromBody]
+            SubeAramaKriterleriDTO aramaKriterleri)
         {
             try
             {
@@ -120,18 +115,27 @@ namespace kocerbank_backend.Controllers
                     + ex.Message);
             }
         }
-        
+
+        // 6. ŞUBE DASHBOARD ÖZETİ
         [HttpPost("DashboardOzet")]
-        public IActionResult GetirDashboardOzet([FromBody] DashboardFiltreDTO? filtre)
+        public IActionResult GetirDashboardOzet(
+            [FromBody] DashboardFiltreDTO? filtre)
         {
             try
             {
-                SubeDashboardDTO ozet = _subeService.GetirDashboardOzet(filtre);
+                SubeDashboardDTO ozet =
+                    _subeService.GetirDashboardOzet(
+                        filtre);
+
                 return Ok(ozet);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { mesaj = ex.Message });
+                return BadRequest(
+                    new
+                    {
+                        mesaj = ex.Message
+                    });
             }
         }
     }

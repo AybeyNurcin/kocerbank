@@ -285,12 +285,40 @@ CREATE OR REPLACE PROCEDURE KB_SUBEDASHBOARD
 AS
 BEGIN
     OPEN P_SONUC FOR
-        SELECT COUNT(*) AS SUBE_SAYISI,
-               SUM(CASE WHEN SUBEDURUMKODU = 1 THEN 1 ELSE 0 END) AS AKTIFSAYI,
-               SUM(CASE WHEN SUBEDURUMKODU = 2 THEN 1 ELSE 0 END) AS PASIFSAYI
-          FROM KB_SUBE
-         WHERE (P_BASLANGICTARIHI IS NULL OR TRUNC(KAYITOLUSTURMATARIHI) >= TRUNC(P_BASLANGICTARIHI))
-           AND (P_BITISTARIHI IS NULL OR TRUNC(KAYITOLUSTURMATARIHI) <= TRUNC(P_BITISTARIHI));
+        SELECT
+            COUNT(*) AS SUBE_SAYISI,
+
+            NVL(
+                SUM(
+                    CASE
+                        WHEN SUBEDURUMKODU = 1 THEN 1
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS AKTIFSAYI,
+
+            NVL(
+                SUM(
+                    CASE
+                        WHEN SUBEDURUMKODU = 2 THEN 1
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS PASIFSAYI
+
+        FROM KB_SUBE
+        WHERE
+            (
+                P_BASLANGICTARIHI IS NULL
+                OR KAYITOLUSTURMATARIHI >= TRUNC(P_BASLANGICTARIHI)
+            )
+            AND
+            (
+                P_BITISTARIHI IS NULL
+                OR KAYITOLUSTURMATARIHI < TRUNC(P_BITISTARIHI) + 1
+            );
 END KB_SUBEDASHBOARD;
 /
 
@@ -303,12 +331,42 @@ CREATE OR REPLACE PROCEDURE KB_PERSONELDASHBOARD
 AS
 BEGIN
     OPEN P_SONUC FOR
-        SELECT COUNT(*) AS PERSONEL_SAYISI,
-               SUM(CASE WHEN DURUMKODU = 1 THEN 1 ELSE 0 END) AS AKTIFSAYI,
-               SUM(CASE WHEN DURUMKODU = 2 THEN 1 ELSE 0 END) AS PASIFSAYI
-          FROM KB_PERSONEL
-         WHERE (P_BASLANGICTARIHI IS NULL OR TRUNC(KAYITOLUSTURMATARIHI) >= TRUNC(P_BASLANGICTARIHI))
-           AND (P_BITISTARIHI IS NULL OR TRUNC(KAYITOLUSTURMATARIHI) <= TRUNC(P_BITISTARIHI));
+        SELECT
+            COUNT(*) AS PERSONEL_SAYISI,
+
+            NVL(
+                SUM(
+                    CASE
+                        WHEN DURUMKODU = 1 THEN 1
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS AKTIFSAYI,
+
+            NVL(
+                SUM(
+                    CASE
+                        WHEN DURUMKODU = 2 THEN 1
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS PASIFSAYI
+
+        FROM KB_PERSONEL
+        WHERE
+            (
+                P_BASLANGICTARIHI IS NULL
+                OR KAYITOLUSTURMATARIHI >=
+                    TRUNC(P_BASLANGICTARIHI)
+            )
+            AND
+            (
+                P_BITISTARIHI IS NULL
+                OR KAYITOLUSTURMATARIHI <
+                    TRUNC(P_BITISTARIHI) + 1
+            );
 END KB_PERSONELDASHBOARD;
 /
 

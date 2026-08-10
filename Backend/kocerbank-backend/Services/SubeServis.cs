@@ -26,6 +26,7 @@ namespace kocerbank_backend.Services
                     "Şube bilgileri gönderilmelidir.");
             }
 
+            SubeBilgileriniDuzenle(dto);
             SubeBilgileriniKontrolEt(dto);
 
             SubeAramaKriterleriDTO aramaKriterleri =
@@ -88,6 +89,8 @@ namespace kocerbank_backend.Services
             }
 
             IdKontrolEt(dto.Id);
+
+            SubeBilgileriniDuzenle(dto);
             SubeBilgileriniKontrolEt(dto);
 
             SubeDTO? mevcutSube =
@@ -120,6 +123,8 @@ namespace kocerbank_backend.Services
                     "Girilen bilgilere sahip başka bir şube zaten bulunmaktadır.");
             }
 
+            // Frontend'den gelen RecordUser dikkate alınmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
                 _aktifPersonelServis.SicilNoGetir();
 
@@ -134,11 +139,47 @@ namespace kocerbank_backend.Services
             _subeRepository.Sil(id);
         }
 
-        public SubeDashboardDTO GetirDashboardOzet(DashboardFiltreDTO? filtre)
+        // 6. ŞUBE DASHBOARD ÖZETİ
+        public SubeDashboardDTO GetirDashboardOzet(
+            DashboardFiltreDTO? filtre)
         {
-            return _subeRepository.GetirDashboardOzet(filtre?.BaslangicTarihi, filtre?.BitisTarihi);
+            DateTime? baslangicTarihi =
+                filtre?.BaslangicTarihi;
+
+            DateTime? bitisTarihi =
+                filtre?.BitisTarihi;
+
+            if (baslangicTarihi.HasValue &&
+                bitisTarihi.HasValue &&
+                baslangicTarihi.Value.Date >
+                bitisTarihi.Value.Date)
+            {
+                throw new ArgumentException(
+                    "Başlangıç tarihi bitiş tarihinden sonra olamaz.");
+            }
+
+            return _subeRepository.GetirDashboardOzet(
+                baslangicTarihi,
+                bitisTarihi);
         }
 
+        // Şube alanlarının başındaki ve sonundaki
+        // gereksiz boşlukları temizler.
+        private static void SubeBilgileriniDuzenle(
+            SubeDTO dto)
+        {
+            dto.SubeAdi =
+                (dto.SubeAdi ?? string.Empty).Trim();
+
+            dto.SubeTelefonNo =
+                (dto.SubeTelefonNo ?? string.Empty).Trim();
+
+            dto.SubeAdres =
+                (dto.SubeAdres ?? string.Empty).Trim();
+        }
+
+        // Şube bilgilerinin iş kurallarına
+        // uygunluğunu kontrol eder.
         private static void SubeBilgileriniKontrolEt(
             SubeDTO dto)
         {
@@ -161,10 +202,11 @@ namespace kocerbank_backend.Services
                     "Şube telefon numarası boş bırakılamaz.");
             }
 
-            if (dto.SubeTelefonNo.Length != 11)
+            if (dto.SubeTelefonNo.Length != 11 ||
+                !dto.SubeTelefonNo.All(char.IsDigit))
             {
                 throw new ArgumentException(
-                    "Şube telefon numarası 11 haneli olmalıdır.");
+                    "Şube telefon numarası 11 rakamdan oluşmalıdır.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.SubeAdres))
@@ -179,14 +221,18 @@ namespace kocerbank_backend.Services
                     "Şube adresi en fazla 50 karakter olabilir.");
             }
 
-            if (dto.SubeDurumKodu ==
-                AktifPasifDurumlari.None)
+            if (!Enum.IsDefined(
+                    typeof(AktifPasifDurumlari),
+                    dto.SubeDurumKodu) ||
+                dto.SubeDurumKodu ==
+                    AktifPasifDurumlari.None)
             {
                 throw new ArgumentException(
                     "Şube durumu Aktif veya Pasif olmalıdır.");
             }
         }
 
+        // ID değerinin geçerli olup olmadığını kontrol eder.
         private static void IdKontrolEt(long id)
         {
             if (id <= 0)
