@@ -416,3 +416,21 @@ SELECT
 FROM KB_MUSTERIBILGILERI
 WHERE EPOSTA LIKE '%@test.com';
 
+select * from kb_musteribilgileri;
+
+SELECT *
+FROM KB_HESAPBILGILERI
+WHERE MUSTERIBILGILERIID IN (
+    SELECT MUSTERIBILGILERIID
+    FROM KB_HESAPBILGILERI
+    GROUP BY MUSTERIBILGILERIID
+    HAVING COUNT(DISTINCT DOVIZCINSI) > 1
+)
+ORDER BY MUSTERIBILGILERIID, DOVIZCINSI;
+
+select * from kb_musteribilgileri where id = 81;
+
+select * from kb_hesapbilgileri where musteribilgileriid = 130;
+
+select * from kb_musteribilgileri where id = 130;
+
