@@ -1,17 +1,21 @@
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 using kocerbank_backend.DataAccess;
 using kocerbank_backend.Enums;
 using kocerbank_backend.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
-using System.Text.RegularExpressions;
-
 
 namespace kocerbank_backend.Services
 {
     public class PersonelService
     {
         private readonly PersonelRepository _personelRepository;
-        private readonly PasswordHasher<PersonelDTO> _passwordHasher;
-        private readonly AktifPersonelServis _aktifPersonelServis;
+
+        private readonly PasswordHasher<PersonelDTO>
+            _passwordHasher;
+
+        private readonly AktifPersonelServis
+            _aktifPersonelServis;
 
         public PersonelService(
             PersonelRepository personelRepository,
@@ -19,108 +23,188 @@ namespace kocerbank_backend.Services
         {
             _personelRepository = personelRepository;
             _aktifPersonelServis = aktifPersonelServis;
-            _passwordHasher = new PasswordHasher<PersonelDTO>();
+
+            _passwordHasher =
+                new PasswordHasher<PersonelDTO>();
         }
 
         // 1. PERSONEL EKLEME
         public PersonelDTO Ekle(PersonelDTO dto)
         {
+            if (dto is null)
+            {
+                throw new ArgumentException(
+                    "Personel bilgileri gönderilmelidir.");
+            }
+
+            PersonelBilgileriniDuzenle(dto);
             PersonelBilgileriniKontrolEt(dto);
 
-                if (string.IsNullOrWhiteSpace(dto.Sifre))
+            if (string.IsNullOrWhiteSpace(dto.Sifre))
+            {
+                throw new ArgumentException(
+                    "Şifre boş bırakılamaz.");
+            }
+
+            if (dto.Sifre.Length < 8)
+            {
+                throw new ArgumentException(
+                    "Şifre en az 8 karakter olmalıdır.");
+            }
+
+            PersonelAramaKriterleriDTO kriter =
+                new PersonelAramaKriterleriDTO
                 {
-                    throw new ArgumentException("Şifre boş bırakılamaz.");
-                }
+                    TCKN = dto.TCKN
+                };
 
-                if (dto.Sifre.Length < 8)
-                {
-                    throw new ArgumentException("Şifre en az 8 karakter olmalıdır.");
-                }
+            bool tcknKullaniliyorMu =
+                Listele(kriter).Count > 0;
 
-                dto.Sifre = _passwordHasher.HashPassword(dto, dto.Sifre);
+            if (tcknKullaniliyorMu)
+            {
+                throw new InvalidOperationException(
+                    "Bu TC Kimlik Numarasına sahip bir personel zaten bulunmaktadır.");
+            }
 
-                // Frontend'den gelen RecordUser dikkate alınmaz.
-                // Giriş yapan personelin sicili backend tarafından atanır.
-                dto.RecordUser =
-                    _aktifPersonelServis.SicilNoGetir();
+            dto.Sifre =
+                _passwordHasher.HashPassword(
+                    dto,
+                    dto.Sifre);
 
-                return _personelRepository.Ekle(dto);
+            // Frontend'den gelen RecordUser kullanılmaz.
+            // Giriş yapan personelin sicili backend tarafından atanır.
+            dto.RecordUser =
+                _aktifPersonelServis.SicilNoGetir();
+
+            return _personelRepository.Ekle(dto);
         }
 
         // 2. ID'YE GÖRE PERSONEL GETİRME
-        public PersonelDTO? GetirById(long id)
+        public PersonelDTO GetirById(long id)
         {
             IdKontrolEt(id);
 
-                var personel = _personelRepository.GetirById(id);
+            PersonelDTO? personel =
+                _personelRepository.GetirById(id);
 
-                if (personel == null)
-                {
-                    throw new KeyNotFoundException($"Personel bulunamadı: ID = {id}");
-                }
+            if (personel is null)
+            {
+                throw new KeyNotFoundException(
+                    $"Personel bulunamadı: ID = {id}");
+            }
 
             return personel;
         }
 
-        public PersonelDTO Login(PersonelLoginDTO dto)
+        // 3. PERSONEL GİRİŞİ
+        public PersonelDTO Login(
+            PersonelLoginDTO dto)
         {
-            // Sicil boş mu?
+            if (dto is null)
+            {
+                throw new ArgumentException(
+                    "Giriş bilgileri gönderilmelidir.");
+            }
+
             if (string.IsNullOrWhiteSpace(dto.Sicil))
             {
-                throw new ArgumentException("Sicil boş bırakılamaz.");
+                throw new ArgumentException(
+                    "Sicil boş bırakılamaz.");
             }
 
-            // Şifre boş mu?
             if (string.IsNullOrWhiteSpace(dto.Sifre))
             {
-                throw new ArgumentException("Şifre boş bırakılamaz.");
+                throw new ArgumentException(
+                    "Şifre boş bırakılamaz.");
             }
 
-            // Sicile göre personeli getir
-            PersonelDTO? personel = GetirBySicil(dto.Sicil);
+            string duzenlenmisSicil =
+                dto.Sicil
+                    .Trim()
+                    .ToUpperInvariant();
 
-            if (personel == null)
+            PersonelDTO? personel =
+                GetirBySicil(duzenlenmisSicil);
+
+            if (personel is null)
             {
-                throw new UnauthorizedAccessException("Sicil veya şifre hatalı.");
+                throw new UnauthorizedAccessException(
+                    "Sicil veya şifre hatalı.");
             }
 
-            // Şifreyi doğrula
-            var sonuc = _passwordHasher.VerifyHashedPassword(
-            personel,
-            personel.Sifre,
-            dto.Sifre);
+            PasswordVerificationResult sonuc =
+                _passwordHasher.VerifyHashedPassword(
+                    personel,
+                    personel.Sifre,
+                    dto.Sifre);
 
-            if (sonuc == PasswordVerificationResult.Failed)
+            if (sonuc ==
+                PasswordVerificationResult.Failed)
             {
-                throw new UnauthorizedAccessException("Sicil veya şifre hatalı.");
+                throw new UnauthorizedAccessException(
+                    "Sicil veya şifre hatalı.");
             }
 
-        return personel;
+            if (personel.DurumKodu !=
+                AktifPasifDurumlari.Aktif)
+            {
+                throw new UnauthorizedAccessException(
+                    "Personel hesabı aktif değildir.");
+            }
+
+            return personel;
         }
 
-        private PersonelDTO? GetirBySicil(string sicil)
+        // SİCİLE GÖRE PERSONEL GETİRME
+        private PersonelDTO? GetirBySicil(
+            string sicil)
         {
             if (string.IsNullOrWhiteSpace(sicil))
             {
-                throw new ArgumentException("Sicil boş bırakılamaz.");
+                throw new ArgumentException(
+                    "Sicil boş bırakılamaz.");
             }
 
-            return _personelRepository.GetirBySicil(sicil);
+            string duzenlenmisSicil =
+                sicil
+                    .Trim()
+                    .ToUpperInvariant();
+
+            return _personelRepository.GetirBySicil(
+                duzenlenmisSicil);
         }
 
-        public List<PersonelDTO> Listele(PersonelAramaKriterleriDTO aramaKriterleri)
+        // 4. KRİTERE GÖRE PERSONEL LİSTELEME
+        public List<PersonelDTO> Listele(
+            PersonelAramaKriterleriDTO? aramaKriterleri)
         {
-            return _personelRepository.GetirListele(aramaKriterleri);
+            aramaKriterleri ??=
+                new PersonelAramaKriterleriDTO();
+
+            PersonelAramaKriterleriniDuzenle(
+                aramaKriterleri);
+
+            return _personelRepository.GetirListele(
+                aramaKriterleri);
         }
 
-        // 4. PERSONEL GÜNCELLEME
+        // 5. PERSONEL GÜNCELLEME
         public void Guncelle(PersonelDTO dto)
         {
+            if (dto is null)
+            {
+                throw new ArgumentException(
+                    "Güncellenecek personel bilgileri gönderilmelidir.");
+            }
+
             IdKontrolEt(dto.Id);
 
+            PersonelBilgileriniDuzenle(dto);
             PersonelBilgileriniKontrolEt(dto);
 
-            PersonelDTO? mevcutPersonel = _personelRepository.GetirById(dto.Id);
+            PersonelDTO? mevcutPersonel =
+                _personelRepository.GetirById(dto.Id);
 
             if (mevcutPersonel is null)
             {
@@ -128,67 +212,109 @@ namespace kocerbank_backend.Services
                     "Güncellenecek personel bulunamadı.");
             }
 
-            // Frontend'den gelen RecordUser dikkate alınmaz.
-            // Giriş yapan personelin sicili backend tarafından atanır.
+            PersonelAramaKriterleriDTO kriter =
+                new PersonelAramaKriterleriDTO
+                {
+                    TCKN = dto.TCKN
+                };
+
+            bool tcknBaskaPersoneldeVarMi =
+                Listele(kriter).Any(
+                    personel =>
+                        personel.Id != dto.Id);
+
+            if (tcknBaskaPersoneldeVarMi)
+            {
+                throw new InvalidOperationException(
+                    "Bu TC Kimlik Numarası başka bir personel tarafından kullanılmaktadır.");
+            }
+
+            // Normal personel güncellemesinde şifre değiştirilemez.
+            // Database'deki mevcut hash korunur.
+            dto.Sifre = mevcutPersonel.Sifre;
+
+            // Frontend'den gelen RecordUser kullanılmaz.
             dto.RecordUser =
                 _aktifPersonelServis.SicilNoGetir();
 
             _personelRepository.Guncelle(dto);
         }
 
-        // 4.1 PERSONEL ŞİFRE DEĞİŞTİRME
-        public void SifreDegistir(long id, PersonelSifreDegistirDTO dto)
+        // 6. PERSONEL ŞİFRE DEĞİŞTİRME
+        public void SifreDegistir(
+            long id,
+            PersonelSifreDegistirDTO dto)
         {
             IdKontrolEt(id);
 
-            if (string.IsNullOrWhiteSpace(dto.EskiSifre))
+            if (dto is null)
             {
-                throw new ArgumentException("Eski şifre boş bırakılamaz.");
+                throw new ArgumentException(
+                    "Şifre değiştirme bilgileri gönderilmelidir.");
             }
 
-            if (string.IsNullOrWhiteSpace(dto.YeniSifre))
+            if (string.IsNullOrWhiteSpace(
+                    dto.EskiSifre))
             {
-                throw new ArgumentException("Yeni şifre boş bırakılamaz.");
+                throw new ArgumentException(
+                    "Eski şifre boş bırakılamaz.");
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                    dto.YeniSifre))
+            {
+                throw new ArgumentException(
+                    "Yeni şifre boş bırakılamaz.");
             }
 
             if (dto.YeniSifre.Length < 8)
             {
-                throw new ArgumentException("Yeni şifre en az 8 karakter olmalıdır.");
+                throw new ArgumentException(
+                    "Yeni şifre en az 8 karakter olmalıdır.");
             }
 
-            PersonelDTO? mevcutPersonel = _personelRepository.GetirById(id);
+            PersonelDTO? mevcutPersonel =
+                _personelRepository.GetirById(id);
 
             if (mevcutPersonel is null)
             {
-                throw new KeyNotFoundException("Personel bulunamadı.");
+                throw new KeyNotFoundException(
+                    "Personel bulunamadı.");
             }
 
-            var sonuc = _passwordHasher.VerifyHashedPassword(
-                mevcutPersonel,
-                mevcutPersonel.Sifre,
-                dto.EskiSifre);
+            PasswordVerificationResult sonuc =
+                _passwordHasher.VerifyHashedPassword(
+                    mevcutPersonel,
+                    mevcutPersonel.Sifre,
+                    dto.EskiSifre);
 
-            if (sonuc == PasswordVerificationResult.Failed)
+            if (sonuc ==
+                PasswordVerificationResult.Failed)
             {
-                throw new UnauthorizedAccessException("Eski şifre hatalı.");
+                throw new UnauthorizedAccessException(
+                    "Eski şifre hatalı.");
             }
 
-            mevcutPersonel.Sifre = _passwordHasher.HashPassword(mevcutPersonel, dto.YeniSifre);
+            mevcutPersonel.Sifre =
+                _passwordHasher.HashPassword(
+                    mevcutPersonel,
+                    dto.YeniSifre);
 
-            // Şifre değişikliği de bir güncellemedir; işlemi yapan
-            // personelin sicili damgalanır.
+            // Şifre değişikliği de bir güncellemedir.
             mevcutPersonel.RecordUser =
                 _aktifPersonelServis.SicilNoGetir();
 
-            _personelRepository.Guncelle(mevcutPersonel);
+            _personelRepository.Guncelle(
+                mevcutPersonel);
         }
 
-        // 5. PERSONEL SİLME
+        // 7. PERSONEL SİLME
         public void Sil(long id)
         {
             IdKontrolEt(id);
 
-            PersonelDTO? mevcutPersonel =  _personelRepository.GetirById(id);
+            PersonelDTO? mevcutPersonel =
+                _personelRepository.GetirById(id);
 
             if (mevcutPersonel is null)
             {
@@ -199,10 +325,107 @@ namespace kocerbank_backend.Services
             _personelRepository.Sil(id);
         }
 
-        public PersonelDashboardDTO GetirDashboardOzet(DashboardFiltreDTO? filtre)
-    {
-        return _personelRepository.GetirDashboardOzet(filtre?.BaslangicTarihi, filtre?.BitisTarihi);
-    }
+        // 8. PERSONEL DASHBOARD ÖZETİ
+        public PersonelDashboardDTO GetirDashboardOzet(
+            DashboardFiltreDTO? filtre)
+        {
+            DateTime? baslangicTarihi =
+                filtre?.BaslangicTarihi;
+
+            DateTime? bitisTarihi =
+                filtre?.BitisTarihi;
+
+            if (baslangicTarihi.HasValue &&
+                bitisTarihi.HasValue &&
+                baslangicTarihi.Value.Date >
+                bitisTarihi.Value.Date)
+            {
+                throw new ArgumentException(
+                    "Başlangıç tarihi bitiş tarihinden sonra olamaz.");
+            }
+
+            return _personelRepository
+                .GetirDashboardOzet(
+                    baslangicTarihi,
+                    bitisTarihi);
+        }
+
+        // PERSONEL BİLGİLERİNİ DÜZENLEME
+        private static void PersonelBilgileriniDuzenle(
+            PersonelDTO dto)
+        {
+            dto.Ad =
+                (dto.Ad ?? string.Empty).Trim();
+
+            dto.Soyad =
+                (dto.Soyad ?? string.Empty).Trim();
+
+            dto.Rol =
+                (dto.Rol ?? string.Empty).Trim();
+
+            dto.TCKN =
+                (dto.TCKN ?? string.Empty).Trim();
+
+            dto.TelefonNo =
+                (dto.TelefonNo ?? string.Empty).Trim();
+
+            dto.Adres =
+                (dto.Adres ?? string.Empty).Trim();
+
+            dto.Email =
+                (dto.Email ?? string.Empty)
+                    .Trim()
+                    .ToLowerInvariant();
+
+            dto.SubeKodu =
+                (dto.SubeKodu ?? string.Empty)
+                    .Trim()
+                    .ToUpperInvariant();
+        }
+
+        // PERSONEL ARAMA KRİTERLERİNİ DÜZENLEME
+        private static void
+            PersonelAramaKriterleriniDuzenle(
+                PersonelAramaKriterleriDTO kriter)
+        {
+            kriter.Ad =
+                BosIseNull(kriter.Ad);
+
+            kriter.Soyad =
+                BosIseNull(kriter.Soyad);
+
+            kriter.Rol =
+                BosIseNull(kriter.Rol);
+
+            kriter.Sicil =
+                BosIseNull(kriter.Sicil)?
+                    .ToUpperInvariant();
+
+            kriter.TCKN =
+                BosIseNull(kriter.TCKN);
+
+            kriter.TelefonNo =
+                BosIseNull(kriter.TelefonNo);
+
+            kriter.Adres =
+                BosIseNull(kriter.Adres);
+
+            kriter.Email =
+                BosIseNull(kriter.Email)?
+                    .ToLowerInvariant();
+
+            kriter.SubeKodu =
+                BosIseNull(kriter.SubeKodu)?
+                    .ToUpperInvariant();
+        }
+
+        private static string? BosIseNull(
+            string? deger)
+        {
+            return string.IsNullOrWhiteSpace(deger)
+                ? null
+                : deger.Trim();
+        }
 
         // EKLEME VE GÜNCELLEMEDE ORTAK KONTROLLER
         private static void PersonelBilgileriniKontrolEt(
@@ -214,51 +437,105 @@ namespace kocerbank_backend.Services
                     "Personel adı boş bırakılamaz.");
             }
 
+            if (dto.Ad.Length > 50)
+            {
+                throw new ArgumentException(
+                    "Personel adı en fazla 50 karakter olabilir.");
+            }
+
             if (string.IsNullOrWhiteSpace(dto.Soyad))
             {
                 throw new ArgumentException(
                     "Personel soyadı boş bırakılamaz.");
             }
 
-            // TCKN kontrolü (Genelde 11 hane olmalıdır)
-            if (!Regex.IsMatch(dto.TCKN, @"^[0-9]{11}$"))
+            if (dto.Soyad.Length > 50)
             {
                 throw new ArgumentException(
-                    "Personel TC Kimlik No 11 haneli ve sadece rakamlardan oluşmalıdır.");
+                    "Personel soyadı en fazla 50 karakter olabilir.");
             }
 
-            if (string.IsNullOrWhiteSpace(dto.TelefonNo))
+            if (string.IsNullOrWhiteSpace(dto.Rol))
             {
                 throw new ArgumentException(
-                    "Personel telefon numarası boş bırakılamaz.");
+                    "Personel rolü boş bırakılamaz.");
             }
 
-            if (!Regex.IsMatch(dto.TelefonNo, @"^[0-9]{11}$"))
+            if (dto.Rol.Length > 20)
             {
                 throw new ArgumentException(
-                    "Personel telefon numarası 11 haneli ve sadece rakamlardan oluşmalıdır.");
+                    "Personel rolü en fazla 20 karakter olabilir.");
             }
 
-
-            if (dto.DurumKodu == AktifPasifDurumlari.None)
+            if (!Regex.IsMatch(
+                    dto.TCKN,
+                    @"^[0-9]{11}$"))
             {
                 throw new ArgumentException(
-                    "Personel durumu Aktif veya Pasif olmalıdır.");
+                    "Personel TC Kimlik No 11 haneli ve yalnızca rakamlardan oluşmalıdır.");
+            }
+
+            if (!Regex.IsMatch(
+                    dto.TelefonNo,
+                    @"^[0-9]{11}$"))
+            {
+                throw new ArgumentException(
+                    "Personel telefon numarası 11 haneli ve yalnızca rakamlardan oluşmalıdır.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Adres))
+            {
+                throw new ArgumentException(
+                    "Personel adresi boş bırakılamaz.");
+            }
+
+            if (dto.Adres.Length > 50)
+            {
+                throw new ArgumentException(
+                    "Personel adresi en fazla 50 karakter olabilir.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                throw new ArgumentException(
+                    "Personel e-posta adresi boş bırakılamaz.");
+            }
+
+            if (dto.Email.Length > 50)
+            {
+                throw new ArgumentException(
+                    "Personel e-posta adresi en fazla 50 karakter olabilir.");
+            }
+
+            if (!MailAddress.TryCreate(
+                    dto.Email,
+                    out _))
+            {
+                throw new ArgumentException(
+                    "Geçerli bir e-posta adresi girilmelidir.");
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                    dto.SubeKodu))
+            {
+                throw new ArgumentException(
+                    "Personelin bağlı olduğu şube seçilmelidir.");
+            }
+
+            if (dto.SubeKodu.Length > 20)
+            {
+                throw new ArgumentException(
+                    "Şube kodu en fazla 20 karakter olabilir.");
             }
 
             if (!Enum.IsDefined(
                     typeof(AktifPasifDurumlari),
-                    dto.DurumKodu))
+                    dto.DurumKodu) ||
+                dto.DurumKodu ==
+                    AktifPasifDurumlari.None)
             {
                 throw new ArgumentException(
-                    "Geçersiz personel durum kodu gönderildi.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(dto.RecordUser) &&
-                dto.RecordUser.Length > 10)
-            {
-                throw new ArgumentException(
-                    "RecordUser en fazla 10 karakter olabilir.");
+                    "Personel durumu Aktif veya Pasif olmalıdır.");
             }
         }
 
@@ -273,5 +550,3 @@ namespace kocerbank_backend.Services
         }
     }
 }
-
-

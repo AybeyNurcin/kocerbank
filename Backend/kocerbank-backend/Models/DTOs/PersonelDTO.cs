@@ -17,6 +17,23 @@ namespace kocerbank_backend.Models.DTOs
         public AktifPasifDurumlari DurumKodu { get; set; }
         public DateTime KayitOlusturmaTarihi { get; set; }
     }
+
+    // Frontend'e dönen DTO; şifre içermez.
+    public class PersonelSonucDTO : BaseDTO
+    {
+        public string Ad { get; set; } = string.Empty;
+        public string Soyad { get; set; } = string.Empty;
+        public string Rol { get; set; } = string.Empty;
+        public string Sicil { get; set; } = string.Empty;
+        public string TCKN { get; set; } = string.Empty;
+        public string Adres { get; set; } = string.Empty;
+        public string SubeKodu { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string TelefonNo { get; set; } = string.Empty;
+        public AktifPasifDurumlari DurumKodu { get; set; }
+        public DateTime KayitOlusturmaTarihi { get; set; }
+    }
+
     public class PersonelAramaKriterleriDTO
     {
         public long? Id { get; set; }
@@ -37,5 +54,29 @@ namespace kocerbank_backend.Models.DTOs
         public long ToplamPersonel { get; set; }
         public long AktifSayi { get; set; }
         public long PasifSayi { get; set; }
+    }
+
+    public static class PersonelDTODonusumleri
+    {
+        public static PersonelSonucDTO SonucaDonustur(this PersonelDTO dto)
+        {
+            return new PersonelSonucDTO
+            {
+                Id = dto.Id,
+                Ad = dto.Ad,
+                Soyad = dto.Soyad,
+                Rol = dto.Rol,
+                Sicil = dto.Sicil,
+                TCKN = dto.TCKN,
+                Adres = dto.Adres,
+                SubeKodu = dto.SubeKodu,
+                Email = dto.Email,
+                TelefonNo = dto.TelefonNo,
+                DurumKodu = dto.DurumKodu,
+                RecordUser = dto.RecordUser,
+                RecordDate = dto.RecordDate,
+                KayitOlusturmaTarihi = dto.KayitOlusturmaTarihi
+            };
+        }
     }
 }
