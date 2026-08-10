@@ -310,4 +310,20 @@ SELECT
 FROM KB_PERSONEL
 WHERE EPOSTA LIKE '%@test.com';
 
-select * from kb_personel;
+update kb_personel set sifre = 'AQAAAAIAAYagAAAAEDNIwmceaM3D2dQTaqjXbCQSxMc/kTMftZQjFjv0gaTHX6KNczZa7KI6WF6Sd8RcKw==' where sicil = 'KB0036';
+
+select * from kb_personel where sicil = 'KB0036';
+
+SELECT
+    SICIL,
+    '[' || SIFRE || ']' AS SIFRE,
+    LENGTH(SIFRE) AS UZUNLUK,
+    DURUMKODU
+FROM KB_PERSONEL
+WHERE SICIL = 'KB0036';
+
+UPDATE KB_PERSONEL
+SET SIFRE =
+    'AQAAAAIAAYagAAAAEDNIwmceaM3D2dQTaqjXbCQSxMc/kTMftZQjFjv0gaTHX6KNczZa7KI6WF6Sd8RcKw==';
+
+COMMIT;
