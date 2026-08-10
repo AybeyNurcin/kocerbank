@@ -1,4 +1,3 @@
-
 using kocerbank_backend.Models.DTOs;
 using kocerbank_backend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,41 +16,23 @@ namespace kocerbank_backend.Controllers
         }
 
         // 1. PERSONEL EKLEME
-        // POST /api/Personel
         [HttpPost("Ekle")]
-            public IActionResult Ekle([FromBody] PersonelDTO dto)
-            {
-                try
-                {
-                    PersonelDTO eklenenPersonel = _personelService.Ekle(dto);
-
-                    return CreatedAtAction(nameof(GetirById), new { id = eklenenPersonel.Id }, eklenenPersonel);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(new{mesaj = ex.Message});
-                }
-            }
-
-        [HttpGet("GetirById/{id:long}")]
-        public IActionResult GetirById(long id)
+        public IActionResult Ekle([FromBody] PersonelDTO dto)
         {
             try
             {
-                PersonelDTO? personel =
-                    _personelService.GetirById(id);
+                PersonelDTO eklenenPersonel =
+                    _personelService.Ekle(dto);
 
-                if (personel is null)
-                {
-                    return NotFound(new
-                    {
-                        mesaj = "Personel bulunamadı."
-                    });
-                }
+                PersonelSonucDTO sonuc =
+                    eklenenPersonel.SonucaDonustur();
 
-                return Ok(personel);
+                return CreatedAtAction(
+                    nameof(GetirById),
+                    new { id = sonuc.Id },
+                    sonuc);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(new
                 {
@@ -60,14 +41,39 @@ namespace kocerbank_backend.Controllers
             }
         }
 
-        [HttpPost("Login")]
-        public IActionResult Login([FromBody] PersonelLoginDTO dto)
+        // 2. ID'YE GÖRE PERSONEL GETİRME
+        [HttpGet("GetirById/{id:long}")]
+        public IActionResult GetirById(long id)
         {
             try
             {
-                PersonelDTO personel = _personelService.Login(dto);
+                PersonelDTO personel =
+                    _personelService.GetirById(id);
 
-                return Ok(personel);
+                return Ok(
+                    personel.SonucaDonustur());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
+            }
+        }
+
+        // 3. PERSONEL GİRİŞİ
+        [HttpPost("Login")]
+        public IActionResult Login(
+            [FromBody] PersonelLoginDTO dto)
+        {
+            try
+            {
+                PersonelDTO personel =
+                    _personelService.Login(dto);
+
+                return Ok(
+                    personel.SonucaDonustur());
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -76,7 +82,7 @@ namespace kocerbank_backend.Controllers
                     mesaj = ex.Message
                 });
             }
-                catch (Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new
                 {
@@ -85,16 +91,33 @@ namespace kocerbank_backend.Controllers
             }
         }
 
-        [HttpPost("listele")]
+        // 4. KRİTERE GÖRE PERSONEL LİSTELEME
+        [HttpPost("Listele")]
         public IActionResult Listele(
-            [FromBody] PersonelAramaKriterleriDTO aramaKriterleri)
+            [FromBody]
+            PersonelAramaKriterleriDTO? aramaKriterleri)
         {
-            List<PersonelDTO> personeller =
-                _personelService.Listele(aramaKriterleri);
+            try
+            {
+                List<PersonelSonucDTO> personeller =
+                    _personelService
+                        .Listele(aramaKriterleri)
+                        .Select(personel =>
+                            personel.SonucaDonustur())
+                        .ToList();
 
-            return Ok(personeller);
+                return Ok(personeller);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
+            }
         }
 
+        // 5. PERSONEL GÜNCELLEME
         [HttpPut("Güncelle/{id:long}")]
         public IActionResult Guncelle(
             long id,
@@ -110,11 +133,14 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new{mesaj = ex.Message});
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
 
-
+        // 6. PERSONEL ŞİFRE DEĞİŞTİRME
         [HttpPut("SifreDegistir/{id:long}")]
         public IActionResult SifreDegistir(
             long id,
@@ -122,21 +148,29 @@ namespace kocerbank_backend.Controllers
         {
             try
             {
-                _personelService.SifreDegistir(id, dto);
+                _personelService.SifreDegistir(
+                    id,
+                    dto);
 
                 return NoContent();
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(new { mesaj = ex.Message });
+                return Unauthorized(new
+                {
+                    mesaj = ex.Message
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new{mesaj = ex.Message});
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
 
-
+        // 7. PERSONEL SİLME
         [HttpDelete("Sil/{id:long}")]
         public IActionResult Sil(long id)
         {
@@ -148,21 +182,32 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new{mesaj = ex.Message});
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
 
+        // 8. PERSONEL DASHBOARD ÖZETİ
         [HttpPost("DashboardOzet")]
-        public IActionResult GetirDashboardOzet([FromBody] DashboardFiltreDTO? filtre)
+        public IActionResult GetirDashboardOzet(
+            [FromBody] DashboardFiltreDTO? filtre)
         {
             try
             {
-                PersonelDashboardDTO ozet = _personelService.GetirDashboardOzet(filtre);
+                PersonelDashboardDTO ozet =
+                    _personelService
+                        .GetirDashboardOzet(filtre);
+
                 return Ok(ozet);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { mesaj = ex.Message });
+                return BadRequest(new
+                {
+                    mesaj = ex.Message
+                });
             }
         }
     }
