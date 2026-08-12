@@ -728,11 +728,326 @@ END KB_EFT_TRANSFERI_YAP;
 /
 
 
+/*
+    KB_SWIFT_EFT_TRANSFERI_YAP
+
+    SWIFT ekranında alıcı IBAN'ı bizim bankamızda
+    kayıtlı değilse kullanılır. KB_EFT_TRANSFERI_YAP'tan
+    farkı:
+      - Gönderen hesabın TL olması şart değildir
+        (SWIFT her döviz cinsinden gönderime izin verir).
+      - Alıcının döviz cinsi bizim tarafımızdan
+        bilinemediği için ekranda kullanıcı tarafından
+        seçilir (P_ALICIDOVIZTIPI) ve kur buna göre
+        dışarıdan hesaplanıp gönderilir (P_DOVIZKURU).
+      - Kur her zaman 1 olmadığından alıcı tutarı da
+        OUT parametre olarak döner.
+*/
+
+CREATE OR REPLACE PROCEDURE KB_SWIFT_EFT_TRANSFERI_YAP
+(
+    P_GONDERENHESAPID       IN  KB_HESAPBILGILERI.ID%TYPE,
+    P_ALICIIBAN             IN  KB_PARATRANSFERI.ALICIIBAN%TYPE,
+    P_ALICIADSOYAD          IN  KB_PARATRANSFERI.ALICIADSOYAD%TYPE,
+    P_ALICIDOVIZTIPI        IN  KB_PARATRANSFERI.ALICIDOVIZTIPI%TYPE,
+    P_GONDERENTUTAR         IN  KB_PARATRANSFERI.GONDERENTUTAR%TYPE,
+    P_DOVIZKURU             IN  KB_PARATRANSFERI.DOVIZKURU%TYPE,
+    P_ACIKLAMA              IN  KB_PARATRANSFERI.ACIKLAMA%TYPE,
+    P_RECORDUSER            IN  KB_PARATRANSFERI.RECORDUSER%TYPE,
+
+    P_TRANSFERID            OUT KB_PARATRANSFERI.ID%TYPE,
+    P_GONDERENHAREKETID     OUT KB_HESAPHAREKETI.ID%TYPE,
+    P_GONDERENYENIBAKIYE    OUT KB_HESAPBILGILERI.BAKIYE%TYPE,
+    P_ALICITUTAR            OUT KB_HESAPHAREKETI.TUTAR%TYPE
+)
+AS
+    /* Gönderen hesap bilgileri */
+
+    V_GONDERENONCEKIBAKIYE
+        KB_HESAPBILGILERI.BAKIYE%TYPE;
+
+    V_GONDERENDOVIZTIPI
+        KB_HESAPBILGILERI.DOVIZCINSI%TYPE;
+
+    V_GONDERENDURUMKODU
+        KB_HESAPBILGILERI.HESAPDURUMKODU%TYPE;
+
+    V_GONDERENYENIBAKIYE
+        KB_HESAPBILGILERI.BAKIYE%TYPE;
+
+    V_ALICITUTAR
+        KB_HESAPHAREKETI.TUTAR%TYPE;
+
+    V_RECORDUSER KB_PARATRANSFERI.RECORDUSER%TYPE;
+    V_RECORDDATE KB_PARATRANSFERI.RECORDDATE%TYPE;
+
+BEGIN
+
+    KB_AUDIT_BILGI_HAZIRLA
+    (
+        P_RECORDUSER       => P_RECORDUSER,
+        P_DUZENLENMIS_USER => V_RECORDUSER,
+        P_RECORDDATE       => V_RECORDDATE
+    );
+
+    /* 1. TEMEL PARAMETRE KONTROLLERİ */
+
+    IF P_GONDERENHESAPID IS NULL
+       OR P_GONDERENHESAPID <= 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20301,
+            'Geçersiz gönderen hesap ID.'
+        );
+
+    END IF;
+
+
+    IF P_ALICIIBAN IS NULL
+       OR LENGTH(TRIM(P_ALICIIBAN)) = 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20302,
+            'Alıcı IBAN girilmesi zorunludur.'
+        );
+
+    END IF;
+
+
+    IF P_ALICIDOVIZTIPI IS NULL
+       OR P_ALICIDOVIZTIPI NOT IN (1, 2, 3) THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20303,
+            'Alıcı döviz cinsi geçersiz.'
+        );
+
+    END IF;
+
+
+    IF P_GONDERENTUTAR IS NULL
+       OR P_GONDERENTUTAR <= 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20304,
+            'Gönderen tutar sıfırdan büyük olmalıdır.'
+        );
+
+    END IF;
+
+
+    IF P_DOVIZKURU IS NULL
+       OR P_DOVIZKURU <= 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20305,
+            'Döviz kuru sıfırdan büyük olmalıdır.'
+        );
+
+    END IF;
+
+
+    IF P_ACIKLAMA IS NOT NULL
+       AND LENGTH(TRIM(P_ACIKLAMA)) > 100 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20306,
+            'Açıklama en fazla 100 karakter olabilir.'
+        );
+
+    END IF;
+
+
+    /* 2. GÖNDEREN HESABI KİLİTLEYEREK GETİR */
+
+    BEGIN
+
+        SELECT
+            BAKIYE,
+            DOVIZCINSI,
+            HESAPDURUMKODU
+        INTO
+            V_GONDERENONCEKIBAKIYE,
+            V_GONDERENDOVIZTIPI,
+            V_GONDERENDURUMKODU
+        FROM KB_HESAPBILGILERI
+        WHERE ID = P_GONDERENHESAPID
+        FOR UPDATE;
+
+    EXCEPTION
+
+        WHEN NO_DATA_FOUND THEN
+
+            RAISE_APPLICATION_ERROR(
+                -20307,
+                'Gönderen hesap bulunamadı.'
+            );
+
+    END;
+
+
+    /* 3. GÖNDEREN HESAP DURUM KONTROLÜ */
+
+    IF V_GONDERENDURUMKODU <> 1 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20308,
+            'Gönderen hesap aktif değildir.'
+        );
+
+    END IF;
+
+
+    /* 4. BAKİYE KONTROLÜ */
+
+    IF V_GONDERENONCEKIBAKIYE < P_GONDERENTUTAR THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20309,
+            'Gönderen hesap bakiyesi yetersizdir.'
+        );
+
+    END IF;
+
+
+    /* 5. DÖVİZ KURU VE ALICI TUTARI */
+
+    IF V_GONDERENDOVIZTIPI = P_ALICIDOVIZTIPI THEN
+
+        IF P_DOVIZKURU <> 1 THEN
+
+            RAISE_APPLICATION_ERROR(
+                -20310,
+                'Aynı döviz cinsleri arasındaki kur 1 olmalıdır.'
+            );
+
+        END IF;
+
+        V_ALICITUTAR := P_GONDERENTUTAR;
+
+    ELSE
+
+        V_ALICITUTAR :=
+            ROUND(
+                P_GONDERENTUTAR * P_DOVIZKURU,
+                2
+            );
+
+    END IF;
+
+
+    IF V_ALICITUTAR <= 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20311,
+            'Kur dönüşümü sonucunda alıcı tutarı sıfırdan büyük olmalıdır.'
+        );
+
+    END IF;
+
+
+    /* 6. YENİ BAKİYEYİ HESAPLA VE GÜNCELLE */
+
+    V_GONDERENYENIBAKIYE :=
+        V_GONDERENONCEKIBAKIYE
+        - P_GONDERENTUTAR;
+
+
+    UPDATE KB_HESAPBILGILERI
+    SET
+        BAKIYE = V_GONDERENYENIBAKIYE
+    WHERE ID = P_GONDERENHESAPID;
+
+
+    /* 7. PARA TRANSFERİ KAYDINI OLUŞTUR */
+
+    INSERT INTO KB_PARATRANSFERI
+    (
+        GONDERENHESAPID,
+        ALICIHESAPID,
+        ALICIIBAN,
+        ALICIADSOYAD,
+        TRANSFERTIPI,
+        GONDERENTUTAR,
+        GONDERENDOVIZTIPI,
+        ALICIDOVIZTIPI,
+        DOVIZKURU,
+        ACIKLAMA,
+        TARIHSAAT,
+        RECORDUSER,
+        RECORDDATE
+    )
+    VALUES
+    (
+        P_GONDERENHESAPID,
+        NULL,
+        UPPER(TRIM(P_ALICIIBAN)),
+        NULLIF(TRIM(P_ALICIADSOYAD), ''),
+        4,
+        P_GONDERENTUTAR,
+        V_GONDERENDOVIZTIPI,
+        P_ALICIDOVIZTIPI,
+        P_DOVIZKURU,
+        NULLIF(TRIM(P_ACIKLAMA), ''),
+        V_RECORDDATE,
+        V_RECORDUSER,
+        V_RECORDDATE
+    )
+    RETURNING ID INTO P_TRANSFERID;
+
+
+    /* 8. GÖNDEREN HESAP HAREKETİ */
+
+    INSERT INTO KB_HESAPHAREKETI
+    (
+        HESAPBILGILERIID,
+        PARATRANSFERIID,
+        HAREKETTIPI,
+        TUTAR,
+        DOVIZCINSI,
+        ONCEKIBAKIYE,
+        SONRAKIBAKIYE,
+        ISLEMTARIHI,
+        RECORDUSER,
+        RECORDDATE
+    )
+    VALUES
+    (
+        P_GONDERENHESAPID,
+        P_TRANSFERID,
+        4,
+        P_GONDERENTUTAR,
+        V_GONDERENDOVIZTIPI,
+        V_GONDERENONCEKIBAKIYE,
+        V_GONDERENYENIBAKIYE,
+        V_RECORDDATE,
+        V_RECORDUSER,
+        V_RECORDDATE
+    )
+    RETURNING ID INTO P_GONDERENHAREKETID;
+
+
+    /* 9. SONUÇLARI DIŞARI AKTAR */
+
+    P_GONDERENYENIBAKIYE :=
+        V_GONDERENYENIBAKIYE;
+
+    P_ALICITUTAR :=
+        V_ALICITUTAR;
+
+END KB_SWIFT_EFT_TRANSFERI_YAP;
+/
+
+
 SELECT
     OBJECT_NAME,
     STATUS
 FROM USER_OBJECTS
-WHERE OBJECT_NAME IN ('KB_PARA_TRANSFERI_YAP', 'KB_EFT_TRANSFERI_YAP');
+WHERE OBJECT_NAME IN (
+    'KB_PARA_TRANSFERI_YAP',
+    'KB_EFT_TRANSFERI_YAP',
+    'KB_SWIFT_EFT_TRANSFERI_YAP'
+);
 
 SELECT
     H.ID,

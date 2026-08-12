@@ -692,6 +692,35 @@
   flex-shrink: 0;
 }
 
+.iban-value-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copy-icon-button {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid #e0e0e3;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  color: #85858c;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+  .copy-icon-button:hover {
+    border-color: #d2a900;
+    background-color: #fff9de;
+    color: #d2a900;
+  }
+
 .detail-information-list {
   margin-bottom: 17px;
   display: grid;
@@ -1097,7 +1126,8 @@
 
 .operation-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-content: center;
   gap: 13px;
 }
 
@@ -1143,6 +1173,11 @@
   font-weight: 700;
 }
 
+  .operation-icon-text {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+
 .operation-card > div {
   min-width: 0;
   display: flex;
@@ -1181,6 +1216,10 @@
 
   .accounts-workspace {
     grid-template-columns: 1fr;
+  }
+
+  .operation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

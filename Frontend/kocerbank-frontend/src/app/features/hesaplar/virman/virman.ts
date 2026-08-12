@@ -1,7 +1,12 @@
 import {
   ChangeDetectorRef,
-  Component
+  Component,
+  OnInit
 } from '@angular/core';
+
+import {
+  ActivatedRoute
+} from '@angular/router';
 
 import {
   MusteriApi
@@ -62,7 +67,8 @@ type EkranTipi =
   templateUrl: './virman.html',
   styleUrl: './virman.css'
 })
-export class VirmanComponent {
+export class VirmanComponent
+  implements OnInit {
 
   ekran: EkranTipi = 'form';
 
@@ -103,12 +109,50 @@ export class VirmanComponent {
   sonuc: ParaTransfer | null = null;
 
 
+  /*
+   * Hesap sayfasından bir hesap seçili şekilde
+   * gelindiyse, müşteri arandıktan sonra bu IBAN'a
+   * sahip hesap otomatik olarak gönderen seçilir.
+   */
+  private otomatikSeciliGonderenIban:
+    string | null = null;
+
+
   constructor(
     private musteriApi: MusteriApi,
     private hesapApi: HesapApi,
     private paraTransferApi: ParaTransferApi,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {
+  }
+
+
+  /*
+   * HESAP SAYFASINDAN GELİNDİYSE MÜŞTERİYİ
+   * VE HESABI OTOMATİK SEÇ
+   */
+
+  ngOnInit(): void {
+
+    const tcParametresi =
+      this.route.snapshot
+        .queryParamMap
+        .get('tc');
+
+    if (!tcParametresi) {
+      return;
+    }
+
+    this.otomatikSeciliGonderenIban =
+      this.route.snapshot
+        .queryParamMap
+        .get('gonderenIban');
+
+    this.tcDegisti(tcParametresi);
+
+    this.ara();
+
   }
 
 
@@ -198,6 +242,23 @@ export class VirmanComponent {
         if (this.hesaplar.length < 2) {
           this.aramaHataMesaji =
             'Bu müşterinin virman yapılabilecek en az iki aktif TL hesabı bulunmuyor.';
+        }
+
+        if (this.otomatikSeciliGonderenIban) {
+
+          const otomatikHesap =
+            this.hesaplar.find(
+              (hesap) =>
+                hesap.iban ===
+                this.otomatikSeciliGonderenIban
+            );
+
+          if (otomatikHesap) {
+            this.gonderenHesapSec(otomatikHesap);
+          }
+
+          this.otomatikSeciliGonderenIban = null;
+
         }
 
         this.cdr.detectChanges();

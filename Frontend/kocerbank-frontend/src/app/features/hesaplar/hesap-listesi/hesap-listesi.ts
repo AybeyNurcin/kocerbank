@@ -57,6 +57,14 @@ import {
   TransferKanallari
 } from '../../../shared/enums/transfer-kanallari-enum';
 
+import {
+  MusteriApi
+} from '../../musteriler/services/musteri-api';
+
+import {
+  Musteri
+} from '../../musteriler/models/musteri-model';
+
 
 interface HesapTipiSecenegi {
   tip: HesapTipi;
@@ -80,6 +88,13 @@ export class HesapListesi
 
   musteriId: number = 0;
 
+  /*
+   * Para transferi ekranlarına geçerken müşteri
+   * bilgilerini (TCKN vb.) otomatik doldurmak için
+   * tutulur.
+   */
+  musteri: Musteri | null = null;
+
   hesaplar: Hesap[] = [];
 
   seciliHesapTipi: HesapTipi =
@@ -88,6 +103,8 @@ export class HesapListesi
   seciliHesap: Hesap | null = null;
 
   detayAcikMi: boolean = false;
+
+  ibanKopyalandiMi: boolean = false;
 
   yukleniyorMu: boolean = false;
   hataMesaji: string = '';
@@ -159,6 +176,7 @@ export class HesapListesi
     private hesapApi: HesapApi,
     private hesapHareketiApi: HesapHareketiApi,
     private paraTransferApi: ParaTransferApi,
+    private musteriApi: MusteriApi,
     private changeDetector: ChangeDetectorRef
   ) {
   }
@@ -186,6 +204,33 @@ export class HesapListesi
     }
 
     this.hesaplariGetir();
+    this.musteriyiGetir();
+  }
+
+
+  private musteriyiGetir(): void {
+
+    this.musteriApi
+      .getirById(this.musteriId)
+      .subscribe({
+
+        next: (musteri: Musteri) => {
+
+          this.musteri = musteri;
+
+          this.changeDetector
+            .markForCheck();
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Müşteri bilgisi getirme hatası:',
+            hata
+          );
+        }
+
+      });
   }
 
 
@@ -475,6 +520,25 @@ export class HesapListesi
 
     this.detayAcikMi =
       !this.detayAcikMi;
+  }
+
+
+  ibanKopyala(): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(this.seciliHesap.iban)
+      .then(() => {
+
+        this.ibanKopyalandiMi = true;
+
+        setTimeout(() => {
+          this.ibanKopyalandiMi = false;
+        }, 2000);
+      });
   }
 
 
@@ -1064,6 +1128,74 @@ export class HesapListesi
           iban:
             this.seciliHesap.iban
         }
+      }
+    );
+  }
+
+
+  havaleEftEkraninaGit(): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    this.router.navigate(
+      [
+        '/havale-eft'
+      ],
+      {
+        queryParams: {
+          gonderenIban:
+            this.seciliHesap.iban
+        }
+      }
+    );
+  }
+
+
+  swiftEkraninaGit(): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    this.router.navigate(
+      [
+        '/swift'
+      ],
+      {
+        queryParams: {
+          gonderenIban:
+            this.seciliHesap.iban
+        }
+      }
+    );
+  }
+
+
+  virmanEkraninaGit(): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    const queryParams:
+      Record<string, string> = {
+      gonderenIban:
+        this.seciliHesap.iban
+    };
+
+    if (this.musteri?.tckn) {
+      queryParams['tc'] =
+        this.musteri.tckn;
+    }
+
+    this.router.navigate(
+      [
+        '/virman'
+      ],
+      {
+        queryParams
       }
     );
   }

@@ -165,6 +165,41 @@
 }
 
 
+/* IBAN + DÖVİZ CİNSİ SEÇİMİ */
+
+.iban-input-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+  .iban-input-row input {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+.doviz-select {
+  flex: 0 0 auto;
+  width: 86px;
+  height: 51px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  color: #292934;
+  background-color: #ffffff;
+  border: 1px solid #cfcfd5;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+  .doviz-select:focus {
+    border-color: #e1b400;
+    box-shadow: 0 0 0 2px rgba(225, 180, 0, 0.12);
+  }
+
+
 /* TUTAR */
 
 .amount-section {
