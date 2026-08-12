@@ -11,6 +11,8 @@ import { Personel } from '../models/personel-model';
 import { PersonelFiltre } from '../models/personel-filtre-model';
 import { PersonelDashboard } from '../models/personel-dashboard-model';
 import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
+import { environment } from '../../../../environments/environment';
+import { dashboardOzetGetir } from '../../../shared/utils/dashboard-api';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,7 @@ import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
 export class PersonelApi {
 
   private readonly apiUrl =
-    'http://localhost:5107/api/Personel';
+    `${environment.apiBaseUrl}/Personel`;
 
   constructor(private http: HttpClient) {
   }
@@ -35,8 +37,9 @@ export class PersonelApi {
 
   getirById(id: number): Observable<Personel> {
 
-    return this.http.get<Personel>(
-      `${this.apiUrl}/GetirById/${id}`
+    return this.http.post<Personel>(
+      `${this.apiUrl}/GetirById/${id}`,
+      null
     );
   }
 
@@ -76,17 +79,14 @@ export class PersonelApi {
   ): Observable<void> {
 
     return this.http.put<void>(
-      `${this.apiUrl}/Güncelle/${id}`,
+      `${this.apiUrl}/Guncelle/${id}`,
       personel
     );
   }
 
   dashboardOzet(filtre?: DashboardFiltre): Observable<PersonelDashboard> {
 
-    return this.http.post<PersonelDashboard>(
-      `${this.apiUrl}/DashboardOzet`,
-      filtre ?? null
-    );
+    return dashboardOzetGetir(this.http, this.apiUrl, filtre);
   }
 
   sifreDegistir(

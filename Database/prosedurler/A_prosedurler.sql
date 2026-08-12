@@ -180,7 +180,13 @@ BEGIN
 END KB_MUSTERIILETISIM_GETIRBYMID;
 /
 
-CREATE OR REPLACE PROCEDURE KB_MUSTERIILETISIM_GUNCELLE
+/*
+ * NOT: Bu prosedür backend'de hiçbir yerden çağrılmıyor.
+ * Müşteri iletişim güncellemesi KB_MUSTERI_ILETISIM_TAM_GUNCELLE
+ * (M_prosedurler.sql) üzerinden yapılıyor (bkz. EMusteriIletisim.cs
+ * Guncelle metodu). Silme yerine ESKI_ önekiyle işaretlenmiştir.
+ */
+CREATE OR REPLACE PROCEDURE ESKI_KB_MUSTERIILETISIM_GUNCELLE
 (
     P_MUSTERIBILGILERIID IN KB_MUSTERIILETISIM.MUSTERIBILGILERIID%TYPE,
     P_RECORDUSER         IN KB_MUSTERIILETISIM.RECORDUSER%TYPE,
@@ -216,7 +222,7 @@ BEGIN
     IF SQL%ROWCOUNT = 0 THEN
         RAISE_APPLICATION_ERROR(-20513, 'Güncellenecek müşteri iletişim kaydı bulunamadı.');
     END IF;
-END KB_MUSTERIILETISIM_GUNCELLE;
+END ESKI_KB_MUSTERIILETISIM_GUNCELLE;
 /
 
 CREATE OR REPLACE PROCEDURE KB_MUSTERIILETISIM_EKLE
@@ -312,12 +318,12 @@ BEGIN
         WHERE
             (
                 P_BASLANGICTARIHI IS NULL
-                OR KAYITOLUSTURMATARIHI >= TRUNC(P_BASLANGICTARIHI)
+                OR TRUNC(KAYITOLUSTURMATARIHI) >= TRUNC(P_BASLANGICTARIHI)
             )
             AND
             (
                 P_BITISTARIHI IS NULL
-                OR KAYITOLUSTURMATARIHI < TRUNC(P_BITISTARIHI) + 1
+                OR TRUNC(KAYITOLUSTURMATARIHI) <= TRUNC(P_BITISTARIHI)
             );
 END KB_SUBEDASHBOARD;
 /
@@ -358,14 +364,14 @@ BEGIN
         WHERE
             (
                 P_BASLANGICTARIHI IS NULL
-                OR KAYITOLUSTURMATARIHI >=
+                OR TRUNC(KAYITOLUSTURMATARIHI) >=
                     TRUNC(P_BASLANGICTARIHI)
             )
             AND
             (
                 P_BITISTARIHI IS NULL
-                OR KAYITOLUSTURMATARIHI <
-                    TRUNC(P_BITISTARIHI) + 1
+                OR TRUNC(KAYITOLUSTURMATARIHI) <=
+                    TRUNC(P_BITISTARIHI)
             );
 END KB_PERSONELDASHBOARD;
 /

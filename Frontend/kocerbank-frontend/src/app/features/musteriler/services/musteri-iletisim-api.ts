@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 
 import { MusteriIletisim } from '../models/musteri-iletisim-model';
 import { MusteriIletisimGuncelle } from '../models/musteri-iletisim-guncelle-model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MusteriIletisimApi {
 
-  private readonly apiUrl = 'http://localhost:5107/api/MusteriIletisim';
+  private readonly apiUrl = `${environment.apiBaseUrl}/MusteriIletisim`;
 
   constructor(private http: HttpClient) {
   }

@@ -102,66 +102,15 @@
         <!-- ŞUBE -->
         <div class="form-field branch-field">
 
-          <label for="guncellemeSube">
+          <label>
             Şube
             <span>*</span>
           </label>
 
-          <div class="branch-autocomplete">
-
-            <input id="guncellemeSube"
-                   name="guncellemeSube"
-                   type="text"
-                   autocomplete="off"
-                   [(ngModel)]="aktifSubeAramaMetni"
-                   (ngModelChange)="subeAramasiDegisti()"
-                   (focus)="subeSecenekleriniAc()"
-                   (blur)="subeSecenekleriniKapat()"
-                   placeholder="Şube kodu veya adı" />
-
-            @if (subeSecenekleriAcikMi) {
-
-            <div class="branch-options">
-
-              @if (subelerYukleniyorMu) {
-
-              <div class="branch-option-message">
-                Şubeler yükleniyor...
-              </div>
-
-              } @else {
-
-              @for (sube of filtrelenmisSubeler; track sube.id) {
-
-              <button type="button"
-                      class="branch-option"
-                      (mousedown)="subeSec(sube)">
-
-                <span class="branch-code">
-                  {{ sube.subeKodu }}
-                </span>
-
-                <span class="branch-name">
-                  {{ sube.subeAdi }}
-                </span>
-
-              </button>
-
-              } @empty {
-
-              <div class="branch-option-message">
-                Uygun şube bulunamadı.
-              </div>
-
-              }
-
-              }
-
-            </div>
-
-            }
-
-          </div>
+          <app-sube-secici
+            [(seciliSubeKodu)]="aktifMusteriFormu.subeSubeKodu"
+            [devreDisiMi]="kaydediliyorMu">
+          </app-sube-secici>
 
         </div>
 
@@ -481,66 +430,15 @@
         <!-- ŞUBE -->
         <div class="form-field branch-field">
 
-          <label for="musteriSube">
+          <label>
             Şube
             <span>*</span>
           </label>
 
-          <div class="branch-autocomplete">
-
-            <input id="musteriSube"
-                   name="musteriSube"
-                   type="text"
-                   autocomplete="off"
-                   [(ngModel)]="aktifSubeAramaMetni"
-                   (ngModelChange)="subeAramasiDegisti()"
-                   (focus)="subeSecenekleriniAc()"
-                   (blur)="subeSecenekleriniKapat()"
-                   placeholder="Şube kodu veya adı" />
-
-            @if (subeSecenekleriAcikMi) {
-
-            <div class="branch-options">
-
-              @if (subelerYukleniyorMu) {
-
-              <div class="branch-option-message">
-                Şubeler yükleniyor...
-              </div>
-
-              } @else {
-
-              @for (sube of filtrelenmisSubeler; track sube.id) {
-
-              <button type="button"
-                      class="branch-option"
-                      (mousedown)="subeSec(sube)">
-
-                <span class="branch-code">
-                  {{ sube.subeKodu }}
-                </span>
-
-                <span class="branch-name">
-                  {{ sube.subeAdi }}
-                </span>
-
-              </button>
-
-              } @empty {
-
-              <div class="branch-option-message">
-                Uygun şube bulunamadı.
-              </div>
-
-              }
-
-              }
-
-            </div>
-
-            }
-
-          </div>
+          <app-sube-secici
+            [(seciliSubeKodu)]="aktifMusteriFormu.subeSubeKodu"
+            [devreDisiMi]="kaydediliyorMu">
+          </app-sube-secici>
 
         </div>
 

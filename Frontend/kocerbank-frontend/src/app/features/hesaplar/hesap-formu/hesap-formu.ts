@@ -15,6 +15,10 @@ import {
 } from '../services/hesap-api';
 
 import {
+  extractErrorMessage
+} from '../../../shared/utils/hata-mesaji';
+
+import {
   HesapTipi
 } from '../../../shared/enums/hesap-tipi-enum';
 
@@ -168,19 +172,11 @@ export class HesapFormu {
 
           this.kaydediliyorMu = false;
 
-          if (typeof hata.error === 'string') {
-            this.hataMesaji =
-              hata.error;
-          } else if (
-            hata.error &&
-            typeof hata.error.mesaj === 'string'
-          ) {
-            this.hataMesaji =
-              hata.error.mesaj;
-          } else {
-            this.hataMesaji =
-              'Hesap oluşturulurken bir hata oluştu.';
-          }
+          this.hataMesaji =
+            extractErrorMessage(
+              hata,
+              'Hesap oluşturulurken bir hata oluştu.'
+            );
 
           this.changeDetector
             .markForCheck();

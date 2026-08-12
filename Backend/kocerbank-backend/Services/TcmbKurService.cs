@@ -4,13 +4,13 @@ using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.Services
 {
-    public class TcmbKurServisi
+    public class TcmbKurService
     {
         private static readonly string[] TakipEdilenDovizKodlari = { "USD", "EUR" };
 
         private readonly HttpClient _httpClient;
 
-        public TcmbKurServisi(HttpClient httpClient)
+        public TcmbKurService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }

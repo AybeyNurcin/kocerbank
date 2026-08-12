@@ -4,6 +4,7 @@ import { Musteri } from '../models/musteri-model';
 import { MusteriIletisim as MusteriIletisimModel } from '../models/musteri-iletisim-model';
 import { MusteriIletisimGuncelle } from '../models/musteri-iletisim-guncelle-model';
 import { MusteriIletisimApi } from '../services/musteri-iletisim-api';
+import { extractErrorMessage } from '../../../shared/utils/hata-mesaji';
 
 @Component({
   selector: 'app-musteri-iletisim',
@@ -72,7 +73,7 @@ export class MusteriIletisim implements OnInit {
 
         this.iletisimBilgisi = null;
         this.yukleniyorMu = false;
-        this.hataMesaji = hata?.error?.mesaj ?? 'İletişim bilgileri getirilirken bir hata oluştu.';
+        this.hataMesaji = extractErrorMessage(hata, 'İletişim bilgileri getirilirken bir hata oluştu.');
 
         this.changeDetector.markForCheck();
       }
@@ -162,7 +163,7 @@ export class MusteriIletisim implements OnInit {
         console.error('Müşteri iletişim bilgileri güncelleme hatası:', hata);
 
         this.kaydediliyorMu = false;
-        this.hataMesaji = hata?.error?.mesaj ?? 'İletişim bilgileri güncellenirken bir hata oluştu.';
+        this.hataMesaji = extractErrorMessage(hata, 'İletişim bilgileri güncellenirken bir hata oluştu.');
 
         this.changeDetector.markForCheck();
       }

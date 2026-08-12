@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { Personel } from '../../personeller/models/personel-model';
 import { PersonelApi } from '../../personeller/services/personel-api';
 import { AuthService } from '../../../core/services/auth';
+import { extractErrorMessage } from '../../../shared/utils/hata-mesaji';
 
 @Component({
   selector: 'app-profil-duzenle',
@@ -163,13 +164,8 @@ export class ProfilDuzenle implements OnInit {
 
     console.error(hata);
 
-    if (typeof hata.error === 'string') {
-      this.hataMesaji = hata.error;
-    } else if (hata.error && typeof hata.error.mesaj === 'string') {
-      this.hataMesaji = hata.error.mesaj;
-    } else {
-      this.hataMesaji = varsayilanMesaj;
-    }
+    this.hataMesaji =
+      extractErrorMessage(hata, varsayilanMesaj);
 
     this.changeDetector.markForCheck();
   }

@@ -9,12 +9,12 @@ namespace kocerbank_backend.Controllers
     [Route("api/[controller]")]
     public class ParaTransferController : ControllerBase
     {
-        private readonly ParaTransferServis
+        private readonly ParaTransferService
             _paraTransferServis;
 
 
         public ParaTransferController(
-            ParaTransferServis paraTransferServis
+            ParaTransferService paraTransferServis
         )
         {
             _paraTransferServis =
@@ -90,7 +90,7 @@ namespace kocerbank_backend.Controllers
         {
             try
             {
-                TransferHesapDTO sonuc =
+                HesapDTO sonuc =
                     _paraTransferServis
                         .TekHesapBilgisiGetir(iban, kanal);
 

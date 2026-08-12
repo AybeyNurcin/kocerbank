@@ -17,7 +17,7 @@ builder.Services.AddScoped<SubeRepository>();
 builder.Services.AddScoped<SubeService>();
 builder.Services.AddScoped<MusteriRepository>();
 builder.Services.AddScoped<MusteriService>();
-builder.Services.AddScoped<AktifPersonelServis>();
+builder.Services.AddScoped<AktifPersonelService>();
 builder.Services.AddScoped<PersonelRepository>();
 builder.Services.AddScoped<PersonelService>();
 builder.Services.AddScoped<MusteriIletisimRepository>();
@@ -27,16 +27,16 @@ builder.Services.AddScoped<HesapService>();
 builder.Services.AddScoped<HesapHareketiRepository>();
 builder.Services.AddScoped<HesapHareketiService>();
 builder.Services.AddScoped<ParaTransferRepository>();
-builder.Services.AddScoped<ParaTransferServis>();
-builder.Services.AddScoped<DovizKuruServis>();
+builder.Services.AddScoped<ParaTransferService>();
+builder.Services.AddScoped<DovizKuruService>();
 
-builder.Services.AddHttpClient<TcmbKurServisi>(client =>
+builder.Services.AddHttpClient<TcmbKurService>(client =>
 {
     client.BaseAddress = new Uri("https://www.tcmb.gov.tr/");
     client.Timeout = TimeSpan.FromSeconds(10);
 });
 
-builder.Services.AddHostedService<DovizKuruGuncellemeArkaPlanServisi>();
+builder.Services.AddHostedService<DovizKuruGuncellemeArkaPlanService>();
 
 builder.Services.AddCors(options =>
 {

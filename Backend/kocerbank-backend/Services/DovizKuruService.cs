@@ -4,11 +4,11 @@ using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.Services
 {
-    public class DovizKuruServis
+    public class DovizKuruService
     {
         private readonly string _kurDosyasiYolu;
 
-        public DovizKuruServis(
+        public DovizKuruService(
             IWebHostEnvironment environment
         )
         {

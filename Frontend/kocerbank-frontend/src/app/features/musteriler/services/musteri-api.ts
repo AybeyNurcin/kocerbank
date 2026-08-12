@@ -35,13 +35,19 @@ import {
   DashboardFiltre
 } from '../../../shared/models/dashboard-filtre-model';
 
+import { environment } from '../../../../environments/environment';
+
+import {
+  dashboardOzetGetir
+} from '../../../shared/utils/dashboard-api';
+
 @Injectable({
   providedIn: 'root'
 })
 export class MusteriApi {
 
   private readonly apiUrl =
-    'http://localhost:5107/api/Musteri';
+    `${environment.apiBaseUrl}/Musteri`;
 
   constructor(
     private http: HttpClient
@@ -62,16 +68,6 @@ export class MusteriApi {
     return this.http.post<Musteri>(
       `${this.apiUrl}/GetirById/${id}`,
       null
-    );
-  }
-
-  ekle(
-    musteri: MusteriKaydet
-  ): Observable<Musteri> {
-
-    return this.http.post<Musteri>(
-      `${this.apiUrl}/Ekle`,
-      musteri
     );
   }
 
@@ -100,9 +96,10 @@ export class MusteriApi {
     filtre?: DashboardFiltre
   ): Observable<MusteriDashboard> {
 
-    return this.http.post<MusteriDashboard>(
-      `${this.apiUrl}/DashboardOzet`,
-      filtre ?? null
+    return dashboardOzetGetir(
+      this.http,
+      this.apiUrl,
+      filtre
     );
   }
 }

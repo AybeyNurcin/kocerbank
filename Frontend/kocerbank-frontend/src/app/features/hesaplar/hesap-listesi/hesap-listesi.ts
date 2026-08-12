@@ -30,6 +30,14 @@ import {
 } from '../../../shared/enums/doviz-cinsi-enum';
 
 import {
+  HesapDurumu
+} from '../../../shared/enums/hesap-durumu-enum';
+
+import {
+  extractErrorMessage
+} from '../../../shared/utils/hata-mesaji';
+
+import {
   HesapHareketTipleri
 } from '../../../shared/enums/hesap-hareket-tipleri-enum';
 
@@ -187,9 +195,9 @@ export class HesapListesi
     this.hataMesaji = '';
 
     this.hesapApi
-      .musteriyeGoreListele(
-        this.musteriId
-      )
+      .listele({
+        musteriBilgileriId: this.musteriId
+      })
       .subscribe({
 
         next: (
@@ -260,8 +268,10 @@ export class HesapListesi
           this.yukleniyorMu = false;
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Hesaplar getirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Hesaplar getirilirken bir hata oluştu.'
+            );
 
           this.changeDetector
             .markForCheck();
@@ -587,8 +597,10 @@ export class HesapListesi
             false;
 
           this.hesapAdiHataMesaji =
-            hata?.error?.mesaj ??
-            'Hesap adı güncellenirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Hesap adı güncellenirken bir hata oluştu.'
+            );
 
           this.changeDetector
             .markForCheck();
@@ -650,8 +662,10 @@ export class HesapListesi
           this.hesapHareketleri = [];
 
           this.hareketlerHataMesaji =
-            hata?.error?.mesaj ??
-            'Hesap hareketleri getirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Hesap hareketleri getirilirken bir hata oluştu.'
+            );
 
           this.changeDetector
             .markForCheck();
@@ -811,8 +825,10 @@ export class HesapListesi
             false;
 
           this.transferDetayiHataMesaji =
-            hata?.error?.mesaj ??
-            'Transfer detayı getirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Transfer detayı getirilirken bir hata oluştu.'
+            );
 
           this.changeDetector
             .markForCheck();
@@ -1010,13 +1026,13 @@ export class HesapListesi
 
     switch (durumKodu) {
 
-      case 1:
+      case HesapDurumu.Aktif:
         return 'Aktif';
 
-      case 2:
+      case HesapDurumu.Pasif:
         return 'Pasif';
 
-      case 3:
+      case HesapDurumu.Kapali:
         return 'Kapalı';
 
       default:

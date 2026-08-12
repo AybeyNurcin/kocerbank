@@ -15,6 +15,13 @@ import { Personel } from '../models/personel-model';
 import { PersonelFiltre } from '../models/personel-filtre-model';
 import { PersonelApi } from '../services/personel-api';
 
+import {
+  ilkKayitNumarasi,
+  sayfadakiKayitlar,
+  sonKayitNumarasi,
+  toplamSayfaSayisi
+} from '../../../shared/utils/sayfalama';
+
 @Component({
   selector: 'app-personel-listesi',
   standalone: false,
@@ -90,46 +97,36 @@ export class PersonelListesi
 
   get sayfadakiPersoneller(): Personel[] {
 
-    const baslangicIndeksi =
-      (this.mevcutSayfa - 1) *
-      this.sayfaBasinaKayit;
-
-    const bitisIndeksi =
-      baslangicIndeksi +
-      this.sayfaBasinaKayit;
-
-    return this.personeller.slice(
-      baslangicIndeksi,
-      bitisIndeksi
+    return sayfadakiKayitlar(
+      this.personeller,
+      this.mevcutSayfa,
+      this.sayfaBasinaKayit
     );
   }
 
   get toplamSayfa(): number {
 
-    return Math.ceil(
-      this.personeller.length /
+    return toplamSayfaSayisi(
+      this.personeller.length,
       this.sayfaBasinaKayit
     );
   }
 
   get ilkKayitNumarasi(): number {
 
-    if (this.personeller.length === 0) {
-      return 0;
-    }
-
-    return (
-      (this.mevcutSayfa - 1) *
+    return ilkKayitNumarasi(
+      this.personeller.length,
+      this.mevcutSayfa,
       this.sayfaBasinaKayit
-    ) + 1;
+    );
   }
 
   get sonKayitNumarasi(): number {
 
-    return Math.min(
-      this.mevcutSayfa *
-      this.sayfaBasinaKayit,
-      this.personeller.length
+    return sonKayitNumarasi(
+      this.personeller.length,
+      this.mevcutSayfa,
+      this.sayfaBasinaKayit
     );
   }
 

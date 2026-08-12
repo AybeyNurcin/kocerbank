@@ -20,6 +20,8 @@ import {
   TransferKanallari
 } from '../../../shared/enums/transfer-kanallari-enum';
 
+import { environment } from '../../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +29,7 @@ import {
 export class ParaTransferApi {
 
   private readonly apiUrl =
-    'http://localhost:5107/api/ParaTransfer';
+    `${environment.apiBaseUrl}/ParaTransfer`;
 
 
   constructor(

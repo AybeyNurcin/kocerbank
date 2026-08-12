@@ -8,9 +8,9 @@ namespace kocerbank_backend.Controllers
     [Route("api/[controller]")]
     public class DovizKuruController : ControllerBase
     {
-        private readonly DovizKuruServis _dovizKuruServis;
+        private readonly DovizKuruService _dovizKuruServis;
 
-        public DovizKuruController(DovizKuruServis dovizKuruServis)
+        public DovizKuruController(DovizKuruService dovizKuruServis)
         {
             _dovizKuruServis = dovizKuruServis;
         }

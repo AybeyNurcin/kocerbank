@@ -29,9 +29,11 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    "Şube ekleme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = "Şube ekleme işlemi sırasında hata oluştu: "
+                        + ex.Message
+                });
             }
         }
 
@@ -48,9 +50,11 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    "Şube getirme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = "Şube getirme işlemi sırasında hata oluştu: "
+                        + ex.Message
+                });
             }
         }
 
@@ -70,9 +74,11 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    "Şube listeleme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = "Şube listeleme işlemi sırasında hata oluştu: "
+                        + ex.Message
+                });
             }
         }
 
@@ -92,9 +98,11 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    "Şube güncelleme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = "Şube güncelleme işlemi sırasında hata oluştu: "
+                        + ex.Message
+                });
             }
         }
 
@@ -110,9 +118,11 @@ namespace kocerbank_backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    "Şube silme işlemi sırasında hata oluştu: "
-                    + ex.Message);
+                return BadRequest(new
+                {
+                    mesaj = "Şube silme işlemi sırasında hata oluştu: "
+                        + ex.Message
+                });
             }
         }
 

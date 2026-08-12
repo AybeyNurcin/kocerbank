@@ -1,10 +1,10 @@
 namespace kocerbank_backend.Services
 {
-    public class AktifPersonelServis
+    public class AktifPersonelService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AktifPersonelServis(
+        public AktifPersonelService(
             IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;

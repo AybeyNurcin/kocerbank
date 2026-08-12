@@ -5,6 +5,10 @@ import {
 } from '@angular/core';
 
 import {
+  Observable
+} from 'rxjs';
+
+import {
   MusteriApi
 } from '../../musteriler/services/musteri-api';
 
@@ -140,169 +144,108 @@ export class Dashboard
 
   musteriOzetGetir(): void {
 
-    this.musteriYukleniyorMu = true;
-    this.musteriHataMesaji = '';
-
-    this.musteriApi
-      .dashboardOzet(this.filtreOlustur())
-      .subscribe({
-
-        next: (
-          ozet: MusteriDashboard
-        ) => {
-
-          this.musteriOzet = ozet;
-          this.musteriYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        },
-
-        error: (hata) => {
-
-          console.error(
-            'Müşteri dashboard özeti getirilirken hata:',
-            hata
-          );
-
-          this.musteriOzet = null;
-
-          this.musteriHataMesaji =
-            'Müşteri özet bilgileri getirilirken bir hata oluştu.';
-
-          this.musteriYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        }
-
-      });
+    this.ozetYukle(
+      this.musteriApi.dashboardOzet(this.filtreOlustur()),
+      {
+        ozetAta: (deger) => this.musteriOzet = deger,
+        yukleniyorMuAta: (deger) => this.musteriYukleniyorMu = deger,
+        hataMesajiAta: (deger) => this.musteriHataMesaji = deger
+      },
+      'Müşteri dashboard özeti getirilirken hata:',
+      'Müşteri özet bilgileri getirilirken bir hata oluştu.'
+    );
   }
 
 
   subeOzetGetir(): void {
 
-    this.subeYukleniyorMu = true;
-    this.subeHataMesaji = '';
-
-    this.subeApi
-      .dashboardOzet(this.filtreOlustur())
-      .subscribe({
-
-        next: (
-          ozet: SubeDashboard
-        ) => {
-
-          this.subeOzet = ozet;
-          this.subeYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        },
-
-        error: (hata) => {
-
-          console.error(
-            'Şube dashboard özeti getirilirken hata:',
-            hata
-          );
-
-          this.subeOzet = null;
-
-          this.subeHataMesaji =
-            'Şube özet bilgileri getirilirken bir hata oluştu.';
-
-          this.subeYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        }
-
-      });
+    this.ozetYukle(
+      this.subeApi.dashboardOzet(this.filtreOlustur()),
+      {
+        ozetAta: (deger) => this.subeOzet = deger,
+        yukleniyorMuAta: (deger) => this.subeYukleniyorMu = deger,
+        hataMesajiAta: (deger) => this.subeHataMesaji = deger
+      },
+      'Şube dashboard özeti getirilirken hata:',
+      'Şube özet bilgileri getirilirken bir hata oluştu.'
+    );
   }
 
 
   personelOzetGetir(): void {
 
-    this.personelYukleniyorMu = true;
-    this.personelHataMesaji = '';
-
-    this.personelApi
-      .dashboardOzet(this.filtreOlustur())
-      .subscribe({
-
-        next: (
-          ozet: PersonelDashboard
-        ) => {
-
-          this.personelOzet = ozet;
-          this.personelYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        },
-
-        error: (hata) => {
-
-          console.error(
-            'Personel dashboard özeti getirilirken hata:',
-            hata
-          );
-
-          this.personelOzet = null;
-
-          this.personelHataMesaji =
-            'Personel özet bilgileri getirilirken bir hata oluştu.';
-
-          this.personelYukleniyorMu = false;
-
-          this.changeDetector.markForCheck();
-
-        }
-
-      });
+    this.ozetYukle(
+      this.personelApi.dashboardOzet(this.filtreOlustur()),
+      {
+        ozetAta: (deger) => this.personelOzet = deger,
+        yukleniyorMuAta: (deger) => this.personelYukleniyorMu = deger,
+        hataMesajiAta: (deger) => this.personelHataMesaji = deger
+      },
+      'Personel dashboard özeti getirilirken hata:',
+      'Personel özet bilgileri getirilirken bir hata oluştu.'
+    );
   }
 
 
   hesapOzetGetir(): void {
 
-    this.hesapYukleniyorMu = true;
-    this.hesapHataMesaji = '';
+    this.ozetYukle(
+      this.hesapApi.dashboardOzet(this.filtreOlustur()),
+      {
+        ozetAta: (deger) => this.hesapOzet = deger,
+        yukleniyorMuAta: (deger) => this.hesapYukleniyorMu = deger,
+        hataMesajiAta: (deger) => this.hesapHataMesaji = deger
+      },
+      'Hesap dashboard özeti getirilirken hata:',
+      'Hesap özet bilgileri getirilirken bir hata oluştu.'
+    );
+  }
 
-    this.hesapApi
-      .dashboardOzet(this.filtreOlustur())
-      .subscribe({
 
-        next: (
-          ozet: HesapDashboard
-        ) => {
+  /*
+   * Dört dashboard kartının (müşteri/şube/personel/hesap) ortak
+   * "yükleniyor -> başarılı/hatalı" akışı. Alan adları her kart
+   * için farklı olduğundan (musteriOzet, subeOzet, ...) doğrudan
+   * atama yapmak yerine setter fonksiyonları alır.
+   */
+  private ozetYukle<T>(
+    gozlemlenebilir: Observable<T>,
+    alanlar: {
+      ozetAta: (deger: T | null) => void;
+      yukleniyorMuAta: (deger: boolean) => void;
+      hataMesajiAta: (deger: string) => void;
+    },
+    hataLogEtiketi: string,
+    varsayilanHataMesaji: string
+  ): void {
 
-          this.hesapOzet = ozet;
-          this.hesapYukleniyorMu = false;
+    alanlar.yukleniyorMuAta(true);
+    alanlar.hataMesajiAta('');
 
-          this.changeDetector.markForCheck();
+    gozlemlenebilir.subscribe({
 
-        },
+      next: (ozet: T) => {
 
-        error: (hata) => {
+        alanlar.ozetAta(ozet);
+        alanlar.yukleniyorMuAta(false);
 
-          console.error(
-            'Hesap dashboard özeti getirilirken hata:',
-            hata
-          );
+        this.changeDetector.markForCheck();
 
-          this.hesapOzet = null;
+      },
 
-          this.hesapHataMesaji =
-            'Hesap özet bilgileri getirilirken bir hata oluştu.';
+      error: (hata) => {
 
-          this.hesapYukleniyorMu = false;
+        console.error(hataLogEtiketi, hata);
 
-          this.changeDetector.markForCheck();
+        alanlar.ozetAta(null);
+        alanlar.hataMesajiAta(varsayilanHataMesaji);
+        alanlar.yukleniyorMuAta(false);
 
-        }
+        this.changeDetector.markForCheck();
 
-      });
+      }
+
+    });
   }
 
 

@@ -5,15 +5,17 @@ import { Observable } from 'rxjs';
 import { Hesap } from '../models/hesap-model';
 import { HesapCekYatir } from '../models/hesap-cek-yatir-model';
 import { HesapDashboard } from '../models/hesap-dashboard-model';
-import { DovizCinsi } from '../../../shared/enums/doviz-cinsi-enum';
+import { HesapFiltre } from '../models/hesap-filtre-model';
 import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
+import { environment } from '../../../../environments/environment';
+import { dashboardOzetGetir } from '../../../shared/utils/dashboard-api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HesapApi {
 
-  private readonly apiUrl = 'http://localhost:5107/api/Hesap';
+  private readonly apiUrl = `${environment.apiBaseUrl}/Hesap`;
 
   constructor(private http: HttpClient) {
   }
@@ -25,38 +27,10 @@ export class HesapApi {
     );
   }
 
-  musteriyeGoreListele(musteriId: number): Observable<Hesap[]> {
+  listele(kriterler: HesapFiltre): Observable<Hesap[]> {
     return this.http.post<Hesap[]>(
       `${this.apiUrl}/listele`,
-      {
-        musteriBilgileriId: musteriId
-      }
-    );
-  }
-
-  musterininTLHesaplariniGetir(musteriId: number): Observable<Hesap[]> {
-    return this.http.post<Hesap[]>(
-      `${this.apiUrl}/listele`,
-      {
-        musteriBilgileriId: musteriId,
-        dovizCinsi: DovizCinsi.TL
-      }
-    );
-  }
-
-  ibanaGoreListele(iban: string): Observable<Hesap[]> {
-    return this.http.post<Hesap[]>(
-      `${this.apiUrl}/listele`,
-      {
-        iban: iban
-      }
-    );
-  }
-
-  getirById(hesapId: number): Observable<Hesap> {
-    return this.http.post<Hesap>(
-      `${this.apiUrl}/GetirById/${hesapId}`,
-      null
+      kriterler
     );
   }
 
@@ -75,9 +49,6 @@ export class HesapApi {
   }
 
   dashboardOzet(filtre?: DashboardFiltre): Observable<HesapDashboard> {
-    return this.http.post<HesapDashboard>(
-      `${this.apiUrl}/DashboardOzet`,
-      filtre ?? null
-    );
+    return dashboardOzetGetir(this.http, this.apiUrl, filtre);
   }
 }

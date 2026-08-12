@@ -8,12 +8,12 @@ namespace kocerbank_backend.Services
         private readonly MusteriIletisimRepository
             _musteriIletisimRepository;
 
-        private readonly AktifPersonelServis
+        private readonly AktifPersonelService
             _aktifPersonelServis;
 
         public MusteriIletisimService(
             MusteriIletisimRepository musteriIletisimRepository,
-            AktifPersonelServis aktifPersonelServis)
+            AktifPersonelService aktifPersonelServis)
         {
             _musteriIletisimRepository =
                 musteriIletisimRepository;

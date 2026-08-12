@@ -42,7 +42,7 @@ namespace kocerbank_backend.Controllers
         }
 
         // 2. ID'YE GÖRE PERSONEL GETİRME
-        [HttpGet("GetirById/{id:long}")]
+        [HttpPost("GetirById/{id:long}")]
         public IActionResult GetirById(long id)
         {
             try
@@ -118,7 +118,7 @@ namespace kocerbank_backend.Controllers
         }
 
         // 5. PERSONEL GÜNCELLEME
-        [HttpPut("Güncelle/{id:long}")]
+        [HttpPut("Guncelle/{id:long}")]
         public IActionResult Guncelle(
             long id,
             [FromBody] PersonelDTO dto)

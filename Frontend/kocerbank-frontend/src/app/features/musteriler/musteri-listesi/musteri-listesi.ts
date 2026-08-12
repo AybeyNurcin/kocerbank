@@ -31,6 +31,13 @@ import {
   MusteriListeDurumu
 } from '../services/musteri-liste-durumu';
 
+import {
+  ilkKayitNumarasi,
+  sayfadakiKayitlar,
+  sonKayitNumarasi,
+  toplamSayfaSayisi
+} from '../../../shared/utils/sayfalama';
+
 @Component({
   selector: 'app-musteri-listesi',
   standalone: false,
@@ -235,25 +242,18 @@ export class MusteriListesi
 
   get sayfadakiMusteriler(): Musteri[] {
 
-    const baslangicIndeksi =
-      (this.mevcutSayfa - 1) *
-      this.sayfaBasinaKayit;
-
-    const bitisIndeksi =
-      baslangicIndeksi +
-      this.sayfaBasinaKayit;
-
-    return this.musteriler.slice(
-      baslangicIndeksi,
-      bitisIndeksi
+    return sayfadakiKayitlar(
+      this.musteriler,
+      this.mevcutSayfa,
+      this.sayfaBasinaKayit
     );
   }
 
 
   get toplamSayfa(): number {
 
-    return Math.ceil(
-      this.musteriler.length /
+    return toplamSayfaSayisi(
+      this.musteriler.length,
       this.sayfaBasinaKayit
     );
   }
@@ -261,23 +261,20 @@ export class MusteriListesi
 
   get ilkKayitNumarasi(): number {
 
-    if (this.musteriler.length === 0) {
-      return 0;
-    }
-
-    return (
-      (this.mevcutSayfa - 1) *
+    return ilkKayitNumarasi(
+      this.musteriler.length,
+      this.mevcutSayfa,
       this.sayfaBasinaKayit
-    ) + 1;
+    );
   }
 
 
   get sonKayitNumarasi(): number {
 
-    return Math.min(
-      this.mevcutSayfa *
-      this.sayfaBasinaKayit,
-      this.musteriler.length
+    return sonKayitNumarasi(
+      this.musteriler.length,
+      this.mevcutSayfa,
+      this.sayfaBasinaKayit
     );
   }
 

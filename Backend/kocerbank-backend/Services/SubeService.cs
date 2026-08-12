@@ -4,17 +4,16 @@ using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.Services
 {
-    public class SubeService
+    public class SubeService : BaseCrudService
     {
         private readonly SubeRepository _subeRepository;
-        private readonly AktifPersonelServis _aktifPersonelServis;
 
         public SubeService(
             SubeRepository subeRepository,
-            AktifPersonelServis aktifPersonelServis)
+            AktifPersonelService aktifPersonelServis)
+            : base(aktifPersonelServis)
         {
             _subeRepository = subeRepository;
-            _aktifPersonelServis = aktifPersonelServis;
         }
 
         // 1. ŞUBE EKLEME
@@ -49,7 +48,7 @@ namespace kocerbank_backend.Services
             // Frontend'den gelen RecordUser dikkate alınmaz.
             // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             return _subeRepository.Ekle(dto);
         }
@@ -57,18 +56,11 @@ namespace kocerbank_backend.Services
         // 2. ID'YE GÖRE ŞUBE GETİRME
         public SubeDTO GetirById(long id)
         {
-            IdKontrolEt(id);
+            IdKontrolEt(id, "Bu ID değerinde şube olamaz.");
 
-            SubeDTO? sube =
-                _subeRepository.GetirById(id);
-
-            if (sube is null)
-            {
-                throw new KeyNotFoundException(
-                    "Bu ID değerine ait şube bulunamadı.");
-            }
-
-            return sube;
+            return KaydiBulunduMuKontrolEt(
+                _subeRepository.GetirById(id),
+                "Bu ID değerine ait şube bulunamadı.");
         }
 
         // 3. KRİTERE GÖRE ŞUBE LİSTELEME
@@ -88,19 +80,14 @@ namespace kocerbank_backend.Services
                     "Güncellenecek şube bilgileri gönderilmelidir.");
             }
 
-            IdKontrolEt(dto.Id);
+            IdKontrolEt(dto.Id, "Bu ID değerinde şube olamaz.");
 
             SubeBilgileriniDuzenle(dto);
             SubeBilgileriniKontrolEt(dto);
 
-            SubeDTO? mevcutSube =
-                _subeRepository.GetirById(dto.Id);
-
-            if (mevcutSube is null)
-            {
-                throw new KeyNotFoundException(
-                    "Güncellenecek şube bulunamadı.");
-            }
+            _ = KaydiBulunduMuKontrolEt(
+                _subeRepository.GetirById(dto.Id),
+                "Güncellenecek şube bulunamadı.");
 
             SubeAramaKriterleriDTO aramaKriterleri =
                 new SubeAramaKriterleriDTO
@@ -126,7 +113,7 @@ namespace kocerbank_backend.Services
             // Frontend'den gelen RecordUser dikkate alınmaz.
             // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             _subeRepository.Guncelle(dto);
         }
@@ -232,14 +219,5 @@ namespace kocerbank_backend.Services
             }
         }
 
-        // ID değerinin geçerli olup olmadığını kontrol eder.
-        private static void IdKontrolEt(long id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentException(
-                    "Bu ID değerinde şube olamaz.");
-            }
-        }
     }
 }

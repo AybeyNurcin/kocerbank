@@ -44,6 +44,10 @@ import {
 } from '../../../shared/enums/transfer-tipleri-enum';
 
 import {
+  extractErrorMessage
+} from '../../../shared/utils/hata-mesaji';
+
+import {
   TransferKanallari
 } from '../../../shared/enums/transfer-kanallari-enum';
 
@@ -165,8 +169,10 @@ export class VirmanComponent {
       error: (hata) => {
         this.aramaYapiliyorMu = false;
         this.aramaHataMesaji =
-          hata?.error?.mesaj ??
-          'Müşteri aranırken bir hata oluştu.';
+          extractErrorMessage(
+            hata,
+            'Müşteri aranırken bir hata oluştu.'
+          );
         this.cdr.detectChanges();
       }
 
@@ -176,7 +182,10 @@ export class VirmanComponent {
 
   private musterininHesaplariniGetir(musteriId: number): void {
 
-    this.hesapApi.musterininTLHesaplariniGetir(musteriId).subscribe({
+    this.hesapApi.listele({
+      musteriBilgileriId: musteriId,
+      dovizCinsi: DovizCinsi.TL
+    }).subscribe({
 
       next: (hesaplar) => {
 
@@ -198,8 +207,10 @@ export class VirmanComponent {
       error: (hata) => {
         this.aramaYapiliyorMu = false;
         this.aramaHataMesaji =
-          hata?.error?.mesaj ??
-          'Müşteri hesapları getirilirken bir hata oluştu.';
+          extractErrorMessage(
+            hata,
+            'Müşteri hesapları getirilirken bir hata oluştu.'
+          );
         this.cdr.detectChanges();
       }
 
@@ -349,8 +360,10 @@ export class VirmanComponent {
       error: (hata) => {
         this.transferYapiliyorMu = false;
         this.hataMesaji =
-          hata?.error?.mesaj ??
-          'Virman işlemi gerçekleştirilirken bir hata oluştu.';
+          extractErrorMessage(
+            hata,
+            'Virman işlemi gerçekleştirilirken bir hata oluştu.'
+          );
         this.cdr.detectChanges();
       }
 

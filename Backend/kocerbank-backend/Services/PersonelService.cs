@@ -7,22 +7,19 @@ using Microsoft.AspNetCore.Identity;
 
 namespace kocerbank_backend.Services
 {
-    public class PersonelService
+    public class PersonelService : BaseCrudService
     {
         private readonly PersonelRepository _personelRepository;
 
         private readonly PasswordHasher<PersonelDTO>
             _passwordHasher;
 
-        private readonly AktifPersonelServis
-            _aktifPersonelServis;
-
         public PersonelService(
             PersonelRepository personelRepository,
-            AktifPersonelServis aktifPersonelServis)
+            AktifPersonelService aktifPersonelServis)
+            : base(aktifPersonelServis)
         {
             _personelRepository = personelRepository;
-            _aktifPersonelServis = aktifPersonelServis;
 
             _passwordHasher =
                 new PasswordHasher<PersonelDTO>();
@@ -75,7 +72,7 @@ namespace kocerbank_backend.Services
             // Frontend'den gelen RecordUser kullanılmaz.
             // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             return _personelRepository.Ekle(dto);
         }
@@ -83,18 +80,11 @@ namespace kocerbank_backend.Services
         // 2. ID'YE GÖRE PERSONEL GETİRME
         public PersonelDTO GetirById(long id)
         {
-            IdKontrolEt(id);
+            IdKontrolEt(id, "Personel ID değeri sıfırdan büyük olmalıdır.");
 
-            PersonelDTO? personel =
-                _personelRepository.GetirById(id);
-
-            if (personel is null)
-            {
-                throw new KeyNotFoundException(
-                    $"Personel bulunamadı: ID = {id}");
-            }
-
-            return personel;
+            return KaydiBulunduMuKontrolEt(
+                _personelRepository.GetirById(id),
+                $"Personel bulunamadı: ID = {id}");
         }
 
         // 3. PERSONEL GİRİŞİ
@@ -198,19 +188,15 @@ namespace kocerbank_backend.Services
                     "Güncellenecek personel bilgileri gönderilmelidir.");
             }
 
-            IdKontrolEt(dto.Id);
+            IdKontrolEt(dto.Id, "Personel ID değeri sıfırdan büyük olmalıdır.");
 
             PersonelBilgileriniDuzenle(dto);
             PersonelBilgileriniKontrolEt(dto);
 
-            PersonelDTO? mevcutPersonel =
-                _personelRepository.GetirById(dto.Id);
-
-            if (mevcutPersonel is null)
-            {
-                throw new KeyNotFoundException(
+            PersonelDTO mevcutPersonel =
+                KaydiBulunduMuKontrolEt(
+                    _personelRepository.GetirById(dto.Id),
                     "Güncellenecek personel bulunamadı.");
-            }
 
             PersonelAramaKriterleriDTO kriter =
                 new PersonelAramaKriterleriDTO
@@ -235,7 +221,7 @@ namespace kocerbank_backend.Services
 
             // Frontend'den gelen RecordUser kullanılmaz.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             _personelRepository.Guncelle(dto);
         }
@@ -245,7 +231,7 @@ namespace kocerbank_backend.Services
             long id,
             PersonelSifreDegistirDTO dto)
         {
-            IdKontrolEt(id);
+            IdKontrolEt(id, "Personel ID değeri sıfırdan büyük olmalıdır.");
 
             if (dto is null)
             {
@@ -273,14 +259,10 @@ namespace kocerbank_backend.Services
                     "Yeni şifre en az 8 karakter olmalıdır.");
             }
 
-            PersonelDTO? mevcutPersonel =
-                _personelRepository.GetirById(id);
-
-            if (mevcutPersonel is null)
-            {
-                throw new KeyNotFoundException(
+            PersonelDTO mevcutPersonel =
+                KaydiBulunduMuKontrolEt(
+                    _personelRepository.GetirById(id),
                     "Personel bulunamadı.");
-            }
 
             PasswordVerificationResult sonuc =
                 _passwordHasher.VerifyHashedPassword(
@@ -302,7 +284,7 @@ namespace kocerbank_backend.Services
 
             // Şifre değişikliği de bir güncellemedir.
             mevcutPersonel.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             _personelRepository.Guncelle(
                 mevcutPersonel);
@@ -311,16 +293,11 @@ namespace kocerbank_backend.Services
         // 7. PERSONEL SİLME
         public void Sil(long id)
         {
-            IdKontrolEt(id);
+            IdKontrolEt(id, "Personel ID değeri sıfırdan büyük olmalıdır.");
 
-            PersonelDTO? mevcutPersonel =
-                _personelRepository.GetirById(id);
-
-            if (mevcutPersonel is null)
-            {
-                throw new KeyNotFoundException(
-                    "Silinecek personel bulunamadı.");
-            }
+            _ = KaydiBulunduMuKontrolEt(
+                _personelRepository.GetirById(id),
+                "Silinecek personel bulunamadı.");
 
             _personelRepository.Sil(id);
         }
@@ -539,14 +516,5 @@ namespace kocerbank_backend.Services
             }
         }
 
-        // ID KULLANAN METOTLARIN ORTAK KONTROLÜ
-        private static void IdKontrolEt(long id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentException(
-                    "Personel ID değeri sıfırdan büyük olmalıdır.");
-            }
-        }
     }
 }

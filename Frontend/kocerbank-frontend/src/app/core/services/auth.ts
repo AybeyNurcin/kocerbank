@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Personel } from '../../features/personeller/models/personel-model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,7 @@ export class AuthService {
   private readonly AKTIVITE_YAZMA_ARALIGI_MS = 10 * 1000;
 
   private readonly apiUrl =
-    'http://localhost:5107/api/Personel';
+    `${environment.apiBaseUrl}/Personel`;
 
   // Oturum bilgilerinin saklanacağı depoyu belirler. Güvenlik nedeniyle
   // sessionStorage kullanılır (tarayıcı sekmesi kapatılınca oturum

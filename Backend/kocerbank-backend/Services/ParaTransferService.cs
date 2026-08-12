@@ -4,7 +4,7 @@ using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.Services
 {
-    public class ParaTransferServis
+    public class ParaTransferService
     {
         private readonly HesapRepository
             _hesapRepository;
@@ -15,19 +15,19 @@ namespace kocerbank_backend.Services
         private readonly ParaTransferRepository
             _paraTransferRepository;
 
-        private readonly DovizKuruServis
+        private readonly DovizKuruService
             _dovizKuruService;
 
-        private readonly AktifPersonelServis
+        private readonly AktifPersonelService
             _aktifPersonelServis;
 
 
-        public ParaTransferServis(
+        public ParaTransferService(
             HesapRepository hesapRepository,
             MusteriRepository musteriRepository,
             ParaTransferRepository paraTransferRepository,
-            DovizKuruServis dovizKuruService,
-            AktifPersonelServis aktifPersonelServis
+            DovizKuruService dovizKuruService,
+            AktifPersonelService aktifPersonelServis
         )
         {
             _hesapRepository =
@@ -246,7 +246,7 @@ namespace kocerbank_backend.Services
          * Transfer kaydı oluşturmaz.
          */
 
-        public TransferHesapDTO TekHesapBilgisiGetir(
+        public HesapDTO TekHesapBilgisiGetir(
             string iban,
             TransferKanallari kanal
         )
@@ -1041,7 +1041,7 @@ namespace kocerbank_backend.Services
         }
 
 
-        private TransferHesapDTO TransferHesabaDonustur(
+        private HesapDTO TransferHesabaDonustur(
             HesapDTO hesap,
             MusteriDTO musteri
         )
@@ -1050,7 +1050,7 @@ namespace kocerbank_backend.Services
                 AdSoyadGetir(musteri);
 
 
-            return new TransferHesapDTO
+            return new HesapDTO
             {
                 Id =
                     hesap.Id,

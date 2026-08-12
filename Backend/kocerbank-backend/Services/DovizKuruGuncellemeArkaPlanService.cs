@@ -3,7 +3,7 @@ using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.Services
 {
-    public class DovizKuruGuncellemeArkaPlanServisi : BackgroundService
+    public class DovizKuruGuncellemeArkaPlanService : BackgroundService
     {
         private static readonly TimeSpan GunlukCalismaSaati = new TimeSpan(16, 0, 0);
 
@@ -15,12 +15,12 @@ namespace kocerbank_backend.Services
 
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IWebHostEnvironment _environment;
-        private readonly ILogger<DovizKuruGuncellemeArkaPlanServisi> _logger;
+        private readonly ILogger<DovizKuruGuncellemeArkaPlanService> _logger;
 
-        public DovizKuruGuncellemeArkaPlanServisi(
+        public DovizKuruGuncellemeArkaPlanService(
             IServiceScopeFactory scopeFactory,
             IWebHostEnvironment environment,
-            ILogger<DovizKuruGuncellemeArkaPlanServisi> logger
+            ILogger<DovizKuruGuncellemeArkaPlanService> logger
         )
         {
             _scopeFactory = scopeFactory;
@@ -53,8 +53,8 @@ namespace kocerbank_backend.Services
             {
                 using IServiceScope scope = _scopeFactory.CreateScope();
 
-                TcmbKurServisi tcmbKurServisi =
-                    scope.ServiceProvider.GetRequiredService<TcmbKurServisi>();
+                TcmbKurService tcmbKurServisi =
+                    scope.ServiceProvider.GetRequiredService<TcmbKurService>();
 
                 DovizKuruDosyasiDTO kurDosyasi =
                     await tcmbKurServisi.GuncelKurlariGetirAsync(cancellationToken);

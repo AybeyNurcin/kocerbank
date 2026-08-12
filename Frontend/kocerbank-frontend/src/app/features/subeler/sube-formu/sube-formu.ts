@@ -15,6 +15,10 @@ import {
   AktifPasifDurumlari
 } from '../../../shared/enums/aktif-pasif-durumlari-enum';
 
+import {
+  extractErrorMessage
+} from '../../../shared/utils/hata-mesaji';
+
 @Component({
   selector: 'app-sube-formu',
   standalone: false,
@@ -171,11 +175,8 @@ export class SubeFormu implements OnChanges {
 
     this.kaydediliyorMu = false;
 
-    if (typeof hata.error === 'string') {
-      this.hataMesaji = hata.error;
-    } else {
-      this.hataMesaji = varsayilanMesaj;
-    }
+    this.hataMesaji =
+      extractErrorMessage(hata, varsayilanMesaj);
 
     this.changeDetector.markForCheck();
   }

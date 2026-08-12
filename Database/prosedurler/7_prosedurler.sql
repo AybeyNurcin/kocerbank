@@ -74,7 +74,14 @@ END ;
 /
 
 
-CREATE OR REPLACE PROCEDURE KB_PERSONEL_LISTELE
+/*
+ * NOT: Bu prosedür ESKI_ önekiyle yeniden adlandırılmıştır çünkü
+ * WHERE cümlesinde hatalı ifadeler içeriyordu (ör. "AD = P_AD IS NULL"),
+ * ve orijinal adıyla (KB_PERSONEL_LISTELE) aynı dosyada aşağıda
+ * bulunan düzeltilmiş tanımla CREATE OR REPLACE yoluyla çakışıyordu.
+ * Güncel/doğru tanım bu dosyada aşağıda devam eder.
+ */
+CREATE OR REPLACE PROCEDURE ESKI_KB_PERSONEL_LISTELE
 (
     P_ID          IN  KB_PERSONEL.ID%TYPE,
     P_AD          IN  KB_PERSONEL.AD%TYPE,
@@ -256,9 +263,15 @@ END;
  * (paratransferi.sql) üzerinden yapılmaktadır.
  * Buradaki KB_PARATRANSFERI_EKLE / KB_PARATRANSFERI_GUNCELLE
  * tanımları hiçbir yerden çağrılmadığı için kaldırılmıştır.
+ *
+ * NOT: Aşağıdaki prosedür ESKI_ önekiyle yeniden adlandırılmıştır.
+ * Güncel/geçerli KB_PARATRANSFERI_GETIRBYID tanımı paratransferi.sql
+ * dosyasındadır (P_SONUC parametre adıyla). Bu dosyadaki eski kopya
+ * (P_CURSOR parametre adıyla) aynı isimle CREATE OR REPLACE yoluyla
+ * paratransferi.sql'deki tanımla çakışıp deploy sırasına göre birbirini
+ * sessizce eziyordu; bu yüzden farklı bir isimle korunmuştur.
  */
-
-CREATE OR REPLACE PROCEDURE KB_PARATRANSFERI_GETIRBYID
+CREATE OR REPLACE PROCEDURE ESKI_KB_PARATRANSFERI_GETIRBYID
 (
     P_ID        IN  KB_PARATRANSFERI.ID%TYPE,
     P_CURSOR    OUT SYS_REFCURSOR

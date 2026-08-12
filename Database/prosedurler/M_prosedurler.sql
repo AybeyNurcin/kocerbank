@@ -431,7 +431,19 @@ BEGIN
 
 
     /* İLETİŞİM TABLOSUNDAKİ
-       BÜTÜN İLETİŞİM BİLGİLERİ */
+       BÜTÜN İLETİŞİM BİLGİLERİ
+
+       NOT: Burada bilinçli olarak NVL() KULLANILMIYOR.
+       EVTELEFON/ISTELEFON/EVADRES/ISADRES opsiyonel alanlardır;
+       frontend (musteri-iletisim.ts) bu alanı boş bırakan
+       kullanıcının niyetini "alanı temizle" olarak NULL gönderip
+       ifade eder. NVL eklemek bu "alanı temizleme" özelliğini
+       sessizce bozar. Bu prosedürü her zaman TÜM alanların güncel
+       anlık görüntüsüyle (partial değil, full-replace) çağıran tek
+       bir çağıran (EMusteriIletisim.cs -> Guncelle) olduğu sürece
+       bu güvenlidir; yeni bir çağıran eklenirse (örn. kısmi güncelleme
+       yapan bir ekran), o çağıranın da formu tam olarak
+       doldurduğundan emin olunmalıdır. */
 
     UPDATE KB_MUSTERIILETISIM
     SET

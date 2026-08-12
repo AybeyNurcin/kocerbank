@@ -4,17 +4,16 @@ using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.Services
 {
-    public class HesapService
+    public class HesapService : BaseCrudService
     {
         private readonly HesapRepository _hesapRepository;
-        private readonly AktifPersonelServis _aktifPersonelServis;
 
         public HesapService(
             HesapRepository hesapRepository,
-            AktifPersonelServis aktifPersonelServis)
+            AktifPersonelService aktifPersonelServis)
+            : base(aktifPersonelServis)
         {
             _hesapRepository = hesapRepository;
-            _aktifPersonelServis = aktifPersonelServis;
         }
 
         // 1. EKLEME
@@ -46,7 +45,7 @@ namespace kocerbank_backend.Services
             // Frontend'den gelen RecordUser dikkate alınmaz.
             // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             return _hesapRepository.Ekle(dto);
         }
@@ -54,22 +53,11 @@ namespace kocerbank_backend.Services
         // 2. ID'YE GÖRE GETİR
         public HesapDTO GetirById(long id)
         {
-            if (id <= 0)
-            {
-                throw new ArgumentException(
-                    "Geçersiz hesap ID'si.");
-            }
+            IdKontrolEt(id, "Geçersiz hesap ID'si.");
 
-            HesapDTO? hesap =
-                _hesapRepository.GetirById(id);
-
-            if (hesap is null)
-            {
-                throw new KeyNotFoundException(
-                    $"Hesap bulunamadı: ID = {id}");
-            }
-
-            return hesap;
+            return KaydiBulunduMuKontrolEt(
+                _hesapRepository.GetirById(id),
+                $"Hesap bulunamadı: ID = {id}");
         }
 
         // 3. LİSTELEME
@@ -85,19 +73,14 @@ namespace kocerbank_backend.Services
         {
             HesapGuncellemeRealityCheck(dto);
 
-            HesapDTO? mevcutHesap =
-                _hesapRepository.GetirById(dto.Id);
-
-            if (mevcutHesap is null)
-            {
-                throw new KeyNotFoundException(
-                    $"{dto.Id} ID'li hesap bulunamadı.");
-            }
+            _ = KaydiBulunduMuKontrolEt(
+                _hesapRepository.GetirById(dto.Id),
+                $"{dto.Id} ID'li hesap bulunamadı.");
 
             // Frontend'den gelen RecordUser dikkate alınmaz.
             // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             _hesapRepository.Guncelle(dto);
         }
@@ -134,7 +117,7 @@ namespace kocerbank_backend.Services
             // Frontend'den gelen RecordUser dikkate alınmaz.
             // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             return _hesapRepository.ParaCekYatir(dto);
         }
@@ -454,14 +437,6 @@ namespace kocerbank_backend.Services
                 throw new ArgumentException(
                     "Geçersiz müşteri ID'si."
                 );
-            }
-        }
-
-        public void IdCheck(long id)
-        {
-            if (id <= 0)
-            {
-                throw new Exception("Geçersiz ID");
             }
         }
     }

@@ -15,6 +15,13 @@ import { Sube } from '../models/sube-model';
 import { SubeFiltre } from '../models/sube-filtre-model';
 import { SubeApi } from '../services/sube-api';
 
+import {
+  ilkKayitNumarasi,
+  sayfadakiKayitlar,
+  sonKayitNumarasi,
+  toplamSayfaSayisi
+} from '../../../shared/utils/sayfalama';
+
 @Component({
   selector: 'app-sube-listesi',
   standalone: false,
@@ -90,46 +97,36 @@ export class SubeListesi
 
   get sayfadakiSubeler(): Sube[] {
 
-    const baslangicIndeksi =
-      (this.mevcutSayfa - 1) *
-      this.sayfaBasinaKayit;
-
-    const bitisIndeksi =
-      baslangicIndeksi +
-      this.sayfaBasinaKayit;
-
-    return this.subeler.slice(
-      baslangicIndeksi,
-      bitisIndeksi
+    return sayfadakiKayitlar(
+      this.subeler,
+      this.mevcutSayfa,
+      this.sayfaBasinaKayit
     );
   }
 
   get toplamSayfa(): number {
 
-    return Math.ceil(
-      this.subeler.length /
+    return toplamSayfaSayisi(
+      this.subeler.length,
       this.sayfaBasinaKayit
     );
   }
 
   get ilkKayitNumarasi(): number {
 
-    if (this.subeler.length === 0) {
-      return 0;
-    }
-
-    return (
-      (this.mevcutSayfa - 1) *
+    return ilkKayitNumarasi(
+      this.subeler.length,
+      this.mevcutSayfa,
       this.sayfaBasinaKayit
-    ) + 1;
+    );
   }
 
   get sonKayitNumarasi(): number {
 
-    return Math.min(
-      this.mevcutSayfa *
-      this.sayfaBasinaKayit,
-      this.subeler.length
+    return sonKayitNumarasi(
+      this.subeler.length,
+      this.mevcutSayfa,
+      this.sayfaBasinaKayit
     );
   }
 

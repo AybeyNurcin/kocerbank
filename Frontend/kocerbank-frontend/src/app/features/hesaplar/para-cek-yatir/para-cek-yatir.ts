@@ -25,6 +25,10 @@ import {
 } from '../../../shared/enums/hesap-hareket-tipleri-enum';
 
 import {
+  extractErrorMessage
+} from '../../../shared/utils/hata-mesaji';
+
+import {
   MusteriApi
 } from '../../musteriler/services/musteri-api';
 
@@ -253,7 +257,7 @@ export class ParaCekYatir
     this.hataMesaji = '';
 
     this.hesapApi
-      .ibanaGoreListele(temizIban)
+      .listele({ iban: temizIban })
       .subscribe({
 
         next: (hesaplar: Hesap[]) => {
@@ -313,8 +317,10 @@ export class ParaCekYatir
                 this.ibanDogrulaniyorMu = false;
 
                 this.hataMesaji =
-                  hata?.error?.mesaj ??
-                  'Hesap sahibi bilgileri getirilirken bir hata oluştu.';
+                  extractErrorMessage(
+                    hata,
+                    'Hesap sahibi bilgileri getirilirken bir hata oluştu.'
+                  );
 
                 this.cdr.detectChanges();
 
@@ -334,8 +340,10 @@ export class ParaCekYatir
           this.ibanDogrulaniyorMu = false;
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Hesap aranırken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Hesap aranırken bir hata oluştu.'
+            );
 
           this.cdr.detectChanges();
 
@@ -481,8 +489,10 @@ export class ParaCekYatir
           this.yukleniyorMu = false;
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'İşlem gerçekleştirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'İşlem gerçekleştirilirken bir hata oluştu.'
+            );
 
           this.cdr.detectChanges();
 

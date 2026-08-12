@@ -21,6 +21,10 @@ import {
 } from '../../../shared/enums/transfer-tipleri-enum';
 
 import {
+  extractErrorMessage
+} from '../../../shared/utils/hata-mesaji';
+
+import {
   TransferKanallari
 } from '../../../shared/enums/transfer-kanallari-enum';
 
@@ -468,8 +472,10 @@ export class ParaTransferComponent
             '';
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Gönderen hesap bilgisi getirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Gönderen hesap bilgisi getirilirken bir hata oluştu.'
+            );
 
           this.cdr.detectChanges();
 
@@ -578,8 +584,10 @@ export class ParaTransferComponent
             '';
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Alıcı hesap bilgisi getirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Alıcı hesap bilgisi getirilirken bir hata oluştu.'
+            );
 
           this.cdr.detectChanges();
 
@@ -1230,8 +1238,10 @@ export class ParaTransferComponent
           this.transferSonucBilgileriniSifirla();
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Transfer bilgileri getirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Transfer bilgileri getirilirken bir hata oluştu.'
+            );
 
           this.cdr.detectChanges();
 
@@ -1297,7 +1307,8 @@ export class ParaTransferComponent
     return deger
       .trim()
       .replace(/\s+/g, ' ')
-      .toLocaleUpperCase('tr-TR');
+      .toLocaleUpperCase('tr-TR')
+      .replace(/İ/g, 'I');
 
   }
 
@@ -1553,8 +1564,10 @@ export class ParaTransferComponent
             false;
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Para transferi gerçekleştirilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Para transferi gerçekleştirilirken bir hata oluştu.'
+            );
 
           this.cdr.detectChanges();
 

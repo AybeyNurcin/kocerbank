@@ -132,9 +132,7 @@ namespace kocerbank_backend.DataAccess
 
                 // ÜRETİLEN DEĞERLERİ DTO'YA YAZ
 
-                dto.Id =
-                    ((OracleDecimal)pYeniId.Value)
-                    .ToInt64();
+                dto.Id =((OracleDecimal)pYeniId.Value).ToInt64();
 
                 dto.HesapNo =
                     pHesapNo.Value?.ToString()
@@ -423,12 +421,6 @@ namespace kocerbank_backend.DataAccess
                 RecordUser = reader["RECORDUSER"].ToString()!,
                 RecordDate = OracleZamanDamgasi.UtcOlarakOku(reader["RECORDDATE"])
             };
-        }
-
-        private string? GetNullableString(OracleDataReader reader, string columnName)
-        {
-            var value = reader[columnName];
-            return value == DBNull.Value ? null : value.ToString();
         }
     }
 }

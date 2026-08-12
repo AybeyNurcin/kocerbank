@@ -4,23 +4,18 @@ using kocerbank_backend.Models.DTOs;
 
 namespace kocerbank_backend.Services
 {
-    public class MusteriService
+    public class MusteriService : BaseCrudService
     {
         private readonly MusteriRepository
             _musteriRepository;
 
-        private readonly AktifPersonelServis
-            _aktifPersonelServis;
-
         public MusteriService(
             MusteriRepository musteriRepository,
-            AktifPersonelServis aktifPersonelServis)
+            AktifPersonelService aktifPersonelServis)
+            : base(aktifPersonelServis)
         {
             _musteriRepository =
                 musteriRepository;
-
-            _aktifPersonelServis =
-                aktifPersonelServis;
         }
 
         // 1. MÜŞTERİ EKLEME
@@ -31,7 +26,7 @@ namespace kocerbank_backend.Services
             // Frontend'den gelen RecordUser kullanılmaz.
             // Giriş yapan personelin sicili backend'de atanır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             return _musteriRepository.Ekle(dto);
         }
@@ -71,7 +66,7 @@ namespace kocerbank_backend.Services
             // Müşteri ve iletişim kayıtlarının ikisine de
             // aktarılacak giriş yapan personel sicili.
             dto.Musteri.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             return _musteriRepository.TamKaydet(dto);
         }
@@ -79,22 +74,11 @@ namespace kocerbank_backend.Services
         // 2. ID'YE GÖRE MÜŞTERİ GETİRME
         public MusteriDTO GetirById(long id)
         {
-            if (id <= 0)
-            {
-                throw new ArgumentException(
-                    "Geçersiz müşteri ID'si.");
-            }
+            IdKontrolEt(id, "Geçersiz müşteri ID'si.");
 
-            MusteriDTO? musteri =
-                _musteriRepository.GetirById(id);
-
-            if (musteri is null)
-            {
-                throw new KeyNotFoundException(
-                    $"Müşteri bulunamadı: ID = {id}");
-            }
-
-            return musteri;
+            return KaydiBulunduMuKontrolEt(
+                _musteriRepository.GetirById(id),
+                $"Müşteri bulunamadı: ID = {id}");
         }
 
         // 3. KRİTERE GÖRE MÜŞTERİ LİSTELEME
@@ -112,19 +96,14 @@ namespace kocerbank_backend.Services
         {
             RealityCheck(dto);
 
-            MusteriDTO? mevcutMusteri =
-                _musteriRepository.GetirById(dto.Id);
-
-            if (mevcutMusteri is null)
-            {
-                throw new KeyNotFoundException(
-                    $"{dto.Id} ID'li müşteri bulunamadı.");
-            }
+            _ = KaydiBulunduMuKontrolEt(
+                _musteriRepository.GetirById(dto.Id),
+                $"{dto.Id} ID'li müşteri bulunamadı.");
 
             // Güncellemeyi yapan personelin sicili
             // frontend yerine backend'den alınır.
             dto.RecordUser =
-                _aktifPersonelServis.SicilNoGetir();
+                GirisYapanPersonelSicili();
 
             _musteriRepository.Guncelle(dto);
         }
@@ -132,20 +111,11 @@ namespace kocerbank_backend.Services
         // 5. MÜŞTERİ SİLME
         public void Sil(long id)
         {
-            if (id <= 0)
-            {
-                throw new ArgumentException(
-                    "Geçersiz müşteri ID'si.");
-            }
+            IdKontrolEt(id, "Geçersiz müşteri ID'si.");
 
-            MusteriDTO? mevcutMusteri =
-                _musteriRepository.GetirById(id);
-
-            if (mevcutMusteri is null)
-            {
-                throw new KeyNotFoundException(
-                    $"{id} ID'li müşteri bulunamadı.");
-            }
+            _ = KaydiBulunduMuKontrolEt(
+                _musteriRepository.GetirById(id),
+                $"{id} ID'li müşteri bulunamadı.");
 
             _musteriRepository.Sil(id);
         }
@@ -428,15 +398,6 @@ namespace kocerbank_backend.Services
             }
 
             return metin.Trim();
-        }
-
-        public void idCheck(long id)
-        {
-            if (id <= 0)
-            {
-                throw new Exception(
-                    "Geçersiz ID");
-            }
         }
     }
 }

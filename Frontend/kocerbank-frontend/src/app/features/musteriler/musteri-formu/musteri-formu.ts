@@ -28,16 +28,12 @@ import {
 } from '../services/musteri-api';
 
 import {
-  Sube
-} from '../../subeler/models/sube-model';
-
-import {
-  SubeApi
-} from '../../subeler/services/sube-api';
-
-import {
   MusteriTipi
 } from '../../../shared/enums/musteri-tipi-enum';
+
+import {
+  extractErrorMessage
+} from '../../../shared/utils/hata-mesaji';
 
 import {
   Cinsiyet
@@ -149,28 +145,14 @@ export class MusteriFormu implements OnInit {
   };
 
 
-  // ŞUBE AUTOCOMPLETE
-
-  tumSubeler: Sube[] = [];
-
-  bireyselSubeAramaMetni: string = '';
-  kurumsalSubeAramaMetni: string = '';
-
-  subeSecenekleriAcikMi: boolean = false;
-  subelerYukleniyorMu: boolean = false;
-
-
   constructor(
     private musteriApi: MusteriApi,
-    private subeApi: SubeApi,
     private changeDetector: ChangeDetectorRef
   ) {
   }
 
 
   ngOnInit(): void {
-
-    this.subeSecenekleriniGetir();
 
     if (this.musteri !== null) {
       this.guncellemeFormunuHazirla();
@@ -219,12 +201,6 @@ export class MusteriFormu implements OnInit {
         this.musteri.durumKodu
     };
 
-    const subeGorunumMetni =
-      this.subeGorunumMetniniOlustur(
-        this.musteri.subeSubeKodu,
-        this.musteri.subeAdi
-      );
-
     if (
       this.musteri.musteriTipi ===
       MusteriTipi.Bireysel
@@ -232,9 +208,6 @@ export class MusteriFormu implements OnInit {
 
       this.bireyselMusteriFormu =
         guncellenecekMusteri;
-
-      this.bireyselSubeAramaMetni =
-        subeGorunumMetni;
 
     }
 
@@ -246,31 +219,7 @@ export class MusteriFormu implements OnInit {
       this.kurumsalMusteriFormu =
         guncellenecekMusteri;
 
-      this.kurumsalSubeAramaMetni =
-        subeGorunumMetni;
-
     }
-
-  }
-
-
-  private subeGorunumMetniniOlustur(
-    subeKodu: string,
-    subeAdi: string | null | undefined
-  ): string {
-
-    if (
-      !subeAdi ||
-      subeAdi.trim() === ''
-    ) {
-      return subeKodu;
-    }
-
-    return (
-      subeKodu +
-      ' - ' +
-      subeAdi
-    );
 
   }
 
@@ -291,44 +240,6 @@ export class MusteriFormu implements OnInit {
   }
 
 
-  // AKTİF ŞUBE ARAMA METNİ
-
-  get aktifSubeAramaMetni(): string {
-
-    if (
-      this.seciliMusteriTipi ===
-      MusteriTipi.Kurumsal
-    ) {
-      return this.kurumsalSubeAramaMetni;
-    }
-
-    return this.bireyselSubeAramaMetni;
-
-  }
-
-
-  set aktifSubeAramaMetni(
-    deger: string
-  ) {
-
-    if (
-      this.seciliMusteriTipi ===
-      MusteriTipi.Kurumsal
-    ) {
-
-      this.kurumsalSubeAramaMetni =
-        deger;
-
-      return;
-
-    }
-
-    this.bireyselSubeAramaMetni =
-      deger;
-
-  }
-
-
   // MÜŞTERİ TİPİ SEÇİMİ
 
   musteriTipiniSec(
@@ -344,7 +255,6 @@ export class MusteriFormu implements OnInit {
       musteriTipi;
 
     this.hataMesaji = '';
-    this.subeSecenekleriAcikMi = false;
 
   }
 
@@ -466,163 +376,6 @@ export class MusteriFormu implements OnInit {
   }
 
 
-  // ŞUBE SEÇENEKLERİNİ GETİRME
-
-  private subeSecenekleriniGetir(): void {
-
-    this.subelerYukleniyorMu = true;
-
-    this.subeApi
-      .listele({})
-      .subscribe({
-
-        next: (
-          gelenSubeler: Sube[]
-        ) => {
-
-          this.tumSubeler =
-            gelenSubeler;
-
-          this.subelerYukleniyorMu =
-            false;
-
-          this.changeDetector
-            .markForCheck();
-
-        },
-
-        error: (hata) => {
-
-          console.error(
-            'Şubeler getirilirken hata oluştu:',
-            hata
-          );
-
-          this.tumSubeler = [];
-
-          this.subelerYukleniyorMu =
-            false;
-
-          this.changeDetector
-            .markForCheck();
-
-        }
-
-      });
-
-  }
-
-
-  get filtrelenmisSubeler(): Sube[] {
-
-    const aranan =
-      this.aktifSubeAramaMetni
-        .trim()
-        .toLocaleLowerCase('tr-TR');
-
-    return this.tumSubeler
-      .filter((sube: Sube) => {
-
-        if (aranan === '') {
-          return true;
-        }
-
-        const subeKodu =
-          sube.subeKodu
-            .toLocaleLowerCase('tr-TR');
-
-        const subeAdi =
-          sube.subeAdi
-            .toLocaleLowerCase('tr-TR');
-
-        return (
-          subeKodu.includes(aranan) ||
-          subeAdi.includes(aranan)
-        );
-
-      })
-      .slice(
-        0,
-        10
-      );
-
-  }
-
-
-  subeAramasiDegisti(): void {
-
-    this.subeSecenekleriAcikMi =
-      true;
-
-    const tamEslesenSube =
-      this.tumSubeler.find(
-        (sube: Sube) =>
-          this.subeGorunumMetni(sube) ===
-          this.aktifSubeAramaMetni
-      );
-
-    this.aktifMusteriFormu
-      .subeSubeKodu =
-      tamEslesenSube?.subeKodu ?? '';
-
-  }
-
-
-  subeSecenekleriniAc(): void {
-
-    this.subeSecenekleriAcikMi =
-      true;
-
-  }
-
-
-  subeSecenekleriniKapat(): void {
-
-    setTimeout(() => {
-
-      this.subeSecenekleriAcikMi =
-        false;
-
-      this.changeDetector
-        .markForCheck();
-
-    }, 150);
-
-  }
-
-
-  subeSec(
-    sube: Sube
-  ): void {
-
-    this.aktifMusteriFormu
-      .subeSubeKodu =
-      sube.subeKodu;
-
-    this.aktifSubeAramaMetni =
-      this.subeGorunumMetni(
-        sube
-      );
-
-    this.subeSecenekleriAcikMi =
-      false;
-
-  }
-
-
-  private subeGorunumMetni(
-    sube: Sube
-  ): string {
-
-    return (
-      sube.subeKodu +
-      ' - ' +
-      sube.subeAdi
-    );
-
-  }
-
-
   // MÜŞTERİ GÜNCELLEME
 
   guncelle(): void {
@@ -671,8 +424,10 @@ export class MusteriFormu implements OnInit {
             false;
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Müşteri güncellenirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Müşteri güncellenirken bir hata oluştu.'
+            );
 
           this.changeDetector
             .markForCheck();
@@ -744,8 +499,10 @@ export class MusteriFormu implements OnInit {
             false;
 
           this.hataMesaji =
-            hata?.error?.mesaj ??
-            'Müşteri kaydedilirken bir hata oluştu.';
+            extractErrorMessage(
+              hata,
+              'Müşteri kaydedilirken bir hata oluştu.'
+            );
 
           this.changeDetector
             .markForCheck();

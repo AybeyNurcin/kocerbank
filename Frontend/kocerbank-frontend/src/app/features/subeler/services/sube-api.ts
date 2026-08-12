@@ -11,6 +11,8 @@ import { Sube } from '../models/sube-model';
 import { SubeFiltre } from '../models/sube-filtre-model';
 import { SubeDashboard } from '../models/sube-dashboard-model';
 import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
+import { environment } from '../../../../environments/environment';
+import { dashboardOzetGetir } from '../../../shared/utils/dashboard-api';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,7 @@ import { DashboardFiltre } from '../../../shared/models/dashboard-filtre-model';
 export class SubeApi {
 
   private readonly apiUrl =
-    'http://localhost:5107/api/Sube';
+    `${environment.apiBaseUrl}/Sube`;
 
   constructor(private http: HttpClient) {
   }
@@ -64,9 +66,6 @@ export class SubeApi {
 
   dashboardOzet(filtre?: DashboardFiltre): Observable<SubeDashboard> {
 
-    return this.http.post<SubeDashboard>(
-      `${this.apiUrl}/DashboardOzet`,
-      filtre ?? null
-    );
+    return dashboardOzetGetir(this.http, this.apiUrl, filtre);
   }
 }

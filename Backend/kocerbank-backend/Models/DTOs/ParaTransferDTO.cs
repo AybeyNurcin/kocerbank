@@ -79,13 +79,13 @@ namespace kocerbank_backend.Models.DTOs
             set;
         }
 
-        public TransferHesapDTO? GonderenHesap
+        public HesapDTO? GonderenHesap
         {
             get;
             set;
         }
 
-        public TransferHesapDTO? AliciHesap
+        public HesapDTO? AliciHesap
         {
             get;
             set;
