@@ -285,6 +285,19 @@
   }
 
 
+  <!-- ALICI BULUNAMADI, EFT OLARAK DEVAM EDECEK -->
+  @if (
+  aliciEftMi &&
+  !transferBilgileriYukleniyorMu
+  ) {
+
+  <div class="information-message">
+    Bu IBAN bankamızda kayıtlı değil. İşlem EFT olarak gerçekleştirilecektir.
+  </div>
+
+  }
+
+
   <!-- KUR VE ALICI TUTARI -->
   @if (
   transfer.gonderenHesap &&
@@ -407,12 +420,32 @@
 
       <strong>
         {{
-            transfer.aliciHesap
-              ?.hesapSahibi
+            aliciEftMi
+              ? aliciIsimSoyisim
+              : transfer.aliciHesap
+                  ?.hesapSahibi
         }}
       </strong>
 
     </div>
+
+
+    <!-- İŞLEM TİPİ (YALNIZCA HAVALE/EFT) -->
+    @if (transferKanaliRotasi === 'havale-eft') {
+
+    <div class="preview-item">
+
+      <span>
+        İşlem Tipi
+      </span>
+
+      <strong>
+        {{ aliciEftMi ? 'EFT' : 'Havale' }}
+      </strong>
+
+    </div>
+
+    }
 
 
     <!-- GÖNDEREN IBAN -->

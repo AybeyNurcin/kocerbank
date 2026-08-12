@@ -583,6 +583,30 @@ export class ParaTransferComponent
           this.aliciMaskelenmisAdSoyad =
             '';
 
+          /*
+           * Havale/EFT ekranında alıcı IBAN'ı
+           * bankamızda bulunamayabilir; bu bir
+           * hata değildir, işlem EFT olarak devam
+           * eder. Kesin karar birleşik
+           * transferBilgileriniGetir çağrısına
+           * (ikisiDeHazirsaKuruGetir) aittir.
+           */
+          if (
+            this.transferKanaliRotasi ===
+            'havale-eft'
+          ) {
+
+            this.hataMesaji =
+              '';
+
+            this.cdr.detectChanges();
+
+            this.ikisiDeHazirsaKuruGetir();
+
+            return;
+
+          }
+
           this.hataMesaji =
             extractErrorMessage(
               hata,
@@ -903,6 +927,30 @@ export class ParaTransferComponent
 
 
   /*
+   * ALICI IBAN'I BANKAMIZDA BULUNAMADI,
+   * İŞLEM EFT OLARAK DEVAM EDECEK
+   *
+   * Yalnızca Havale/EFT ekranında geçerlidir;
+   * SWIFT'te alıcı hesabının bulunamaması
+   * hâlâ engelleyici bir durumdur.
+   */
+
+  get aliciEftMi():
+    boolean {
+
+    return (
+      this.transferKanaliRotasi ===
+      'havale-eft' &&
+      this.transfer.aliciHesap ===
+      null &&
+      this.transfer.transferTipi ===
+      TransferTipleri.Eft
+    );
+
+  }
+
+
+  /*
    * İLERİ BUTONU AKTİF Mİ?
    */
 
@@ -914,8 +962,11 @@ export class ParaTransferComponent
       this.isimlerGirildiMi &&
       this.transfer.gonderenHesap !==
       null &&
-      this.transfer.aliciHesap !==
-      null &&
+      (
+        this.transfer.aliciHesap !==
+        null ||
+        this.aliciEftMi
+      ) &&
       this.transfer.dovizKuru > 0 &&
       this.transfer.aliciTutar > 0 &&
       !this.transferBilgileriYukleniyorMu &&
@@ -1341,6 +1392,16 @@ export class ParaTransferComponent
   private aliciIsmiEslesiyorMu():
     boolean {
 
+    /*
+     * EFT'de alıcının bizim bankamızda hesabı
+     * olmadığı için doğrulanacak gerçek bir isim
+     * yok; kullanıcının girdiği isim doğrulanmadan
+     * kabul edilir.
+     */
+    if (this.aliciEftMi) {
+      return true;
+    }
+
     const gercekAdSoyad =
       this.transfer.aliciHesap
         ?.hesapSahibi;
@@ -1448,8 +1509,11 @@ export class ParaTransferComponent
       this.transferYapiliyorMu ||
       this.transfer.gonderenHesap ===
       null ||
-      this.transfer.aliciHesap ===
-      null
+      (
+        this.transfer.aliciHesap ===
+        null &&
+        !this.aliciEftMi
+      )
     ) {
       return;
     }
@@ -1614,7 +1678,16 @@ export class ParaTransferComponent
         this.transfer.gonderenTutar,
 
       aciklama:
-        this.transfer.aciklama
+        this.transfer.aciklama,
+
+      /*
+       * Yalnızca EFT'de (alıcının bizim
+       * bankamızda hesabı yoksa) kullanılır;
+       * doğrulanmadan olduğu gibi gönderilir.
+       */
+      aliciAdSoyad:
+        this.aliciIsimSoyisim.trim() ||
+        null
     };
 
   }
@@ -1771,6 +1844,9 @@ export class ParaTransferComponent
         0,
 
       aciklama:
+        null,
+
+      aliciAdSoyad:
         null,
 
       gonderenHesapId:

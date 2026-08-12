@@ -477,11 +477,262 @@ BEGIN
 END KB_PARA_TRANSFERI_YAP;
 /
 
+
+/*
+    KB_EFT_TRANSFERI_YAP
+
+    Havale/EFT ekranında alıcı IBAN'ı bizim
+    bankamızda kayıtlı değilse kullanılır. Alıcının
+    bizim sistemimizde bir hesabı olmadığı için
+    yalnızca gönderenin hesabı güncellenir; alıcı
+    IBAN'ı ve kullanıcının girdiği ad-soyad bilgisi
+    yalnızca KB_PARATRANSFERI kaydına metin olarak
+    yazılır.
+*/
+
+CREATE OR REPLACE PROCEDURE KB_EFT_TRANSFERI_YAP
+(
+    P_GONDERENHESAPID       IN  KB_HESAPBILGILERI.ID%TYPE,
+    P_ALICIIBAN             IN  KB_PARATRANSFERI.ALICIIBAN%TYPE,
+    P_ALICIADSOYAD          IN  KB_PARATRANSFERI.ALICIADSOYAD%TYPE,
+    P_GONDERENTUTAR         IN  KB_PARATRANSFERI.GONDERENTUTAR%TYPE,
+    P_ACIKLAMA              IN  KB_PARATRANSFERI.ACIKLAMA%TYPE,
+    P_RECORDUSER            IN  KB_PARATRANSFERI.RECORDUSER%TYPE,
+
+    P_TRANSFERID            OUT KB_PARATRANSFERI.ID%TYPE,
+    P_GONDERENHAREKETID     OUT KB_HESAPHAREKETI.ID%TYPE,
+    P_GONDERENYENIBAKIYE    OUT KB_HESAPBILGILERI.BAKIYE%TYPE
+)
+AS
+    /* Gönderen hesap bilgileri */
+
+    V_GONDERENONCEKIBAKIYE
+        KB_HESAPBILGILERI.BAKIYE%TYPE;
+
+    V_GONDERENDOVIZTIPI
+        KB_HESAPBILGILERI.DOVIZCINSI%TYPE;
+
+    V_GONDERENDURUMKODU
+        KB_HESAPBILGILERI.HESAPDURUMKODU%TYPE;
+
+    V_GONDERENYENIBAKIYE
+        KB_HESAPBILGILERI.BAKIYE%TYPE;
+
+    V_RECORDUSER KB_PARATRANSFERI.RECORDUSER%TYPE;
+    V_RECORDDATE KB_PARATRANSFERI.RECORDDATE%TYPE;
+
+BEGIN
+
+    KB_AUDIT_BILGI_HAZIRLA
+    (
+        P_RECORDUSER       => P_RECORDUSER,
+        P_DUZENLENMIS_USER => V_RECORDUSER,
+        P_RECORDDATE       => V_RECORDDATE
+    );
+
+    /* 1. TEMEL PARAMETRE KONTROLLERİ */
+
+    IF P_GONDERENHESAPID IS NULL
+       OR P_GONDERENHESAPID <= 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20201,
+            'Geçersiz gönderen hesap ID.'
+        );
+
+    END IF;
+
+
+    IF P_ALICIIBAN IS NULL
+       OR LENGTH(TRIM(P_ALICIIBAN)) = 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20202,
+            'Alıcı IBAN girilmesi zorunludur.'
+        );
+
+    END IF;
+
+
+    IF P_GONDERENTUTAR IS NULL
+       OR P_GONDERENTUTAR <= 0 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20203,
+            'Gönderen tutar sıfırdan büyük olmalıdır.'
+        );
+
+    END IF;
+
+
+    IF P_ACIKLAMA IS NOT NULL
+       AND LENGTH(TRIM(P_ACIKLAMA)) > 100 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20204,
+            'Açıklama en fazla 100 karakter olabilir.'
+        );
+
+    END IF;
+
+
+    /* 2. GÖNDEREN HESABI KİLİTLEYEREK GETİR */
+
+    BEGIN
+
+        SELECT
+            BAKIYE,
+            DOVIZCINSI,
+            HESAPDURUMKODU
+        INTO
+            V_GONDERENONCEKIBAKIYE,
+            V_GONDERENDOVIZTIPI,
+            V_GONDERENDURUMKODU
+        FROM KB_HESAPBILGILERI
+        WHERE ID = P_GONDERENHESAPID
+        FOR UPDATE;
+
+    EXCEPTION
+
+        WHEN NO_DATA_FOUND THEN
+
+            RAISE_APPLICATION_ERROR(
+                -20205,
+                'Gönderen hesap bulunamadı.'
+            );
+
+    END;
+
+
+    /* 3. GÖNDEREN HESAP DURUM VE DÖVİZ KONTROLÜ */
+
+    IF V_GONDERENDURUMKODU <> 1 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20206,
+            'Gönderen hesap aktif değildir.'
+        );
+
+    END IF;
+
+
+    IF V_GONDERENDOVIZTIPI <> 1 THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20207,
+            'EFT işlemi yalnızca TL hesaplardan yapılabilir.'
+        );
+
+    END IF;
+
+
+    /* 4. BAKİYE KONTROLÜ */
+
+    IF V_GONDERENONCEKIBAKIYE < P_GONDERENTUTAR THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20208,
+            'Gönderen hesap bakiyesi yetersizdir.'
+        );
+
+    END IF;
+
+
+    /* 5. YENİ BAKİYEYİ HESAPLA VE GÜNCELLE */
+
+    V_GONDERENYENIBAKIYE :=
+        V_GONDERENONCEKIBAKIYE
+        - P_GONDERENTUTAR;
+
+
+    UPDATE KB_HESAPBILGILERI
+    SET
+        BAKIYE = V_GONDERENYENIBAKIYE
+    WHERE ID = P_GONDERENHESAPID;
+
+
+    /* 6. PARA TRANSFERİ KAYDINI OLUŞTUR */
+
+    INSERT INTO KB_PARATRANSFERI
+    (
+        GONDERENHESAPID,
+        ALICIHESAPID,
+        ALICIIBAN,
+        ALICIADSOYAD,
+        TRANSFERTIPI,
+        GONDERENTUTAR,
+        GONDERENDOVIZTIPI,
+        ALICIDOVIZTIPI,
+        DOVIZKURU,
+        ACIKLAMA,
+        TARIHSAAT,
+        RECORDUSER,
+        RECORDDATE
+    )
+    VALUES
+    (
+        P_GONDERENHESAPID,
+        NULL,
+        UPPER(TRIM(P_ALICIIBAN)),
+        NULLIF(TRIM(P_ALICIADSOYAD), ''),
+        3,
+        P_GONDERENTUTAR,
+        V_GONDERENDOVIZTIPI,
+        V_GONDERENDOVIZTIPI,
+        1,
+        NULLIF(TRIM(P_ACIKLAMA), ''),
+        V_RECORDDATE,
+        V_RECORDUSER,
+        V_RECORDDATE
+    )
+    RETURNING ID INTO P_TRANSFERID;
+
+
+    /* 7. GÖNDEREN HESAP HAREKETİ */
+
+    INSERT INTO KB_HESAPHAREKETI
+    (
+        HESAPBILGILERIID,
+        PARATRANSFERIID,
+        HAREKETTIPI,
+        TUTAR,
+        DOVIZCINSI,
+        ONCEKIBAKIYE,
+        SONRAKIBAKIYE,
+        ISLEMTARIHI,
+        RECORDUSER,
+        RECORDDATE
+    )
+    VALUES
+    (
+        P_GONDERENHESAPID,
+        P_TRANSFERID,
+        4,
+        P_GONDERENTUTAR,
+        V_GONDERENDOVIZTIPI,
+        V_GONDERENONCEKIBAKIYE,
+        V_GONDERENYENIBAKIYE,
+        V_RECORDDATE,
+        V_RECORDUSER,
+        V_RECORDDATE
+    )
+    RETURNING ID INTO P_GONDERENHAREKETID;
+
+
+    /* 8. SONUÇLARI DIŞARI AKTAR */
+
+    P_GONDERENYENIBAKIYE :=
+        V_GONDERENYENIBAKIYE;
+
+END KB_EFT_TRANSFERI_YAP;
+/
+
+
 SELECT
     OBJECT_NAME,
     STATUS
 FROM USER_OBJECTS
-WHERE OBJECT_NAME = 'KB_PARA_TRANSFERI_YAP';
+WHERE OBJECT_NAME IN ('KB_PARA_TRANSFERI_YAP', 'KB_EFT_TRANSFERI_YAP');
 
 SELECT
     H.ID,

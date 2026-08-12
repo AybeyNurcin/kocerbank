@@ -392,6 +392,8 @@ export class VirmanComponent {
 
       aciklama: this.aciklama,
 
+      aliciAdSoyad: null,
+
       gonderenHesapId: 0,
       aliciHesapId: 0,
 

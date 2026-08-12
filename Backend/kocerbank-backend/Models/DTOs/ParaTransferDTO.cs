@@ -44,6 +44,19 @@ namespace kocerbank_backend.Models.DTOs
             set;
         }
 
+        /*
+         * Yalnızca EFT'de (alıcının bizim
+         * bankamızda hesabı yoksa) kullanılır.
+         * Gerçek bir hesapla doğrulanamaz;
+         * kullanıcının girdiği isim doğrudan
+         * kayda yazılır.
+         */
+        public string? AliciAdSoyad
+        {
+            get;
+            set;
+        }
+
 
         /*
          * SERVICE TARAFINDAN DOLDURULACAK
@@ -55,7 +68,11 @@ namespace kocerbank_backend.Models.DTOs
             set;
         }
 
-        public long AliciHesapId
+        /*
+         * EFT'de alıcının bizim bankamızda
+         * hesabı olmadığı için null kalır.
+         */
+        public long? AliciHesapId
         {
             get;
             set;
