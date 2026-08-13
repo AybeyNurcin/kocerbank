@@ -92,26 +92,51 @@
     aramaKriterleri.musteriTipi === 2
     ) {
 
-    <div class="selected-type-heading">
+    <div class="filter-fields">
 
+      <!-- BİREYSEL: TCKN -->
       @if (aramaKriterleri.musteriTipi === 1) {
 
-      <span class="customer-type individual-type">
-        Bireysel müşteri filtreleri
-      </span>
+      <div class="form-field">
 
-      } @else {
+        <label for="tckn">
+          TCKN
+        </label>
 
-      <span class="customer-type corporate-type">
-        Kurumsal müşteri filtreleri
-      </span>
+        <input id="tckn"
+               name="tckn"
+               type="text"
+               inputmode="numeric"
+               maxlength="11"
+               [(ngModel)]="aramaKriterleri.tckn"
+               placeholder="11 haneli TCKN" />
+
+      </div>
 
       }
 
-    </div>
 
+      <!-- KURUMSAL: VKN -->
+      @if (aramaKriterleri.musteriTipi === 2) {
 
-    <div class="filter-fields">
+      <div class="form-field">
+
+        <label for="vkn">
+          VKN
+        </label>
+
+        <input id="vkn"
+               name="vkn"
+               type="text"
+               inputmode="numeric"
+               maxlength="10"
+               [(ngModel)]="aramaKriterleri.vkn"
+               placeholder="10 haneli VKN" />
+
+      </div>
+
+      }
+
 
       <!-- ORTAK: AD -->
       <div class="form-field">
@@ -145,89 +170,8 @@
       </div>
 
 
-      <!-- ORTAK: E-POSTA -->
-      <div class="form-field">
-
-        <label for="eposta">
-          E-posta
-        </label>
-
-        <input id="eposta"
-               name="eposta"
-               type="text"
-               [(ngModel)]="aramaKriterleri.eposta"
-               placeholder="E-posta adresi" />
-
-      </div>
-
-
-      <!-- ORTAK: TELEFON -->
-      <!-- YALNIZCA BU ALAN 400 MS SONRA OTOMATİK ARAR -->
-      <div class="form-field">
-
-        <label for="telefonNo">
-          Telefon
-        </label>
-
-        <input id="telefonNo"
-               name="telefonNo"
-               type="text"
-               [(ngModel)]="aramaKriterleri.telefonNo"
-               (ngModelChange)="telefonDegisti()"
-               maxlength="13"
-               placeholder="Telefon numarası" />
-
-      </div>
-
-
-      <!-- ORTAK: ŞUBE SEÇİCİ -->
-      <div class="form-field branch-filter-field">
-
-        <label for="subeArama">
-          Şube
-        </label>
-
-        <app-sube-secici [(seciliSubeKodu)]="aramaKriterleri.subeSubeKodu">
-        </app-sube-secici>
-
-      </div>
-
-
       <!-- BİREYSEL MÜŞTERİ FİLTRELERİ -->
       @if (aramaKriterleri.musteriTipi === 1) {
-
-      <!-- DOĞUM TARİHİ -->
-      <div class="form-field">
-
-        <label for="dogumTarihi">
-          Doğum tarihi
-        </label>
-
-        <input id="dogumTarihi"
-               name="dogumTarihi"
-               type="date"
-               [(ngModel)]="aramaKriterleri.dogumTarihi" />
-
-      </div>
-
-
-      <!-- TCKN -->
-      <div class="form-field">
-
-        <label for="tckn">
-          TCKN
-        </label>
-
-        <input id="tckn"
-               name="tckn"
-               type="text"
-               inputmode="numeric"
-               maxlength="11"
-               [(ngModel)]="aramaKriterleri.tckn"
-               placeholder="11 haneli TCKN" />
-
-      </div>
-
 
       <!-- CİNSİYET -->
       <div class="form-field">
@@ -256,31 +200,27 @@
 
       </div>
 
-      }
 
-
-      <!-- KURUMSAL MÜŞTERİ FİLTRELERİ -->
-      @if (aramaKriterleri.musteriTipi === 2) {
-
-      <!-- VKN -->
+      <!-- DOĞUM TARİHİ ARALIĞI -->
       <div class="form-field">
 
-        <label for="vkn">
-          VKN
+        <label>
+          Doğum tarihi aralığı
         </label>
 
-        <input id="vkn"
-               name="vkn"
-               type="text"
-               inputmode="numeric"
-               maxlength="10"
-               [(ngModel)]="aramaKriterleri.vkn"
-               placeholder="10 haneli VKN" />
+        <app-tarih-araligi-secici
+          [(baslangicTarihi)]="aramaKriterleri.dogumTarihiBaslangic"
+          [(bitisTarihi)]="aramaKriterleri.dogumTarihiBitis">
+        </app-tarih-araligi-secici>
 
       </div>
 
+      }
 
-      <!-- UNVAN -->
+
+      <!-- KURUMSAL: UNVAN -->
+      @if (aramaKriterleri.musteriTipi === 2) {
+
       <div class="form-field">
 
         <label for="unvan">
@@ -297,6 +237,19 @@
       </div>
 
       }
+
+
+      <!-- ORTAK: ŞUBE SEÇİCİ -->
+      <div class="form-field branch-filter-field">
+
+        <label for="subeArama">
+          Şube
+        </label>
+
+        <app-sube-secici [(seciliSubeKodu)]="aramaKriterleri.subeSubeKodu">
+        </app-sube-secici>
+
+      </div>
 
 
       <!-- ORTAK: DURUM -->
@@ -332,6 +285,18 @@
     <!-- ARA BUTONU -->
     <div class="filter-actions">
 
+      <div class="filter-info-spacer">
+
+        @if (bilgiMesaji !== '') {
+
+        <span class="filter-info-message">
+          {{ bilgiMesaji }}
+        </span>
+
+        }
+
+      </div>
+
       <button type="button"
               class="search-button"
               [disabled]="yukleniyorMu"
@@ -357,7 +322,11 @@
 
 
   <!-- BİLGİ MESAJI -->
-  @if (bilgiMesaji !== '') {
+  @if (
+  bilgiMesaji !== '' &&
+  aramaKriterleri.musteriTipi !== 1 &&
+  aramaKriterleri.musteriTipi !== 2
+  ) {
 
   <div class="information-message">
     {{ bilgiMesaji }}
@@ -772,9 +741,14 @@
 
   <div class="modal-background">
 
-    <div class="musteri-form-modal">
+    <div class="musteri-form-modal"
+         [class.no-clip-modal]="
+           seciliMusteri !== null ||
+           musteriFormuRef.aktifAdim === 1
+         ">
 
-      <app-musteri-formu [musteri]="seciliMusteri"
+      <app-musteri-formu #musteriFormuRef
+                         [musteri]="seciliMusteri"
                          (kapat)="musteriFormunuKapat()"
                          (kaydedildi)="musteriKaydedildi()">
       </app-musteri-formu>

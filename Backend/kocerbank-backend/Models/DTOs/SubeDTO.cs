@@ -20,6 +20,9 @@ namespace kocerbank_backend.Models.DTOs
         public string? SubeTelefonNo { get; set; }
         public string? SubeAdres { get; set; }
         public AktifPasifDurumlari? SubeDurumKodu { get; set; }
+
+        public DateTime? AcilisTarihiBaslangic { get; set; }
+        public DateTime? AcilisTarihiBitis { get; set; }
     }
 
     public class SubeDashboardDTO

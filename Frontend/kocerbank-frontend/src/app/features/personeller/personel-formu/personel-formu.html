@@ -72,6 +72,7 @@
 
       <label for="formAd">
         Ad
+        <span>*</span>
       </label>
 
       <input id="formAd"
@@ -90,6 +91,7 @@
 
       <label for="formSoyad">
         Soyad
+        <span>*</span>
       </label>
 
       <input id="formSoyad"
@@ -108,6 +110,7 @@
 
       <label for="formRol">
         Rol
+        <span>*</span>
       </label>
 
       <input id="formRol"
@@ -126,6 +129,7 @@
 
       <label for="formTckn">
         TC Kimlik No
+        <span>*</span>
       </label>
 
       <input id="formTckn"
@@ -144,6 +148,7 @@
 
       <label for="formTelefon">
         Telefon
+        <span>*</span>
       </label>
 
       <input id="formTelefon"
@@ -162,6 +167,7 @@
 
       <label for="formEposta">
         E-posta
+        <span>*</span>
       </label>
 
       <input id="formEposta"
@@ -175,13 +181,14 @@
     </div>
 
 
-    <!-- ŞİFRE SADECE EKLEMEDE GÖSTERİLİR -->
+    <!-- ŞİFRE VE ŞUBE SADECE EKLEMEDE GÖSTERİLİR -->
     @if (personel === null) {
 
     <div class="popup-field">
 
       <label for="formSifre">
         Şifre
+        <span>*</span>
       </label>
 
       <div class="password-field">
@@ -229,14 +236,32 @@
 
     </div>
 
-    }
 
-
-    <!-- ŞUBE -->
-    <div class="popup-field full-field">
+    <div class="popup-field">
 
       <label>
         Şube
+        <span>*</span>
+      </label>
+
+      <app-sube-secici
+        [(seciliSubeKodu)]="formModel.subeKodu"
+        [devreDisiMi]="kaydediliyorMu">
+      </app-sube-secici>
+
+    </div>
+
+    }
+
+
+    <!-- ŞUBE VE DURUM SADECE GÜNCELLEMEDE BU KONUMDA GÖSTERİLİR -->
+    @if (personel !== null) {
+
+    <div class="popup-field">
+
+      <label>
+        Şube
+        <span>*</span>
       </label>
 
       <app-sube-secici
@@ -247,11 +272,11 @@
     </div>
 
 
-    <!-- DURUM -->
     <div class="popup-field">
 
       <label for="formDurum">
         Durum
+        <span>*</span>
       </label>
 
       <select id="formDurum"
@@ -272,12 +297,15 @@
 
     </div>
 
+    }
+
 
     <!-- ADRES -->
     <div class="popup-field full-field">
 
       <label for="formAdres">
         Adres
+        <span>*</span>
       </label>
 
       <input id="formAdres"

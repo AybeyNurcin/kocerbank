@@ -9,9 +9,10 @@ export interface PersonelFiltre {
   soyad?: string;
   rol?: string;
   tckn?: string;
-  telefonNo?: string;
   subeKodu?: string;
   adres?: string;
-  email?: string;
   durumKodu?: AktifPasifDurumlari;
+
+  baslangicTarihi?: string;
+  bitisTarihi?: string;
 }

@@ -25,7 +25,8 @@ namespace kocerbank_backend.Models.DTOs
         public string? Ad { get; set; }
         public string? Soyad { get; set; }
         public string? Eposta { get; set; }
-        public DateTime? DogumTarihi { get; set; }
+        public DateTime? DogumTarihiBaslangic { get; set; }
+        public DateTime? DogumTarihiBitis { get; set; }
         public string? TelefonNo { get; set; }
         public string? TCKN { get; set; }
         public CinsiyetDurumlari? Cinsiyet { get; set; }

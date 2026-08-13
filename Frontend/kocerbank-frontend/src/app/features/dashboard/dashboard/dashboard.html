@@ -20,23 +20,11 @@
   <div class="dashboard-filter-bar">
 
     <div class="filter-field">
-      <label for="baslangicTarihi">Başlangıç Tarihi</label>
-      <input
-        id="baslangicTarihi"
-        name="baslangicTarihi"
-        type="date"
-        [(ngModel)]="baslangicTarihi"
-      />
-    </div>
-
-    <div class="filter-field">
-      <label for="bitisTarihi">Bitiş Tarihi</label>
-      <input
-        id="bitisTarihi"
-        name="bitisTarihi"
-        type="date"
-        [(ngModel)]="bitisTarihi"
-      />
+      <label>Tarih Aralığı</label>
+      <app-tarih-araligi-secici
+        [(baslangicTarihi)]="baslangicTarihi"
+        [(bitisTarihi)]="bitisTarihi">
+      </app-tarih-araligi-secici>
     </div>
 
     <div class="filter-actions">

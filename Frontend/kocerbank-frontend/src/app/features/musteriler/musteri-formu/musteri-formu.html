@@ -38,7 +38,7 @@
   <!-- GÜNCELLEME MODU -->
   @if (musteri !== null) {
 
-  <div class="form-content">
+  <div class="form-content no-min-height">
 
     <div class="section-heading">
 
@@ -61,7 +61,53 @@
 
     <div class="selected-form-area">
 
-      <div class="form-grid">
+      <div class="form-grid update-form-grid">
+
+        <!-- BİREYSEL: TCKN -->
+        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
+
+        <div class="form-field">
+
+          <label for="guncellemeTckn">
+            TCKN
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeTckn"
+                 name="guncellemeTckn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="11"
+                 [(ngModel)]="aktifMusteriFormu.tckn"
+                 placeholder="11 haneli TCKN" />
+
+        </div>
+
+        }
+
+
+        <!-- KURUMSAL: VKN -->
+        @if (seciliMusteriTipi === musteriTipleri.Kurumsal) {
+
+        <div class="form-field">
+
+          <label for="guncellemeVkn">
+            VKN
+            <span>*</span>
+          </label>
+
+          <input id="guncellemeVkn"
+                 name="guncellemeVkn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="10"
+                 [(ngModel)]="aktifMusteriFormu.vkn"
+                 placeholder="10 haneli VKN" />
+
+        </div>
+
+        }
+
 
         <!-- AD -->
         <div class="form-field">
@@ -99,57 +145,8 @@
         </div>
 
 
-        <!-- ŞUBE -->
-        <div class="form-field branch-field">
-
-          <label>
-            Şube
-            <span>*</span>
-          </label>
-
-          <app-sube-secici
-            [(seciliSubeKodu)]="aktifMusteriFormu.subeSubeKodu"
-            [devreDisiMi]="kaydediliyorMu">
-          </app-sube-secici>
-
-        </div>
-
-
         <!-- BİREYSEL GÜNCELLEME ALANLARI -->
         @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
-
-        <div class="form-field">
-
-          <label for="guncellemeDogumTarihi">
-            Doğum tarihi
-            <span>*</span>
-          </label>
-
-          <input id="guncellemeDogumTarihi"
-                 name="guncellemeDogumTarihi"
-                 type="date"
-                 [(ngModel)]="aktifMusteriFormu.dogumTarihi" />
-
-        </div>
-
-
-        <div class="form-field">
-
-          <label for="guncellemeTckn">
-            TCKN
-            <span>*</span>
-          </label>
-
-          <input id="guncellemeTckn"
-                 name="guncellemeTckn"
-                 type="text"
-                 inputmode="numeric"
-                 maxlength="11"
-                 [(ngModel)]="aktifMusteriFormu.tckn"
-                 placeholder="11 haneli TCKN" />
-
-        </div>
-
 
         <div class="form-field">
 
@@ -178,6 +175,20 @@
 
         </div>
 
+
+        <div class="form-field">
+
+          <label for="guncellemeDogumTarihi">
+            Doğum tarihi
+            <span>*</span>
+          </label>
+
+          <app-tarih-secici
+            [(seciliTarih)]="aktifMusteriFormu.dogumTarihi">
+          </app-tarih-secici>
+
+        </div>
+
         }
 
 
@@ -185,24 +196,6 @@
         @if (seciliMusteriTipi === musteriTipleri.Kurumsal) {
 
         <div class="form-field">
-
-          <label for="guncellemeVkn">
-            VKN
-            <span>*</span>
-          </label>
-
-          <input id="guncellemeVkn"
-                 name="guncellemeVkn"
-                 type="text"
-                 inputmode="numeric"
-                 maxlength="10"
-                 [(ngModel)]="aktifMusteriFormu.vkn"
-                 placeholder="10 haneli VKN" />
-
-        </div>
-
-
-        <div class="form-field wide-field">
 
           <label for="guncellemeUnvan">
             Unvan
@@ -219,6 +212,47 @@
         </div>
 
         }
+
+
+        <!-- ŞUBE -->
+        <div class="form-field">
+
+          <label>
+            Şube
+            <span>*</span>
+          </label>
+
+          <app-sube-secici
+            [(seciliSubeKodu)]="aktifMusteriFormu.subeSubeKodu"
+            [devreDisiMi]="kaydediliyorMu">
+          </app-sube-secici>
+
+        </div>
+
+
+        <!-- DURUM -->
+        <div class="form-field">
+
+          <label for="guncellemeDurum">
+            Durum
+            <span>*</span>
+          </label>
+
+          <select id="guncellemeDurum"
+                  name="guncellemeDurum"
+                  [(ngModel)]="aktifMusteriFormu.durumKodu">
+
+            <option [ngValue]="durumlar.Aktif">
+              Aktif
+            </option>
+
+            <option [ngValue]="durumlar.Pasif">
+              Pasif
+            </option>
+
+          </select>
+
+        </div>
 
       </div>
 
@@ -352,7 +386,54 @@
       </div>
 
 
-      <div class="form-grid">
+      <div class="form-grid"
+           [class.corporate-add-grid]="seciliMusteriTipi === musteriTipleri.Kurumsal">
+
+        <!-- BİREYSEL: TCKN -->
+        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
+
+        <div class="form-field">
+
+          <label for="tckn">
+            TCKN
+            <span>*</span>
+          </label>
+
+          <input id="tckn"
+                 name="tckn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="11"
+                 [(ngModel)]="aktifMusteriFormu.tckn"
+                 placeholder="11 haneli TCKN" />
+
+        </div>
+
+        }
+
+
+        <!-- KURUMSAL: VKN -->
+        @if (seciliMusteriTipi === musteriTipleri.Kurumsal) {
+
+        <div class="form-field">
+
+          <label for="vkn">
+            VKN
+            <span>*</span>
+          </label>
+
+          <input id="vkn"
+                 name="vkn"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="10"
+                 [(ngModel)]="aktifMusteriFormu.vkn"
+                 placeholder="10 haneli VKN" />
+
+        </div>
+
+        }
+
 
         <!-- AD -->
         <div class="form-field">
@@ -390,22 +471,23 @@
         </div>
 
 
-        <!-- E-POSTA -->
+        <!-- BİREYSEL: DOĞUM TARİHİ -->
+        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
+
         <div class="form-field">
 
-          <label for="musteriEposta">
-            E-posta
+          <label for="dogumTarihi">
+            Doğum tarihi
             <span>*</span>
           </label>
 
-          <input id="musteriEposta"
-                 name="musteriEposta"
-                 type="email"
-                 maxlength="50"
-                 [(ngModel)]="aktifMusteriFormu.eposta"
-                 placeholder="ornek@eposta.com" />
+          <app-tarih-secici
+            [(seciliTarih)]="aktifMusteriFormu.dogumTarihi">
+          </app-tarih-secici>
 
         </div>
+
+        }
 
 
         <!-- TELEFON -->
@@ -427,7 +509,26 @@
         </div>
 
 
-        <!-- ŞUBE -->
+        <!-- BİREYSEL: E-POSTA, ŞUBE, CİNSİYET -->
+        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
+
+        <div class="form-field">
+
+          <label for="musteriEposta">
+            E-posta
+            <span>*</span>
+          </label>
+
+          <input id="musteriEposta"
+                 name="musteriEposta"
+                 type="email"
+                 maxlength="50"
+                 [(ngModel)]="aktifMusteriFormu.eposta"
+                 placeholder="ornek@eposta.com" />
+
+        </div>
+
+
         <div class="form-field branch-field">
 
           <label>
@@ -439,42 +540,6 @@
             [(seciliSubeKodu)]="aktifMusteriFormu.subeSubeKodu"
             [devreDisiMi]="kaydediliyorMu">
           </app-sube-secici>
-
-        </div>
-
-
-        <!-- BİREYSEL EKLEME ALANLARI -->
-        @if (seciliMusteriTipi === musteriTipleri.Bireysel) {
-
-        <div class="form-field">
-
-          <label for="dogumTarihi">
-            Doğum tarihi
-            <span>*</span>
-          </label>
-
-          <input id="dogumTarihi"
-                 name="dogumTarihi"
-                 type="date"
-                 [(ngModel)]="aktifMusteriFormu.dogumTarihi" />
-
-        </div>
-
-
-        <div class="form-field">
-
-          <label for="tckn">
-            TCKN
-            <span>*</span>
-          </label>
-
-          <input id="tckn"
-                 name="tckn"
-                 type="text"
-                 inputmode="numeric"
-                 maxlength="11"
-                 [(ngModel)]="aktifMusteriFormu.tckn"
-                 placeholder="11 haneli TCKN" />
 
         </div>
 
@@ -509,40 +574,58 @@
         }
 
 
-        <!-- KURUMSAL EKLEME ALANLARI -->
+        <!-- KURUMSAL: E-POSTA, ŞUBE, UNVAN (TAM GENİŞLİK ALT SATIR) -->
         @if (seciliMusteriTipi === musteriTipleri.Kurumsal) {
 
-        <div class="form-field">
+        <div class="corporate-bottom-row">
 
-          <label for="vkn">
-            VKN
-            <span>*</span>
-          </label>
+          <div class="form-field">
 
-          <input id="vkn"
-                 name="vkn"
-                 type="text"
-                 inputmode="numeric"
-                 maxlength="10"
-                 [(ngModel)]="aktifMusteriFormu.vkn"
-                 placeholder="10 haneli VKN" />
+            <label for="musteriEposta">
+              E-posta
+              <span>*</span>
+            </label>
 
-        </div>
+            <input id="musteriEposta"
+                   name="musteriEposta"
+                   type="email"
+                   maxlength="50"
+                   [(ngModel)]="aktifMusteriFormu.eposta"
+                   placeholder="ornek@eposta.com" />
+
+          </div>
 
 
-        <div class="form-field wide-field">
+          <div class="form-field">
 
-          <label for="unvan">
-            Unvan
-            <span>*</span>
-          </label>
+            <label>
+              Şube
+              <span>*</span>
+            </label>
 
-          <input id="unvan"
-                 name="unvan"
-                 type="text"
-                 maxlength="50"
-                 [(ngModel)]="aktifMusteriFormu.unvan"
-                 placeholder="Şirket veya kurum unvanı" />
+            <app-sube-secici
+              [(seciliSubeKodu)]="aktifMusteriFormu.subeSubeKodu"
+              [devreDisiMi]="kaydediliyorMu">
+            </app-sube-secici>
+
+          </div>
+
+
+          <div class="form-field">
+
+            <label for="unvan">
+              Unvan
+              <span>*</span>
+            </label>
+
+            <input id="unvan"
+                   name="unvan"
+                   type="text"
+                   maxlength="50"
+                   [(ngModel)]="aktifMusteriFormu.unvan"
+                   placeholder="Şirket veya kurum unvanı" />
+
+          </div>
 
         </div>
 

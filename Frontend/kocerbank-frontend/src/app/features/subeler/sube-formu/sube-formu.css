@@ -47,6 +47,10 @@
   font-weight: 600;
 }
 
+  .popup-field label span {
+    color: #b74545;
+  }
+
 .popup-field input,
 .popup-field select {
   height: 42px;

@@ -65,6 +65,14 @@ import {
 } from './shared/components/sube-secici/sube-secici';
 
 import {
+  TarihSecici
+} from './shared/components/tarih-secici/tarih-secici';
+
+import {
+  TarihAraligiSecici
+} from './shared/components/tarih-araligi-secici/tarih-araligi-secici';
+
+import {
   MusteriFormu
 } from './features/musteriler/musteri-formu/musteri-formu';
 
@@ -117,6 +125,8 @@ import {
     SubeFormu,
     PersonelFormu,
     SubeSecici,
+    TarihSecici,
+    TarihAraligiSecici,
     MusteriFormu,
     MusteriIletisim,
     HesapListesi,

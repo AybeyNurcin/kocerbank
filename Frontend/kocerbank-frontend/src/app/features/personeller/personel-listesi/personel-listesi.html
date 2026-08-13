@@ -46,174 +46,165 @@
 
     <div class="filter-fields">
 
-      <!-- SİCİL -->
-      <div class="form-field">
+      <div class="filter-row filter-row-top">
 
-        <label for="sicil">
-          Sicil
-        </label>
+        <!-- SİCİL -->
+        <div class="form-field">
 
-        <input id="sicil"
-               name="sicil"
-               type="text"
-               [(ngModel)]="aramaKriterleri.sicil"
-               placeholder="Örnek: KB0001" />
+          <label for="sicil">
+            Sicil
+          </label>
 
-      </div>
+          <input id="sicil"
+                 name="sicil"
+                 type="text"
+                 [(ngModel)]="aramaKriterleri.sicil"
+                 placeholder="Örnek: KB0001" />
 
-
-      <!-- ŞUBE -->
-      <div class="form-field sube-field">
-
-        <label>
-          Şube
-        </label>
-
-        <app-sube-secici
-          [(seciliSubeKodu)]="aramaKriterleri.subeKodu">
-        </app-sube-secici>
-
-      </div>
+        </div>
 
 
-      <!-- AD -->
-      <div class="form-field">
+        <!-- TCKN -->
+        <div class="form-field">
 
-        <label for="ad">
-          Ad
-        </label>
+          <label for="tckn">
+            TC Kimlik No
+          </label>
 
-        <input id="ad"
-               name="ad"
-               type="text"
-               [(ngModel)]="aramaKriterleri.ad"
-               placeholder="Ad giriniz" />
+          <input id="tckn"
+                 name="tckn"
+                 type="text"
+                 [(ngModel)]="aramaKriterleri.tckn"
+                 maxlength="11"
+                 placeholder="11 haneli TCKN" />
 
-      </div>
-
-
-      <!-- SOYAD -->
-      <div class="form-field">
-
-        <label for="soyad">
-          Soyad
-        </label>
-
-        <input id="soyad"
-               name="soyad"
-               type="text"
-               [(ngModel)]="aramaKriterleri.soyad"
-               placeholder="Soyad giriniz" />
-
-      </div>
+        </div>
 
 
-      <!-- ROL -->
-      <div class="form-field">
+        <!-- AD -->
+        <div class="form-field">
 
-        <label for="rol">
-          Rol
-        </label>
+          <label for="ad">
+            Ad
+          </label>
 
-        <input id="rol"
-               name="rol"
-               type="text"
-               [(ngModel)]="aramaKriterleri.rol"
-               placeholder="Örnek: Müdür" />
+          <input id="ad"
+                 name="ad"
+                 type="text"
+                 [(ngModel)]="aramaKriterleri.ad"
+                 placeholder="Ad giriniz" />
 
-      </div>
-
-
-      <!-- TELEFON -->
-      <div class="form-field">
-
-        <label for="telefon">
-          Telefon
-        </label>
-
-        <input id="telefon"
-               name="telefon"
-               type="text"
-               [(ngModel)]="aramaKriterleri.telefonNo"
-               placeholder="Telefon numarası" />
-
-      </div>
+        </div>
 
 
-      <!-- TCKN -->
-      <div class="form-field">
+        <!-- SOYAD -->
+        <div class="form-field">
 
-        <label for="tckn">
-          TC Kimlik No
-        </label>
+          <label for="soyad">
+            Soyad
+          </label>
 
-        <input id="tckn"
-               name="tckn"
-               type="text"
-               [(ngModel)]="aramaKriterleri.tckn"
-               maxlength="11"
-               placeholder="11 haneli TCKN" />
+          <input id="soyad"
+                 name="soyad"
+                 type="text"
+                 [(ngModel)]="aramaKriterleri.soyad"
+                 placeholder="Soyad giriniz" />
+
+        </div>
+
+
+        <!-- DURUM -->
+        <div class="form-field">
+
+          <label for="durum">
+            Durum
+          </label>
+
+          <select id="durum"
+                  name="durum"
+                  [(ngModel)]="aramaKriterleri.durumKodu">
+
+            <option [ngValue]="undefined">
+              Tümü
+            </option>
+
+            <option [ngValue]="1">
+              Aktif
+            </option>
+
+            <option [ngValue]="2">
+              Pasif
+            </option>
+
+          </select>
+
+        </div>
 
       </div>
 
 
-      <!-- E-POSTA -->
-      <div class="form-field">
+      <div class="filter-row filter-row-bottom">
 
-        <label for="eposta">
-          E-posta
-        </label>
+        <!-- ADRES -->
+        <div class="form-field">
 
-        <input id="eposta"
-               name="eposta"
-               type="text"
-               [(ngModel)]="aramaKriterleri.email"
-               placeholder="E-posta adresi" />
+          <label for="adres">
+            Adres
+          </label>
 
-      </div>
+          <input id="adres"
+                 name="adres"
+                 type="text"
+                 [(ngModel)]="aramaKriterleri.adres"
+                 (ngModelChange)="adresDegisti()"
+                 placeholder="Adres bilgisi" />
 
-
-      <!-- ADRES -->
-      <div class="form-field address-field">
-
-        <label for="adres">
-          Adres
-        </label>
-
-        <input id="adres"
-               name="adres"
-               type="text"
-               [(ngModel)]="aramaKriterleri.adres"
-               (ngModelChange)="adresDegisti()"
-               placeholder="Adres bilgisi" />
-
-      </div>
+        </div>
 
 
-      <!-- DURUM -->
-      <div class="form-field">
+        <!-- ROL -->
+        <div class="form-field">
 
-        <label for="durum">
-          Durum
-        </label>
+          <label for="rol">
+            Rol
+          </label>
 
-        <select id="durum"
-                name="durum"
-                [(ngModel)]="aramaKriterleri.durumKodu">
+          <input id="rol"
+                 name="rol"
+                 type="text"
+                 [(ngModel)]="aramaKriterleri.rol"
+                 placeholder="Örnek: Müdür" />
 
-          <option [ngValue]="undefined">
-            Tümü
-          </option>
+        </div>
 
-          <option [ngValue]="1">
-            Aktif
-          </option>
 
-          <option [ngValue]="2">
-            Pasif
-          </option>
+        <!-- ŞUBE -->
+        <div class="form-field">
 
-        </select>
+          <label>
+            Şube
+          </label>
+
+          <app-sube-secici
+            [(seciliSubeKodu)]="aramaKriterleri.subeKodu">
+          </app-sube-secici>
+
+        </div>
+
+
+        <!-- BAŞLANGIÇ TARİHİ ARALIĞI -->
+        <div class="form-field">
+
+          <label>
+            Başlangıç tarihi aralığı
+          </label>
+
+          <app-tarih-araligi-secici
+            [(baslangicTarihi)]="aramaKriterleri.baslangicTarihi"
+            [(bitisTarihi)]="aramaKriterleri.bitisTarihi">
+          </app-tarih-araligi-secici>
+
+        </div>
 
       </div>
 
@@ -222,6 +213,18 @@
 
     <!-- ARA BUTONU -->
     <div class="filter-actions">
+
+      <div class="filter-info-spacer">
+
+        @if (bilgiMesaji !== '') {
+
+        <span class="filter-info-message">
+          {{ bilgiMesaji }}
+        </span>
+
+        }
+
+      </div>
 
       <button type="button"
               class="search-button"
@@ -243,16 +246,6 @@
     </div>
 
   </div>
-
-
-  <!-- BİLGİ MESAJI -->
-  @if (bilgiMesaji !== '') {
-
-  <div class="information-message">
-    {{ bilgiMesaji }}
-  </div>
-
-  }
 
 
   <!-- YÜKLENME MESAJI -->

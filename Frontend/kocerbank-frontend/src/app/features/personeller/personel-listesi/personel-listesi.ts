@@ -236,13 +236,6 @@ export class PersonelListesi
     const tcknGirildiMi =
       (kriterler.tckn?.trim().length ?? 0) > 0;
 
-    const telefonGirildiMi =
-      (
-        kriterler.telefonNo
-          ?.trim()
-          .length ?? 0
-      ) > 0;
-
     const subeGirildiMi =
       (kriterler.subeKodu?.trim().length ?? 0) > 0;
 
@@ -253,12 +246,21 @@ export class PersonelListesi
           .length ?? 0
       ) > 0;
 
-    const epostaGirildiMi =
-      (kriterler.email?.trim().length ?? 0) > 0;
-
     const durumSecildiMi =
       kriterler.durumKodu !== undefined &&
       kriterler.durumKodu !== null;
+
+    const tarihAraligiGirildiMi =
+      (
+        kriterler.baslangicTarihi
+          ?.trim()
+          .length ?? 0
+      ) > 0 ||
+      (
+        kriterler.bitisTarihi
+          ?.trim()
+          .length ?? 0
+      ) > 0;
 
     return (
       idGirildiMi ||
@@ -267,11 +269,10 @@ export class PersonelListesi
       soyadGirildiMi ||
       rolGirildiMi ||
       tcknGirildiMi ||
-      telefonGirildiMi ||
       subeGirildiMi ||
       adresGirildiMi ||
-      epostaGirildiMi ||
-      durumSecildiMi
+      durumSecildiMi ||
+      tarihAraligiGirildiMi
     );
   }
 

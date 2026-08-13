@@ -1,0 +1,137 @@
+.date-picker {
+  position: relative;
+  width: 100%;
+}
+
+  .date-picker input {
+    width: 100%;
+    height: 39px;
+    padding: 0 11px;
+    box-sizing: border-box;
+    border: 1px solid #ccccd0;
+    border-radius: 6px;
+    outline: none;
+    background-color: #fafafa;
+    color: #34343a;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+    .date-picker input:focus {
+      border-color: #d2a900;
+      box-shadow: 0 0 0 3px rgba(210, 169, 0, 0.13);
+    }
+
+    .date-picker input:disabled {
+      background-color: #eeeeef;
+      color: #77777e;
+      cursor: not-allowed;
+    }
+
+.date-picker-panel {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  z-index: 100;
+  width: 266px;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #ccccd0;
+  border-radius: 7px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(40, 40, 45, 0.16);
+}
+
+.date-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.month-nav-button {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #ccccd0;
+  border-radius: 5px;
+  background-color: #fafafa;
+  color: #34343a;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+  .month-nav-button:hover {
+    background-color: #faf9f3;
+    border-color: #d2a900;
+  }
+
+.current-month-label {
+  color: #34343a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.weekday-cell {
+  color: #77777e;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day-cell {
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #34343a;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+  .day-cell:hover {
+    background-color: #faf9f3;
+  }
+
+  .day-cell.other-month {
+    color: #c2c2c8;
+  }
+
+  .day-cell.selected-day {
+    background-color: #7351a3;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+.date-picker-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eeeeef;
+  text-align: right;
+}
+
+.clear-date-button {
+  border: none;
+  background-color: transparent;
+  color: #7351a3;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+  .clear-date-button:hover {
+    text-decoration: underline;
+  }

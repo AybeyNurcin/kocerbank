@@ -616,6 +616,32 @@
   font-weight: 700;
 }
 
+.status-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.status-select {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+  .status-select:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+.hesap-durumu-hata {
+  color: #a13c3c;
+  font-size: 11px;
+}
+
 .active-status {
   background-color: #e5f5eb;
   color: #237a46;
@@ -1351,8 +1377,8 @@
 
 .account-form-modal {
   width: min(620px, calc(100vw - 32px));
-  max-height: calc(100vh - 50px);
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 

@@ -67,6 +67,15 @@ namespace kocerbank_backend.Services
         public List<SubeDTO> Listele(
             SubeAramaKriterleriDTO aramaKriterleri)
         {
+            if (aramaKriterleri.AcilisTarihiBaslangic.HasValue &&
+                aramaKriterleri.AcilisTarihiBitis.HasValue &&
+                aramaKriterleri.AcilisTarihiBaslangic.Value.Date >
+                aramaKriterleri.AcilisTarihiBitis.Value.Date)
+            {
+                throw new ArgumentException(
+                    "Açılış tarihi aralığının başlangıcı bitişinden sonra olamaz.");
+            }
+
             return _subeRepository.GetirListele(
                 aramaKriterleri);
         }

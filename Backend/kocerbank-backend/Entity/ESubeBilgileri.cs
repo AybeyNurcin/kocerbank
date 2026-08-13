@@ -106,6 +106,8 @@ namespace kocerbank_backend.DataAccess
                     kb.Parameters.Add("P_TELEFONNO", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeTelefonNo ?? DBNull.Value;
                     kb.Parameters.Add("P_ADRES", OracleDbType.Varchar2).Value = (object?)aramaKriterleri.SubeAdres ?? DBNull.Value;
                     kb.Parameters.Add("P_DURUMKODU", OracleDbType.Byte).Value = aramaKriterleri.SubeDurumKodu.HasValue ? (object)(byte)aramaKriterleri.SubeDurumKodu.Value : DBNull.Value;
+                    kb.Parameters.Add("P_ACILISTARIHIBASLANGIC", OracleDbType.Date).Value = aramaKriterleri.AcilisTarihiBaslangic.HasValue ? (object)aramaKriterleri.AcilisTarihiBaslangic.Value : DBNull.Value;
+                    kb.Parameters.Add("P_ACILISTARIHIBITIS", OracleDbType.Date).Value = aramaKriterleri.AcilisTarihiBitis.HasValue ? (object)aramaKriterleri.AcilisTarihiBitis.Value : DBNull.Value;
                     kb.Parameters.Add("P_SONUC", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                     conn.Open();

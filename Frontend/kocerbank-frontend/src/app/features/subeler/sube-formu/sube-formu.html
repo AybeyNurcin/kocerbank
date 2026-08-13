@@ -72,6 +72,7 @@
 
       <label for="formSubeAdi">
         Şube adı
+        <span>*</span>
       </label>
 
       <input id="formSubeAdi"
@@ -90,6 +91,7 @@
 
       <label for="formTelefon">
         Telefon
+        <span>*</span>
       </label>
 
       <input id="formTelefon"
@@ -108,6 +110,7 @@
 
       <label for="formAdres">
         Adres
+        <span>*</span>
       </label>
 
       <input id="formAdres"
@@ -121,11 +124,14 @@
     </div>
 
 
-    <!-- DURUM -->
+    <!-- DURUM SADECE GÜNCELLEMEDE GÖSTERİLİR -->
+    @if (sube !== null) {
+
     <div class="popup-field full-field">
 
       <label for="formDurum">
         Durum
+        <span>*</span>
       </label>
 
       <select id="formDurum"
@@ -145,6 +151,8 @@
       </select>
 
     </div>
+
+    }
 
   </div>
 

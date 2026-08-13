@@ -78,25 +78,8 @@
       </div>
 
 
-      <!-- TELEFON -->
-      <div class="form-field">
-
-        <label for="telefon">
-          Telefon
-        </label>
-
-        <input id="telefon"
-               name="telefon"
-               type="text"
-               [(ngModel)]="aramaKriterleri.subeTelefonNo"
-               (ngModelChange)="otomatikFiltreDegisti()"
-               placeholder="Telefon numarası" />
-
-      </div>
-
-
       <!-- ADRES -->
-      <div class="form-field address-field">
+      <div class="form-field">
 
         <label for="adres">
           Adres
@@ -108,6 +91,21 @@
                [(ngModel)]="aramaKriterleri.subeAdres"
                (ngModelChange)="otomatikFiltreDegisti()"
                placeholder="Adres bilgisi" />
+
+      </div>
+
+
+      <!-- AÇILIŞ TARİHİ ARALIĞI -->
+      <div class="form-field">
+
+        <label>
+          Açılış tarihi aralığı
+        </label>
+
+        <app-tarih-araligi-secici
+          [(baslangicTarihi)]="aramaKriterleri.acilisTarihiBaslangic"
+          [(bitisTarihi)]="aramaKriterleri.acilisTarihiBitis">
+        </app-tarih-araligi-secici>
 
       </div>
 
@@ -145,6 +143,18 @@
     <!-- ARA BUTONU -->
     <div class="filter-actions">
 
+      <div class="filter-info-spacer">
+
+        @if (bilgiMesaji !== '') {
+
+        <span class="filter-info-message">
+          {{ bilgiMesaji }}
+        </span>
+
+        }
+
+      </div>
+
       <button type="button"
               class="search-button"
               [disabled]="yukleniyorMu"
@@ -165,16 +175,6 @@
     </div>
 
   </div>
-
-
-  <!-- BİLGİ MESAJI -->
-  @if (bilgiMesaji !== '') {
-
-  <div class="information-message">
-    {{ bilgiMesaji }}
-  </div>
-
-  }
 
 
   <!-- YÜKLENME MESAJI -->

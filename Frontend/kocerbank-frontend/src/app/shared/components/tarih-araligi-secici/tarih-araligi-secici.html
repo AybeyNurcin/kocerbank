@@ -1,0 +1,85 @@
+<div class="date-range-picker">
+
+  <input type="text"
+         readonly
+         autocomplete="off"
+         [value]="gorunumMetni"
+         (focus)="takvimiAc()"
+         (keydown.escape)="escTuslandi($event)"
+         [disabled]="devreDisiMi"
+         [placeholder]="placeholder" />
+
+
+  @if (takvimAcikMi) {
+
+  <div class="date-picker-panel">
+
+    <div class="date-picker-header">
+
+      <button type="button"
+              class="month-nav-button"
+              (click)="oncekiAy()">
+        ‹
+      </button>
+
+      <span class="current-month-label">
+        {{ ayAdlari[gorunenAy] }} {{ gorunenYil }}
+      </span>
+
+      <button type="button"
+              class="month-nav-button"
+              (click)="sonrakiAy()">
+        ›
+      </button>
+
+    </div>
+
+
+    <div class="weekday-row">
+
+      @for (gunAdi of gunAdlariKisa; track gunAdi) {
+
+      <span class="weekday-cell">
+        {{ gunAdi }}
+      </span>
+
+      }
+
+    </div>
+
+
+    <div class="day-grid"
+         (mouseleave)="gunHoveriTemizle()">
+
+      @for (gun of takvimGunleri; track gun.tarih) {
+
+      <button type="button"
+              class="day-cell"
+              [class.other-month]="!gun.buAyMi"
+              [class.in-range]="gunAralikIcindeMi(gun)"
+              [class.range-endpoint]="gunBaslangicMi(gun) || gunBitisMi(gun)"
+              (mouseenter)="gunUzerineGelindi(gun)"
+              (click)="gunSec(gun)">
+        {{ gun.gun }}
+      </button>
+
+      }
+
+    </div>
+
+
+    <div class="date-picker-footer">
+
+      <button type="button"
+              class="clear-date-button"
+              (click)="temizle($event)">
+        Temizle
+      </button>
+
+    </div>
+
+  </div>
+
+  }
+
+</div>
