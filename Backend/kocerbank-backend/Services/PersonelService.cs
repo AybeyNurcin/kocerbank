@@ -175,6 +175,15 @@ namespace kocerbank_backend.Services
             PersonelAramaKriterleriniDuzenle(
                 aramaKriterleri);
 
+            if (aramaKriterleri.BaslangicTarihi.HasValue &&
+                aramaKriterleri.BitisTarihi.HasValue &&
+                aramaKriterleri.BaslangicTarihi.Value.Date >
+                aramaKriterleri.BitisTarihi.Value.Date)
+            {
+                throw new ArgumentException(
+                    "Başlangıç tarihi bitiş tarihinden sonra olamaz.");
+            }
+
             return _personelRepository.GetirListele(
                 aramaKriterleri);
         }

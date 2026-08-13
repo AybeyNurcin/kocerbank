@@ -13,10 +13,9 @@ import {
 export interface MusteriFiltre {
   ad?: string;
   soyad?: string;
-  eposta?: string;
-  telefonNo?: string;
 
-  dogumTarihi?: string;
+  dogumTarihiBaslangic?: string;
+  dogumTarihiBitis?: string;
 
   tckn?: string;
   vkn?: string;

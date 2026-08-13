@@ -87,6 +87,15 @@ namespace kocerbank_backend.Services
         {
             // Kriterler opsiyonel olduğu için
             // zorunlu alan kontrolü yapılmaz.
+            if (aramaKriterleri.DogumTarihiBaslangic.HasValue &&
+                aramaKriterleri.DogumTarihiBitis.HasValue &&
+                aramaKriterleri.DogumTarihiBaslangic.Value.Date >
+                aramaKriterleri.DogumTarihiBitis.Value.Date)
+            {
+                throw new ArgumentException(
+                    "Doğum tarihi aralığının başlangıcı bitişinden sonra olamaz.");
+            }
+
             return _musteriRepository.Listele(
                 aramaKriterleri);
         }

@@ -47,6 +47,9 @@ namespace kocerbank_backend.Models.DTOs
         public string? Email { get; set; }
         public string? TelefonNo { get; set; }
         public AktifPasifDurumlari? DurumKodu { get; set; }
+
+        public DateTime? BaslangicTarihi { get; set; }
+        public DateTime? BitisTarihi { get; set; }
     }
 
     public class PersonelDashboardDTO

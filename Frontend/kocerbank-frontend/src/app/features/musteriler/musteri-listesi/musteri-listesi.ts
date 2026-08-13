@@ -1,19 +1,11 @@
 import {
   ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit
+  Component
 } from '@angular/core';
 
 import {
   Router
 } from '@angular/router';
-
-import {
-  Subject,
-  Subscription,
-  debounceTime
-} from 'rxjs';
 
 import {
   Musteri
@@ -44,8 +36,7 @@ import {
   templateUrl: './musteri-listesi.html',
   styleUrl: './musteri-listesi.css'
 })
-export class MusteriListesi
-  implements OnInit, OnDestroy {
+export class MusteriListesi {
 
   // Aşağıdaki dört alan, hesaplar ekranına gidip
   // (özellikle tarayıcı geri tuşuyla) geri dönüldüğünde
@@ -91,14 +82,6 @@ export class MusteriListesi
   hataMesaji: string = '';
 
 
-  // TELEFON İÇİN OTOMATİK ARAMA
-
-  private telefonDegisikligi =
-    new Subject<void>();
-
-  private telefonAboneligi?: Subscription;
-
-
   constructor(
     private musteriApi: MusteriApi,
     private router: Router,
@@ -108,71 +91,7 @@ export class MusteriListesi
   }
 
 
-  ngOnInit(): void {
-
-    // Yalnızca telefon numarası yazılırken
-    // 400 ms sonra otomatik müşteri araması yapar.
-    this.telefonAboneligi =
-      this.telefonDegisikligi
-        .pipe(
-          debounceTime(400)
-        )
-        .subscribe(() => {
-          this.telefonlaOtomatikAra();
-        });
-
-  }
-
-
-  ngOnDestroy(): void {
-
-    this.telefonAboneligi?.unsubscribe();
-
-  }
-
-
   // ARAMA İŞLEMLERİ
-
-  telefonDegisti(): void {
-
-    // Yalnızca telefon alanındaki değişiklik
-    // gecikmeli sorgu gönderir.
-    this.telefonDegisikligi.next();
-
-  }
-
-  private telefonlaOtomatikAra(): void {
-
-    const telefonNo =
-      this.aramaKriterleri.telefonNo?.trim();
-
-    // Telefon alanı tamamen silindiyse
-    // backend'e istek göndermez.
-    if (
-      telefonNo === undefined ||
-      telefonNo === ''
-    ) {
-
-      this.musteriler = [];
-      this.mevcutSayfa = 1;
-
-      this.yukleniyorMu = false;
-      this.hataMesaji = '';
-
-      this.bilgiMesaji =
-        'Filtreleri belirledikten sonra Ara butonuna basınız.';
-
-      this.changeDetector.markForCheck();
-
-      return;
-    }
-
-    // Telefon doluysa 400 ms sonunda
-    // mevcut kriterlerle otomatik sorgu gönderir.
-    this.musterileriGetir();
-
-  }
-
 
   ara(): void {
 
@@ -225,7 +144,8 @@ export class MusteriListesi
       // bireysel alanları temizler.
       delete this.aramaKriterleri.tckn;
       delete this.aramaKriterleri.cinsiyet;
-      delete this.aramaKriterleri.dogumTarihi;
+      delete this.aramaKriterleri.dogumTarihiBaslangic;
+      delete this.aramaKriterleri.dogumTarihiBitis;
 
     }
 

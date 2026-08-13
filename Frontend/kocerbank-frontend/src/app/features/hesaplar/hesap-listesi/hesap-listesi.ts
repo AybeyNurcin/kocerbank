@@ -129,6 +129,12 @@ export class HesapListesi
   hesapAdiHataMesaji: string = '';
 
 
+  // HESAP DURUMU DÜZENLEME
+
+  hesapDurumuKaydediliyorMu: boolean = false;
+  hesapDurumuHataMesaji: string = '';
+
+
   // HESAP HAREKETLERİ
 
   hesapHareketleri: HesapHareketi[] = [];
@@ -354,6 +360,8 @@ export class HesapListesi
 
     this.hesapAdiDuzenlemesiniSifirla();
 
+    this.hesapDurumuHataMesaji = '';
+
     this.hesapHareketleriniGetir(
       ilkHesap.id
     );
@@ -481,6 +489,8 @@ export class HesapListesi
 
     this.hesapAdiDuzenlemesiniSifirla();
 
+    this.hesapDurumuHataMesaji = '';
+
     if (this.seciliHesap !== null) {
 
       this.hesapHareketleriniGetir(
@@ -509,6 +519,8 @@ export class HesapListesi
     this.hareketDetayiniKapat();
 
     this.hesapAdiDuzenlemesiniSifirla();
+
+    this.hesapDurumuHataMesaji = '';
 
     this.hesapHareketleriniGetir(
       hesap.id
@@ -686,6 +698,98 @@ export class HesapListesi
     this.duzenlenenHesapAdi = '';
 
     this.hesapAdiHataMesaji = '';
+  }
+
+
+  // HESAP DURUMU DÜZENLEME
+
+  hesapDurumunuGuncelle(
+    event: Event
+  ): void {
+
+    if (this.seciliHesap === null) {
+      return;
+    }
+
+    const yeniDurumKodu = Number(
+      (event.target as HTMLSelectElement)
+        .value
+    );
+
+    if (
+      yeniDurumKodu ===
+      this.seciliHesap.hesapDurumKodu
+    ) {
+      return;
+    }
+
+    const guncellenecekHesap:
+      Hesap = {
+      ...this.seciliHesap,
+      hesapDurumKodu: yeniDurumKodu
+    };
+
+    this.hesapDurumuKaydediliyorMu =
+      true;
+
+    this.hesapDurumuHataMesaji = '';
+
+    this.hesapApi
+      .guncelle(
+        guncellenecekHesap.id,
+        guncellenecekHesap
+      )
+      .subscribe({
+
+        next: () => {
+
+          if (
+            this.seciliHesap !== null
+          ) {
+            this.seciliHesap.hesapDurumKodu =
+              yeniDurumKodu;
+          }
+
+          const listedekiHesap =
+            this.hesaplar.find(
+              (hesap: Hesap) =>
+                hesap.id ===
+                guncellenecekHesap.id
+            );
+
+          if (listedekiHesap) {
+            listedekiHesap.hesapDurumKodu =
+              yeniDurumKodu;
+          }
+
+          this.hesapDurumuKaydediliyorMu =
+            false;
+
+          this.changeDetector
+            .markForCheck();
+        },
+
+        error: (hata) => {
+
+          console.error(
+            'Hesap durumu güncelleme hatası:',
+            hata
+          );
+
+          this.hesapDurumuKaydediliyorMu =
+            false;
+
+          this.hesapDurumuHataMesaji =
+            extractErrorMessage(
+              hata,
+              'Hesap durumu güncellenirken bir hata oluştu.'
+            );
+
+          this.changeDetector
+            .markForCheck();
+        }
+
+      });
   }
 
 

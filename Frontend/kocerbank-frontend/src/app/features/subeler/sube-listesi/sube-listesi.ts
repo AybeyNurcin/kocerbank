@@ -227,13 +227,6 @@ export class SubeListesi
     const subeKoduGirildiMi =
       (kriterler.subeKodu?.trim().length ?? 0) > 0;
 
-    const telefonGirildiMi =
-      (
-        kriterler.subeTelefonNo
-          ?.trim()
-          .length ?? 0
-      ) > 0;
-
     const adresGirildiMi =
       (
         kriterler.subeAdres
@@ -245,13 +238,25 @@ export class SubeListesi
       kriterler.subeDurumKodu !== undefined &&
       kriterler.subeDurumKodu !== null;
 
+    const tarihAraligiGirildiMi =
+      (
+        kriterler.acilisTarihiBaslangic
+          ?.trim()
+          .length ?? 0
+      ) > 0 ||
+      (
+        kriterler.acilisTarihiBitis
+          ?.trim()
+          .length ?? 0
+      ) > 0;
+
     return (
       idGirildiMi ||
       subeAdiGirildiMi ||
       subeKoduGirildiMi ||
-      telefonGirildiMi ||
       adresGirildiMi ||
-      durumSecildiMi
+      durumSecildiMi ||
+      tarihAraligiGirildiMi
     );
   }
 

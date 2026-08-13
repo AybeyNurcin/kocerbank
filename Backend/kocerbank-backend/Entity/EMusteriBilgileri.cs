@@ -402,10 +402,17 @@ namespace kocerbank_backend.DataAccess
                     DBNull.Value;
 
             command.Parameters
-                .Add("P_DOGUMTARIHI", OracleDbType.Date)
+                .Add("P_DOGUMTARIHIBASLANGIC", OracleDbType.Date)
                 .Value =
-                    aramaKriterleri.DogumTarihi.HasValue
-                        ? aramaKriterleri.DogumTarihi.Value
+                    aramaKriterleri.DogumTarihiBaslangic.HasValue
+                        ? aramaKriterleri.DogumTarihiBaslangic.Value
+                        : DBNull.Value;
+
+            command.Parameters
+                .Add("P_DOGUMTARIHIBITIS", OracleDbType.Date)
+                .Value =
+                    aramaKriterleri.DogumTarihiBitis.HasValue
+                        ? aramaKriterleri.DogumTarihiBitis.Value
                         : DBNull.Value;
 
             command.Parameters

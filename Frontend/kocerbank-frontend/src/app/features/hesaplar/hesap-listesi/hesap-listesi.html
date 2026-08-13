@@ -10,12 +10,17 @@
         ← Müşteri listesine dön
       </button>
 
-      <h1>Müşteri Hesapları</h1>
+      <h1>
+        {{
+          musteri
+            ? musteri.ad + ' ' + musteri.soyad
+            : 'Müşteri Hesapları'
+        }}
+      </h1>
 
       <p>
         Müşteri No:
         <strong>{{ musteriId }}</strong>
-        • Hesapları görüntüleyebilir ve yönetebilirsiniz.
       </p>
     </div>
 
@@ -390,12 +395,29 @@
 
         </div>
 
-        <span class="status-badge"
-              [class.active-status]="seciliHesap.hesapDurumKodu === 1"
-              [class.passive-status]="seciliHesap.hesapDurumKodu === 2"
-              [class.closed-status]="seciliHesap.hesapDurumKodu === 3">
-          {{ hesapDurumuAdiniGetir(seciliHesap.hesapDurumKodu) }}
-        </span>
+        <div class="status-select-wrapper">
+
+          <select class="status-select"
+                  [class.active-status]="seciliHesap.hesapDurumKodu === 1"
+                  [class.passive-status]="seciliHesap.hesapDurumKodu === 2"
+                  [class.closed-status]="seciliHesap.hesapDurumKodu === 3"
+                  [value]="seciliHesap.hesapDurumKodu"
+                  [disabled]="hesapDurumuKaydediliyorMu"
+                  (change)="hesapDurumunuGuncelle($event)">
+            <option value="1">Aktif</option>
+            <option value="2">Pasif</option>
+            <option value="3">Kapalı</option>
+          </select>
+
+          @if (hesapDurumuHataMesaji !== '') {
+
+          <small class="hesap-durumu-hata">
+            {{ hesapDurumuHataMesaji }}
+          </small>
+
+          }
+
+        </div>
 
       </div>
 
