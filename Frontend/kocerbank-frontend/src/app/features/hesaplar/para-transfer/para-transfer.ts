@@ -1,7 +1,8 @@
 import {
   ChangeDetectorRef,
   Component,
-  OnDestroy
+  OnDestroy,
+  OnInit
 } from '@angular/core';
 
 import {
@@ -50,7 +51,7 @@ const BILGI_GETIRME_GECIKMESI_MS =
   styleUrl: './para-transfer.css'
 })
 export class ParaTransferComponent
-  implements OnDestroy {
+  implements OnInit, OnDestroy {
 
   transferKanaliRotasi: TransferKanaliRotasi;
 
@@ -98,6 +99,24 @@ export class ParaTransferComponent
 
   aliciMaskelenmisAdSoyad =
     '';
+
+
+  /*
+   * SWIFT: ALICI IBAN'I BANKAMIZDA
+   * BULUNAMADIĞINDA KULLANICININ
+   * SEÇECEĞİ HEDEF DÖVİZ CİNSİ
+   *
+   * Alıcının bizim bankamızda hesabı
+   * olmadığında döviz cinsi bizim
+   * tarafımızdan bilinemez; kur bu
+   * seçime göre hesaplanır.
+   */
+
+  aliciDovizSeciciGoster =
+    false;
+
+  aliciDovizSecimi: DovizCinsi =
+    DovizCinsi.None;
 
 
   private bilgiGetirmeZamanlayici:
@@ -159,6 +178,39 @@ export class ParaTransferComponent
 
     this.transfer =
       this.bosTransferOlustur();
+
+  }
+
+
+  /*
+   * HESAP SAYFASINDAN GELİNDİYSE
+   * GÖNDEREN BİLGİLERİNİ OTOMATİK DOLDUR
+   *
+   * Hesap seçili şekilde bu ekrana gelindiyse
+   * gönderen IBAN ve hesap sahibi ismi zaten
+   * bilinmektedir; kullanıcının tekrar girmesine
+   * gerek yoktur.
+   */
+
+  ngOnInit(): void {
+
+    const gonderenIbanParametresi =
+      this.route.snapshot
+        .queryParamMap
+        .get('gonderenIban');
+
+    if (
+      !gonderenIbanParametresi
+    ) {
+      return;
+    }
+
+    this.transfer.gonderenIBAN =
+      this.ibanBicimlendir(
+        gonderenIbanParametresi
+      );
+
+    this.gonderenIbanOdakKaybetti(true);
 
   }
 
@@ -337,6 +389,12 @@ export class ParaTransferComponent
     this.aliciMaskelenmisAdSoyad =
       '';
 
+    this.aliciDovizSeciciGoster =
+      false;
+
+    this.aliciDovizSecimi =
+      DovizCinsi.None;
+
     this.hataMesaji =
       '';
 
@@ -381,7 +439,9 @@ export class ParaTransferComponent
    * gönderen hesabın kontrolünü hemen yapar.
    */
 
-  gonderenIbanOdakKaybetti(): void {
+  gonderenIbanOdakKaybetti(
+    otomatikDoldur: boolean = false
+  ): void {
 
     if (
       !this.gonderenIbanGecerliMi
@@ -440,6 +500,18 @@ export class ParaTransferComponent
             this.adiMaskele(
               hesap.hesapSahibi
             );
+
+          /*
+           * Hesap zaten sistemden seçildiği için
+           * gerçek sahibi doğrulanmış kabul edilir;
+           * ad soyad kullanıcı yerine otomatik girilir.
+           */
+          if (otomatikDoldur) {
+
+            this.gonderenIsimSoyisim =
+              hesap.hesapSahibi;
+
+          }
 
           this.hataMesaji =
             '';
@@ -583,6 +655,57 @@ export class ParaTransferComponent
           this.aliciMaskelenmisAdSoyad =
             '';
 
+          /*
+           * Havale/EFT ekranında alıcı IBAN'ı
+           * bankamızda bulunamayabilir; bu bir
+           * hata değildir, işlem EFT olarak devam
+           * eder. Kesin karar birleşik
+           * transferBilgileriniGetir çağrısına
+           * (ikisiDeHazirsaKuruGetir) aittir.
+           */
+          if (
+            this.transferKanaliRotasi ===
+            'havale-eft'
+          ) {
+
+            this.hataMesaji =
+              '';
+
+            this.cdr.detectChanges();
+
+            this.ikisiDeHazirsaKuruGetir();
+
+            return;
+
+          }
+
+          /*
+           * SWIFT ekranında alıcı IBAN'ı
+           * bankamızda bulunamayabilir; bu bir
+           * hata değildir. Alıcının döviz cinsi
+           * bizim tarafımızdan bilinemediği için
+           * kullanıcının seçmesi istenir; seçim
+           * yapılınca birleşik
+           * transferBilgileriniGetir çağrısı
+           * (ikisiDeHazirsaKuruGetir) tetiklenir.
+           */
+          if (
+            this.transferKanaliRotasi ===
+            'swift'
+          ) {
+
+            this.hataMesaji =
+              '';
+
+            this.aliciDovizSeciciGoster =
+              true;
+
+            this.cdr.detectChanges();
+
+            return;
+
+          }
+
           this.hataMesaji =
             extractErrorMessage(
               hata,
@@ -594,6 +717,38 @@ export class ParaTransferComponent
         }
 
       });
+
+  }
+
+
+  /*
+   * SWIFT: ALICI DÖVİZ CİNSİ SEÇİMİ
+   *
+   * Alıcı IBAN'ı bankamızda bulunamadığında,
+   * kullanıcı hedef döviz cinsini seçtikten
+   * sonra birleşik bilgi çağrısını tetikler.
+   */
+
+  aliciDovizSecimiDegisti(
+    deger: DovizCinsi
+  ): void {
+
+    this.aliciDovizSecimi =
+      deger;
+
+    this.transfer.aliciDovizTipi =
+      deger;
+
+    this.hataMesaji =
+      '';
+
+    if (deger === DovizCinsi.None) {
+      this.kurBilgileriniSifirla();
+
+      return;
+    }
+
+    this.ikisiDeHazirsaKuruGetir();
 
   }
 
@@ -896,7 +1051,44 @@ export class ParaTransferComponent
     return (
       this.gonderenIbanGecerliMi &&
       this.aliciIbanGecerliMi &&
-      !this.ibanlarAyniMi
+      !this.ibanlarAyniMi &&
+      /*
+       * SWIFT'te alıcı bulunamadığında döviz
+       * cinsi seçici gösterilir; seçim yapılana
+       * kadar birleşik çağrı yapılmaz.
+       */
+      (
+        !this.aliciDovizSeciciGoster ||
+        this.aliciDovizSecimi !==
+        DovizCinsi.None
+      )
+    );
+
+  }
+
+
+  /*
+   * ALICI IBAN'I BANKAMIZDA BULUNAMADI,
+   * İŞLEM EFT/SWIFT EFT OLARAK DEVAM EDECEK
+   *
+   * Havale/EFT ekranında EFT, SWIFT ekranında
+   * SWIFT EFT olarak backend tarafından
+   * belirlenir; her iki durumda da alıcının
+   * bizim bankamızda hesabı yoktur.
+   */
+
+  get aliciBulunamadiMi():
+    boolean {
+
+    return (
+      this.transfer.aliciHesap ===
+      null &&
+      (
+        this.transfer.transferTipi ===
+        TransferTipleri.Eft ||
+        this.transfer.transferTipi ===
+        TransferTipleri.SwiftEft
+      )
     );
 
   }
@@ -914,8 +1106,11 @@ export class ParaTransferComponent
       this.isimlerGirildiMi &&
       this.transfer.gonderenHesap !==
       null &&
-      this.transfer.aliciHesap !==
-      null &&
+      (
+        this.transfer.aliciHesap !==
+        null ||
+        this.aliciBulunamadiMi
+      ) &&
       this.transfer.dovizKuru > 0 &&
       this.transfer.aliciTutar > 0 &&
       !this.transferBilgileriYukleniyorMu &&
@@ -1074,6 +1269,36 @@ export class ParaTransferComponent
       'swift'
       ? 'SWIFT'
       : 'Havale/EFT';
+
+  }
+
+
+  /*
+   * ÖNİZLEME EKRANINDA GÖSTERİLECEK
+   * GERÇEK İŞLEM TİPİ ETİKETİ
+   */
+
+  get islemTipiEtiketi():
+    string {
+
+    if (
+      this.transfer.transferTipi ===
+      TransferTipleri.Eft
+    ) {
+      return 'EFT';
+    }
+
+    if (
+      this.transfer.transferTipi ===
+      TransferTipleri.SwiftEft
+    ) {
+      return 'SWIFT (Yurt Dışı)';
+    }
+
+    return this.transferKanaliRotasi ===
+      'swift'
+      ? 'SWIFT'
+      : 'Havale';
 
   }
 
@@ -1341,6 +1566,16 @@ export class ParaTransferComponent
   private aliciIsmiEslesiyorMu():
     boolean {
 
+    /*
+     * EFT/SWIFT EFT'de alıcının bizim bankamızda
+     * hesabı olmadığı için doğrulanacak gerçek bir
+     * isim yok; kullanıcının girdiği isim
+     * doğrulanmadan kabul edilir.
+     */
+    if (this.aliciBulunamadiMi) {
+      return true;
+    }
+
     const gercekAdSoyad =
       this.transfer.aliciHesap
         ?.hesapSahibi;
@@ -1448,8 +1683,11 @@ export class ParaTransferComponent
       this.transferYapiliyorMu ||
       this.transfer.gonderenHesap ===
       null ||
-      this.transfer.aliciHesap ===
-      null
+      (
+        this.transfer.aliciHesap ===
+        null &&
+        !this.aliciBulunamadiMi
+      )
     ) {
       return;
     }
@@ -1614,7 +1852,27 @@ export class ParaTransferComponent
         this.transfer.gonderenTutar,
 
       aciklama:
-        this.transfer.aciklama
+        this.transfer.aciklama,
+
+      /*
+       * Yalnızca EFT/SWIFT EFT'de (alıcının
+       * bizim bankamızda hesabı yoksa)
+       * kullanılır; doğrulanmadan olduğu gibi
+       * gönderilir.
+       */
+      aliciAdSoyad:
+        this.aliciIsimSoyisim.trim() ||
+        null,
+
+      /*
+       * Yalnızca SWIFT'te, alıcı IBAN'ı
+       * bankamızda bulunamadığında kullanıcının
+       * seçtiği hedef döviz cinsini taşır. Alıcı
+       * bulunursa backend bu değeri yok sayıp
+       * gerçek hesabın döviz cinsini kullanır.
+       */
+      aliciDovizTipi:
+        this.aliciDovizSecimi
     };
 
   }
@@ -1771,6 +2029,9 @@ export class ParaTransferComponent
         0,
 
       aciklama:
+        null,
+
+      aliciAdSoyad:
         null,
 
       gonderenHesapId:

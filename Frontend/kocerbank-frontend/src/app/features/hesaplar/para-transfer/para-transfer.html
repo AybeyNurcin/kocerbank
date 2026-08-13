@@ -107,21 +107,46 @@
           <span>*</span>
         </label>
 
-        <input id="aliciIban"
-               type="text"
-               [attr.maxlength]="ibanMaxLength"
-               autocomplete="off"
-               [placeholder]="ibanPlaceholder"
-               [ngModel]="transfer.aliciIBAN"
-               (ngModelChange)="
-              aliciIbanDegisti($event)
-            "
-               (paste)="
-              aliciIbanYapistir($event)
-            "
-               (blur)="
-              aliciIbanOdakKaybetti()
-            " />
+        <div class="iban-input-row">
+
+          <input id="aliciIban"
+                 type="text"
+                 [attr.maxlength]="ibanMaxLength"
+                 autocomplete="off"
+                 [placeholder]="ibanPlaceholder"
+                 [ngModel]="transfer.aliciIBAN"
+                 (ngModelChange)="
+                aliciIbanDegisti($event)
+              "
+                 (paste)="
+                aliciIbanYapistir($event)
+              "
+                 (blur)="
+                aliciIbanOdakKaybetti()
+              " />
+
+          @if (
+          transferKanaliRotasi === 'swift' &&
+          aliciDovizSeciciGoster &&
+          !transfer.aliciHesap
+          ) {
+
+          <select class="doviz-select"
+                  id="aliciDovizSecimi"
+                  aria-label="Alıcı Döviz Cinsi"
+                  [ngModel]="aliciDovizSecimi"
+                  (ngModelChange)="
+                  aliciDovizSecimiDegisti($event)
+                ">
+            <option [ngValue]="0">Seç</option>
+            <option [ngValue]="1">TL</option>
+            <option [ngValue]="2">USD</option>
+            <option [ngValue]="3">EUR</option>
+          </select>
+
+          }
+
+        </div>
 
         @if (
         transfer.aliciIBAN.length > 2 &&
@@ -138,6 +163,18 @@
 
         <small class="field-error">
           Gönderen ve alıcı IBAN aynı olamaz.
+        </small>
+
+        }
+
+        @if (
+        transferKanaliRotasi === 'swift' &&
+        aliciDovizSeciciGoster &&
+        !transfer.aliciHesap
+        ) {
+
+        <small class="name-hint">
+          Bu IBAN bankamızda kayıtlı değil. Devam etmek için alıcının döviz cinsini seçiniz.
         </small>
 
         }
@@ -285,10 +322,30 @@
   }
 
 
+  <!-- ALICI BULUNAMADI, EFT/SWIFT EFT OLARAK DEVAM EDECEK -->
+  @if (
+  aliciBulunamadiMi &&
+  !transferBilgileriYukleniyorMu
+  ) {
+
+  <div class="information-message">
+    Bu IBAN bankamızda kayıtlı değil. İşlem
+    {{
+      transferKanaliRotasi === 'swift'
+        ? 'SWIFT (yurt dışı) transferi'
+        : 'EFT'
+    }}
+    olarak gerçekleştirilecektir.
+  </div>
+
+  }
+
+
   <!-- KUR VE ALICI TUTARI -->
   @if (
   transfer.gonderenHesap &&
-  transfer.aliciHesap &&
+  (transfer.aliciHesap || aliciBulunamadiMi) &&
+  transfer.dovizKuru > 0 &&
   !transferBilgileriYukleniyorMu &&
   kurBilgisiGosterilsinMi
   ) {
@@ -407,9 +464,26 @@
 
       <strong>
         {{
-            transfer.aliciHesap
-              ?.hesapSahibi
+            aliciBulunamadiMi
+              ? aliciIsimSoyisim
+              : transfer.aliciHesap
+                  ?.hesapSahibi
         }}
+      </strong>
+
+    </div>
+
+
+    <!-- İŞLEM TİPİ -->
+
+    <div class="preview-item">
+
+      <span>
+        İşlem Tipi
+      </span>
+
+      <strong>
+        {{ islemTipiEtiketi }}
       </strong>
 
     </div>

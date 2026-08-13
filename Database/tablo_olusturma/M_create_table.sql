@@ -96,7 +96,76 @@ CREATE TABLE KB_PARATRANSFERI
 ALTER TABLE KB_PARATRANSFERI
 RENAME COLUMN MIKTAR TO GONDERENTUTAR;
 
+/*
+    EFT DESTEĞİ
+
+    Havale/EFT ekranında alıcı IBAN'ı bizim
+    bankamızda kayıtlı değilse işlem EFT olarak
+    kaydedilir: ALICIHESAPID NULL kalır, alıcı
+    IBAN'ı ve kullanıcının girdiği ad-soyad metin
+    olarak ALICIIBAN/ALICIADSOYAD'a yazılır.
+
+    ALICIIBAN 34 karakter olarak tanımlanır çünkü
+    SWIFT ekranında yabancı (TR olmayan) IBAN'lar
+    da bu koloa yazılabilir (bkz. SWIFT EFT desteği).
+*/
+
+ALTER TABLE KB_PARATRANSFERI
+MODIFY (ALICIHESAPID NUMBER(19) NULL);
+
+ALTER TABLE KB_PARATRANSFERI
+ADD (
+    ALICIIBAN    VARCHAR2(34),
+    ALICIADSOYAD VARCHAR2(150)
+);
+
+ALTER TABLE KB_PARATRANSFERI
+DROP CONSTRAINT CK_KB_TRANSFER_TIP;
+
+ALTER TABLE KB_PARATRANSFERI
+ADD CONSTRAINT CK_KB_TRANSFER_TIP
+CHECK (TRANSFERTIPI IN (1,2,3));
+
+ALTER TABLE KB_PARATRANSFERI
+ADD CONSTRAINT CK_KB_TRANSFER_ALICI_TUTARLILIK
+CHECK (
+    (TRANSFERTIPI = 3 AND ALICIHESAPID IS NULL AND ALICIIBAN IS NOT NULL)
+    OR
+    (TRANSFERTIPI <> 3 AND ALICIHESAPID IS NOT NULL AND ALICIIBAN IS NULL)
+);
+
 select * from kb_paratransferi;
+
+
+/*
+    SWIFT EFT DESTEĞİ
+
+    SWIFT ekranında da alıcı IBAN'ı bizim
+    bankamızda kayıtlı değilse işlem, TransferTipi=4
+    (SwiftEft) olarak kaydedilir. Havale/EFT'teki
+    EFT'den (TransferTipi=3) farkı, alıcının döviz
+    cinsinin bizim tarafımızdan bilinemeyip kullanıcı
+    tarafından ekranda seçilmesi ve kurun bu seçime
+    göre hesaplanmasıdır (kur her zaman 1 değildir).
+*/
+
+ALTER TABLE KB_PARATRANSFERI
+DROP CONSTRAINT CK_KB_TRANSFER_TIP;
+
+ALTER TABLE KB_PARATRANSFERI
+ADD CONSTRAINT CK_KB_TRANSFER_TIP
+CHECK (TRANSFERTIPI IN (1,2,3,4));
+
+ALTER TABLE KB_PARATRANSFERI
+DROP CONSTRAINT CK_KB_TRANSFER_ALICI_TUTARLILIK;
+
+ALTER TABLE KB_PARATRANSFERI
+ADD CONSTRAINT CK_KB_TRANSFER_ALICI_TUTARLILIK
+CHECK (
+    (TRANSFERTIPI IN (3,4) AND ALICIHESAPID IS NULL AND ALICIIBAN IS NOT NULL)
+    OR
+    (TRANSFERTIPI NOT IN (3,4) AND ALICIHESAPID IS NOT NULL AND ALICIIBAN IS NULL)
+);
 
 DROP TABLE KB_PARATRANSFERI;
 

@@ -426,9 +426,54 @@
         <div class="detail-iban-information">
           <span>IBAN</span>
 
-          <strong class="iban-value">
-            {{ seciliHesap.iban }}
-          </strong>
+          <div class="iban-value-row">
+
+            <strong class="iban-value">
+              {{ seciliHesap.iban }}
+            </strong>
+
+            <button type="button"
+                    class="copy-icon-button"
+                    [title]="ibanKopyalandiMi ? 'Kopyalandı' : 'IBAN\'ı kopyala'"
+                    (click)="ibanKopyala()">
+
+              @if (ibanKopyalandiMi) {
+
+              <svg width="15"
+                   height="15"
+                   viewBox="0 0 24 24"
+                   fill="none"
+                   stroke="currentColor"
+                   stroke-width="2"
+                   stroke-linecap="round"
+                   stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+
+              } @else {
+
+              <svg width="15"
+                   height="15"
+                   viewBox="0 0 24 24"
+                   fill="none"
+                   stroke="currentColor"
+                   stroke-width="2"
+                   stroke-linecap="round"
+                   stroke-linejoin="round">
+                <rect x="9"
+                      y="9"
+                      width="13"
+                      height="13"
+                      rx="2"
+                      ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+
+              }
+
+            </button>
+
+          </div>
         </div>
 
         <button type="button"
@@ -1051,7 +1096,8 @@
 
       <button type="button"
               class="operation-card"
-              [disabled]="seciliHesap === null">
+              [disabled]="seciliHesap === null"
+              (click)="havaleEftEkraninaGit()">
 
         <span class="operation-icon">
           ⇄
@@ -1059,11 +1105,61 @@
 
         <div>
           <strong>
-            Para Transferleri
+            Havale/EFT
           </strong>
 
           <span>
-            Havale, EFT ve diğer transfer işlemleri
+            Farklı müşteri hesaplarına transfer
+          </span>
+        </div>
+
+        <span class="operation-arrow">
+          →
+        </span>
+
+      </button>
+
+      <button type="button"
+              class="operation-card"
+              [disabled]="seciliHesap === null"
+              (click)="swiftEkraninaGit()">
+
+        <span class="operation-icon operation-icon-text">
+           € | $
+        </span>
+
+        <div>
+          <strong>
+            SWIFT
+          </strong>
+
+          <span>
+            Yurt dışı ve döviz transferleri
+          </span>
+        </div>
+
+        <span class="operation-arrow">
+          →
+        </span>
+
+      </button>
+
+      <button type="button"
+              class="operation-card"
+              [disabled]="seciliHesap === null"
+              (click)="virmanEkraninaGit()">
+
+        <span class="operation-icon">
+          ↻
+        </span>
+
+        <div>
+          <strong>
+            Virman
+          </strong>
+
+          <span>
+            Kendi hesaplarınız arasında transfer
           </span>
         </div>
 

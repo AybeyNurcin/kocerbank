@@ -66,13 +66,22 @@ export interface ParaTransfer {
   // işlemi yapan personelin sicilini backend header'dan atar.
   recordUser?: string | null;
 
+  /*
+   * Yalnızca EFT'de (alıcının bizim bankamızda
+   * hesabı yoksa) kullanılır. Gerçek bir hesapla
+   * doğrulanamaz; kullanıcının girdiği isim
+   * doğrudan kayda yazılır.
+   */
+  aliciAdSoyad: string | null;
+
 
   /*
    * BACKEND SERVICE TARAFINDAN DOLDURULAN
    */
 
   gonderenHesapId: number;
-  aliciHesapId: number;
+  // EFT'de alıcının bizim bankamızda hesabı olmadığı için null olabilir.
+  aliciHesapId: number | null;
 
   gonderenDovizTipi: DovizCinsi;
   aliciDovizTipi: DovizCinsi;
