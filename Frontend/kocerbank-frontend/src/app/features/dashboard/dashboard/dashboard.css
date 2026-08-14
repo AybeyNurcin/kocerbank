@@ -90,6 +90,35 @@
     color: #77777e;
   }
 
+.filter-quick-range {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+  .filter-quick-range button {
+    padding: 9px 16px;
+    border: 1px solid #dcdce2;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #4b4b56;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+    .filter-quick-range button:hover {
+      background-color: #f1f1f4;
+    }
+
+    .filter-quick-range button.active {
+      background-color: #2563ec;
+      border-color: #2563ec;
+      color: #ffffff;
+    }
+
 
 /* KART IZGARASI */
 

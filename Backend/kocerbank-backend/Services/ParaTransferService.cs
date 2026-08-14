@@ -6,6 +6,20 @@ namespace kocerbank_backend.Services
 {
     public class ParaTransferService
     {
+        /*
+         * MASRAF TUTARLARI
+         *
+         * Yalnızca bilgilendirme amaçlıdır; bakiyeden
+         * ayrıca düşülmez, veritabanında tutulmaz.
+         */
+
+        private const decimal EFT_KOMISYON_TUTARI =
+            4.67m;
+
+        private const decimal SWIFT_KOMISYON_EUR_TUTARI =
+            16m;
+
+
         private readonly HesapRepository
             _hesapRepository;
 
@@ -278,6 +292,18 @@ namespace kocerbank_backend.Services
             dto.TransferTipi =
                 transferTipi;
 
+            /*
+             * MASRAF TUTARI
+             *
+             * Yalnızca gerçek EFT'de (alıcının bizim
+             * bankamızda hesabı yoksa) uygulanır; aynı
+             * bankadaki Havale ücretsizdir.
+             */
+            dto.KomisyonTutari =
+                transferTipi == TransferTipleri.Eft
+                    ? EFT_KOMISYON_TUTARI
+                    : 0m;
+
 
             if (dto.GonderenTutar > 0)
             {
@@ -460,6 +486,18 @@ namespace kocerbank_backend.Services
 
             dto.TransferTipi =
                 transferTipi;
+
+            /*
+             * MASRAF TUTARI
+             *
+             * SWIFT ekranından yapılan her işlemde
+             * (Havale/Virman/SWIFT EFT fark etmeksizin)
+             * uygulanır.
+             */
+            dto.KomisyonTutari =
+                SwiftKomisyonuHesapla(
+                    gonderenHesap.DovizCinsi
+                );
 
 
             if (dto.GonderenTutar > 0)
@@ -1110,7 +1148,10 @@ namespace kocerbank_backend.Services
                         aliciTutar,
 
                     Aciklama =
-                        transfer.Aciklama
+                        transfer.Aciklama,
+
+                    KomisyonTutari =
+                        KomisyonTutariniHesapla(transfer)
                 };
             }
 
@@ -1209,7 +1250,10 @@ namespace kocerbank_backend.Services
                     aliciTutar,
 
                 Aciklama =
-                    transfer.Aciklama
+                    transfer.Aciklama,
+
+                KomisyonTutari =
+                    KomisyonTutariniHesapla(transfer)
             };
         }
 
@@ -1733,6 +1777,111 @@ namespace kocerbank_backend.Services
                     "Açıklama en fazla 100 karakter olabilir."
                 );
             }
+        }
+
+
+        /*
+         * SWIFT MASRAF TUTARINI GÖNDEREN
+         * DÖVİZİNE ÇEVİR
+         *
+         * 16 EUR sabit masraf, gönderen hesabın
+         * döviz cinsi EUR değilse güncel kura göre
+         * gönderen dövizine çevrilir.
+         */
+
+        private decimal SwiftKomisyonuHesapla(
+            DovizCinsiDurumlari gonderenDoviz
+        )
+        {
+            decimal kur =
+                _dovizKuruService
+                    .TransferKuruGetir(
+                        DovizCinsiDurumlari.EUR,
+                        gonderenDoviz
+                    );
+
+            return decimal.Round(
+                SWIFT_KOMISYON_EUR_TUTARI * kur,
+                2,
+                MidpointRounding.AwayFromZero
+            );
+        }
+
+
+        /*
+         * TAMAMLANMIŞ BİR TRANSFER KAYDI İÇİN
+         * MASRAF TUTARINI HESAPLA
+         *
+         * TransferDetayiGetir ve HesapHareketiService
+         * (hesap hareketleri listesindeki giden tutarı
+         * masrafla birlikte göstermek için) tarafından
+         * ortak kullanılır.
+         */
+
+        private decimal KomisyonTutariniHesapla(
+            ParaTransferDTO transfer
+        )
+        {
+            if (transfer.TransferTipi == TransferTipleri.Eft)
+            {
+                return EFT_KOMISYON_TUTARI;
+            }
+
+            if (transfer.TransferTipi == TransferTipleri.SwiftEft)
+            {
+                return SwiftKomisyonuHesapla(
+                    transfer.GonderenDovizTipi
+                );
+            }
+
+            /*
+             * HAVALE VEYA VİRMAN
+             *
+             * DB'de kanal saklanmadığı için SWIFT
+             * kanalından mı geldiği, gönderen/alıcı
+             * döviz cinsinin farklı olup olmamasına
+             * bakılarak anlaşılır (bkz. TransferDetayiGetir).
+             */
+
+            bool ikisiDeTL =
+                transfer.GonderenDovizTipi ==
+                    DovizCinsiDurumlari.TL &&
+                transfer.AliciDovizTipi ==
+                    DovizCinsiDurumlari.TL;
+
+            return !ikisiDeTL
+                ? SwiftKomisyonuHesapla(
+                    transfer.GonderenDovizTipi
+                )
+                : 0m;
+        }
+
+
+        /*
+         * BİR HESAP HAREKETİNE BAĞLI TRANSFERİN
+         * MASRAF TUTARINI HESAPLA
+         *
+         * HesapHareketiService tarafından, giden
+         * transfer hareketlerinde hesaptan gerçekte
+         * çıkan tutarı (gönderilen tutar + masraf)
+         * gösterebilmek için kullanılır.
+         */
+
+        public decimal KomisyonTutariniHesapla(
+            long transferId
+        )
+        {
+            ParaTransferDTO? transfer =
+                _paraTransferRepository.GetirById(
+                    transferId
+                );
+
+            if (transfer is null)
+            {
+                return 0m;
+            }
+
+            return KomisyonTutariniHesapla(transfer);
         }
 
 

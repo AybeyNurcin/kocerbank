@@ -377,6 +377,27 @@
       }}
     </strong>
 
+    @if (transfer.komisyonTutari > 0) {
+
+    <span>
+      Masraf tutarı:
+    </span>
+
+    <strong>
+      {{
+            transfer.komisyonTutari
+              | number:'1.2-2'
+      }}
+
+      {{
+            dovizKoduGetir(
+              transfer.gonderenDovizTipi
+            )
+      }}
+    </strong>
+
+    }
+
   </div>
 
   }
@@ -565,6 +586,37 @@
       </strong>
 
     </div>
+
+
+    <!-- MASRAF TUTARI -->
+    @if (transfer.komisyonTutari > 0) {
+
+    <div class="preview-item">
+
+      <span>
+        Masraf Tutarı
+      </span>
+
+      <strong>
+        {{
+            transfer.komisyonTutari
+              | number:'1.2-2'
+        }}
+
+        {{
+            dovizKoduGetir(
+              transfer.gonderenDovizTipi
+            )
+        }}
+
+        @if (swiftMasrafiEuroKarsiligiGosterilsinMi) {
+        (16€)
+        }
+      </strong>
+
+    </div>
+
+    }
 
 
     <!-- KUR -->

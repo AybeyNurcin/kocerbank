@@ -18,6 +18,13 @@ export interface HesapHareketi {
   oncekiBakiye: number;
   sonrakiBakiye: number;
 
+  /*
+   * Yalnızca giden transfer hareketlerinde
+   * (Eft/SwiftEft ya da SWIFT kanalından yapılan
+   * Havale/Virman) dolu gelir; diğerlerinde 0'dır.
+   */
+  komisyonTutari: number;
+
   islemTarihi: string;
 
   recordUser: string | null;

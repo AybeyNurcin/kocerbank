@@ -43,6 +43,13 @@ export interface ParaTransferiDetay {
 
   aciklama: string | null;
 
+  /*
+   * İşlem türüne göre sabit masraf tutarı
+   * (EFT: 4,67 TL; SWIFT: 16 EUR karşılığı).
+   * Yalnızca bilgilendirme amaçlıdır.
+   */
+  komisyonTutari: number;
+
 }
 
 
@@ -108,5 +115,12 @@ export interface ParaTransfer {
   aliciYeniBakiye: number;
 
   aliciTutar: number;
+
+  /*
+   * İşlem türüne göre sabit masraf tutarı
+   * (EFT: 4,67 TL; SWIFT: 16 EUR karşılığı).
+   * Yalnızca bilgilendirme amaçlıdır.
+   */
+  komisyonTutari: number;
 
 }

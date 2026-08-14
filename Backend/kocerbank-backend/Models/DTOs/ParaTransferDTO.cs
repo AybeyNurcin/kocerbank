@@ -120,6 +120,18 @@ namespace kocerbank_backend.Models.DTOs
             set;
         }
 
+        /*
+         * İşlem türüne göre sabit masraf tutarı
+         * (EFT: 4,67 TL; SWIFT: 16 EUR karşılığı).
+         * Yalnızca bilgilendirme amaçlıdır; veritabanında
+         * tutulmaz, bakiyeden ayrıca düşülmez.
+         */
+        public decimal KomisyonTutari
+        {
+            get;
+            set;
+        }
+
 
         /*
          * PROSEDÜRDEN DÖNECEK
@@ -223,6 +235,18 @@ namespace kocerbank_backend.Models.DTOs
         }
 
         public string? Aciklama
+        {
+            get;
+            set;
+        }
+
+        /*
+         * İşlem türüne göre sabit masraf tutarı
+         * (EFT: 4,67 TL; SWIFT: 16 EUR karşılığı).
+         * Yalnızca bilgilendirme amaçlıdır; veritabanında
+         * tutulmaz, bakiyeden ayrıca düşülmez.
+         */
+        public decimal KomisyonTutari
         {
             get;
             set;

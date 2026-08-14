@@ -12,5 +12,14 @@ namespace kocerbank_backend.Models.DTOs
         public int OncekiBakiye { get; set; }
         public int SonrakiBakiye { get; set; }
         public DateTime IslemTarihi { get; set; }
+
+        /*
+         * Yalnızca giden transfer hareketlerinde
+         * (TransferTipi Eft/SwiftEft ya da SWIFT
+         * kanalından yapılan Havale/Virman) dolu
+         * gelir; diğerlerinde 0'dır. Bilgilendirme
+         * amaçlıdır, veritabanında tutulmaz.
+         */
+        public decimal KomisyonTutari { get; set; }
     }
 }

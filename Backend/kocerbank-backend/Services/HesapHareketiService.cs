@@ -7,10 +7,14 @@ namespace kocerbank_backend.Services
     public class HesapHareketiService
     {
         private readonly HesapHareketiRepository _hesapHareketiRepository;
+        private readonly ParaTransferService _paraTransferService;
 
-        public HesapHareketiService(HesapHareketiRepository hesapHareketiRepository)
+        public HesapHareketiService(
+            HesapHareketiRepository hesapHareketiRepository,
+            ParaTransferService paraTransferService)
         {
             _hesapHareketiRepository = hesapHareketiRepository;
+            _paraTransferService = paraTransferService;
         }
 
 
@@ -20,7 +24,34 @@ namespace kocerbank_backend.Services
             {
                 throw new ArgumentException("Geçersiz hesap ID'si.");
             }
-            return _hesapHareketiRepository.Listele(hesapBilgileriId);
+
+            List<HesapHareketiDTO> hareketler =
+                _hesapHareketiRepository.Listele(hesapBilgileriId);
+
+            /*
+             * GİDEN TRANSFER HAREKETLERİNDE MASRAF TUTARI
+             *
+             * Masraf, hesap hareketi kaydında tutulmadığı
+             * için ilgili transfer kaydından işlem türüne
+             * göre anlık hesaplanır.
+             */
+            foreach (HesapHareketiDTO hareket in hareketler)
+            {
+                if (
+                    hareket.HesapHareketiTipi ==
+                        HesapHareketTipleri.GidenTransfer &&
+                    hareket.ParaTransferiId.HasValue
+                )
+                {
+                    hareket.KomisyonTutari =
+                        _paraTransferService
+                            .KomisyonTutariniHesapla(
+                                hareket.ParaTransferiId.Value
+                            );
+                }
+            }
+
+            return hareketler;
         }
     }
 }

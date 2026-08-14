@@ -429,6 +429,9 @@ export class ParaTransferComponent
     this.transfer.aliciTutar =
       0;
 
+    this.transfer.komisyonTutari =
+      0;
+
   }
 
 
@@ -1259,6 +1262,29 @@ export class ParaTransferComponent
 
 
   /*
+   * SWIFT MASRAFI EUR KARŞILIĞI GÖSTERİLSİN Mİ?
+   *
+   * SWIFT masrafı sabit 16 EUR'dur. Gönderen
+   * hesap zaten EUR ise ayrıca belirtmeye gerek
+   * yoktur; farklı bir dövizse dönüşüm öncesi
+   * tutar parantez içinde gösterilir.
+   */
+
+  get swiftMasrafiEuroKarsiligiGosterilsinMi():
+    boolean {
+
+    return (
+      this.transferKanaliRotasi ===
+      'swift' &&
+      this.transfer.komisyonTutari > 0 &&
+      this.transfer.gonderenDovizTipi !==
+      DovizCinsi.EUR
+    );
+
+  }
+
+
+  /*
    * SAYFA BAŞLIĞI VE AÇIKLAMASI
    */
 
@@ -1919,6 +1945,9 @@ export class ParaTransferComponent
     this.transfer.aliciTutar =
       0;
 
+    this.transfer.komisyonTutari =
+      0;
+
     this.transfer.transferId =
       0;
 
@@ -2077,6 +2106,9 @@ export class ParaTransferComponent
         0,
 
       aliciTutar:
+        0,
+
+      komisyonTutari:
         0
     };
 

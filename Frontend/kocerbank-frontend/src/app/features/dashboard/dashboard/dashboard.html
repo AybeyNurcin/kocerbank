@@ -22,14 +22,39 @@
     <div class="filter-field">
       <label>Tarih Aralığı</label>
       <app-tarih-araligi-secici
-        [(baslangicTarihi)]="baslangicTarihi"
-        [(bitisTarihi)]="bitisTarihi">
+        [baslangicTarihi]="baslangicTarihi"
+        (baslangicTarihiChange)="baslangicTarihiDegisti($event)"
+        [bitisTarihi]="bitisTarihi"
+        (bitisTarihiChange)="bitisTarihiDegisti($event)">
       </app-tarih-araligi-secici>
     </div>
 
     <div class="filter-actions">
       <button type="button" (click)="filtreUygula()">Uygula</button>
       <button type="button" (click)="filtreTemizle()">Temizle</button>
+    </div>
+
+    <div class="filter-quick-range">
+      <button type="button"
+              [class.active]="aktifHizliAralik === 1"
+              (click)="hizliAralikSec(1)">
+        Son 1 Ay
+      </button>
+      <button type="button"
+              [class.active]="aktifHizliAralik === 3"
+              (click)="hizliAralikSec(3)">
+        Son 3 Ay
+      </button>
+      <button type="button"
+              [class.active]="aktifHizliAralik === 6"
+              (click)="hizliAralikSec(6)">
+        Son 6 Ay
+      </button>
+      <button type="button"
+              [class.active]="aktifHizliAralik === 12"
+              (click)="hizliAralikSec(12)">
+        Son 1 Yıl
+      </button>
     </div>
 
   </div>

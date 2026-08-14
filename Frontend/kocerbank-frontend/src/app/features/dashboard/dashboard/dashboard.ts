@@ -52,6 +52,10 @@ import {
   DashboardFiltre
 } from '../../../shared/models/dashboard-filtre-model';
 
+import {
+  tarihiIsoyaCevir
+} from '../../../shared/utils/takvim';
+
 interface DovizKuruSatiri {
   kod: string;
   ad: string;
@@ -118,6 +122,9 @@ export class Dashboard
 
   baslangicTarihi: string = '';
   bitisTarihi: string = '';
+
+  // Aktif "son N ay/yıl" hızlı seçim butonu (vurgu için).
+  aktifHizliAralik: number | null = null;
 
 
   constructor(
@@ -325,6 +332,57 @@ export class Dashboard
 
     this.baslangicTarihi = '';
     this.bitisTarihi = '';
+    this.aktifHizliAralik = null;
+
+    this.filtreUygula();
+
+  }
+
+
+  baslangicTarihiDegisti(
+    deger: string | null
+  ): void {
+
+    this.baslangicTarihi = deger ?? '';
+    this.aktifHizliAralik = null;
+
+  }
+
+
+  bitisTarihiDegisti(
+    deger: string | null
+  ): void {
+
+    this.bitisTarihi = deger ?? '';
+    this.aktifHizliAralik = null;
+
+  }
+
+
+  // "Son N Ay/Yıl" hızlı seçimi: bugün ile bugünden N ay
+  // öncesi arasındaki aralığı seçip filtreyi hemen uygular.
+  hizliAralikSec(
+    ayFarki: number
+  ): void {
+
+    const bugun = new Date();
+
+    const gecmisTarih = new Date(bugun);
+    gecmisTarih.setMonth(gecmisTarih.getMonth() - ayFarki);
+
+    this.bitisTarihi = tarihiIsoyaCevir(
+      bugun.getFullYear(),
+      bugun.getMonth(),
+      bugun.getDate()
+    );
+
+    this.baslangicTarihi = tarihiIsoyaCevir(
+      gecmisTarih.getFullYear(),
+      gecmisTarih.getMonth(),
+      gecmisTarih.getDate()
+    );
+
+    this.aktifHizliAralik = ayFarki;
 
     this.filtreUygula();
 

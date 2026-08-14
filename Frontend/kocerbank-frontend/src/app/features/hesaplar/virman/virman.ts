@@ -477,7 +477,9 @@ export class VirmanComponent
       gonderenYeniBakiye: 0,
       aliciYeniBakiye: 0,
 
-      aliciTutar: 0
+      aliciTutar: 0,
+
+      komisyonTutari: 0
     };
 
   }
