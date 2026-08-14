@@ -4,4 +4,5 @@ export interface MusteriDashboard {
   pasifSayi: number;
   bireyselSayi: number;
   kurumsalSayi: number;
+  sonMusteriAdSoyad: string | null;
 }

@@ -188,6 +188,11 @@ namespace kocerbank_backend.DataAccess
                             ozet.ToplamSube = Convert.ToInt64(reader["SUBE_SAYISI"]);
                             ozet.AktifSayi  = Convert.ToInt64(reader["AKTIFSAYI"]);
                             ozet.PasifSayi  = Convert.ToInt64(reader["PASIFSAYI"]);
+
+                            ozet.SonSubeAdi =
+                                reader["SON_SUBE_ADI"] is DBNull
+                                    ? null
+                                    : reader["SON_SUBE_ADI"].ToString();
                         }
                     }
                 }

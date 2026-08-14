@@ -57,6 +57,7 @@ namespace kocerbank_backend.Models.DTOs
         public long ToplamPersonel { get; set; }
         public long AktifSayi { get; set; }
         public long PasifSayi { get; set; }
+        public string? SonPersonelAdSoyad { get; set; }
     }
 
     public static class PersonelDTODonusumleri

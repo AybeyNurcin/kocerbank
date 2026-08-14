@@ -30,5 +30,6 @@ namespace kocerbank_backend.Models.DTOs
         public long ToplamSube { get; set; }
         public long AktifSayi { get; set; }
         public long PasifSayi { get; set; }
+        public string? SonSubeAdi { get; set; }
     }
 }

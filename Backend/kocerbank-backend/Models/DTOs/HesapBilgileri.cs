@@ -73,5 +73,6 @@ namespace kocerbank_backend.Models.DTOs
         public long TlSayi { get; set; }
         public long UsdSayi { get; set; }
         public long EurSayi { get; set; }
+        public string? SonHesapNo { get; set; }
     }
 }

@@ -394,6 +394,11 @@ namespace kocerbank_backend.DataAccess
                             ozet.TlSayi      = Convert.ToInt64(reader["TLSAYI"]);
                             ozet.UsdSayi     = Convert.ToInt64(reader["USDSAYI"]);
                             ozet.EurSayi     = Convert.ToInt64(reader["EURSAYI"]);
+
+                            ozet.SonHesapNo =
+                                reader["SON_HESAP_NO"] is DBNull
+                                    ? null
+                                    : reader["SON_HESAP_NO"].ToString();
                         }
                     }
                 }

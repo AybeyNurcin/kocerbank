@@ -89,6 +89,15 @@
 
       </div>
 
+      @if (musteriOzet.sonMusteriAdSoyad !== null) {
+
+      <div class="last-user-information">
+        <span class="last-user-label">Son Müşteri</span>
+        <span class="last-user-name">{{ musteriOzet.sonMusteriAdSoyad }}</span>
+      </div>
+
+      }
+
       }
 
     </div>
@@ -136,6 +145,15 @@
 
       </div>
 
+      @if (subeOzet.sonSubeAdi !== null) {
+
+      <div class="last-user-information">
+        <span class="last-user-label">Son Şube</span>
+        <span class="last-user-name">{{ subeOzet.sonSubeAdi }}</span>
+      </div>
+
+      }
+
       }
 
     </div>
@@ -182,6 +200,15 @@
         </div>
 
       </div>
+
+      @if (personelOzet.sonPersonelAdSoyad !== null) {
+
+      <div class="last-user-information">
+        <span class="last-user-label">Son Personel</span>
+        <span class="last-user-name">{{ personelOzet.sonPersonelAdSoyad }}</span>
+      </div>
+
+      }
 
       }
 
@@ -244,6 +271,15 @@
         </div>
 
       </div>
+
+      @if (hesapOzet.sonHesapNo !== null) {
+
+      <div class="last-user-information">
+        <span class="last-user-label">Son Hesap</span>
+        <span class="last-user-name">{{ hesapOzet.sonHesapNo }}</span>
+      </div>
+
+      }
 
       }
 

@@ -235,6 +235,11 @@ namespace kocerbank_backend.DataAccess
                             ozet.ToplamPersonel = Convert.ToInt64(reader["PERSONEL_SAYISI"]);
                             ozet.AktifSayi      = Convert.ToInt64(reader["AKTIFSAYI"]);
                             ozet.PasifSayi      = Convert.ToInt64(reader["PASIFSAYI"]);
+
+                            ozet.SonPersonelAdSoyad =
+                                reader["SON_PERSONEL_ADSOYAD"] is DBNull
+                                    ? null
+                                    : reader["SON_PERSONEL_ADSOYAD"].ToString();
                         }
                     }
                 }

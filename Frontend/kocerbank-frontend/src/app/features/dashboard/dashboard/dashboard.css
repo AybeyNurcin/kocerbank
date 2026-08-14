@@ -181,7 +181,9 @@
 
 
 .card-heading {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -190,8 +192,9 @@
 
   .card-heading h2 {
     margin: 0;
-    font-size: 17px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
   }
 
 

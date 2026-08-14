@@ -672,6 +672,11 @@ namespace kocerbank_backend.DataAccess
                 ozet.KurumsalSayi =
                     Convert.ToInt64(
                         reader["KURUMSALSAYI"]);
+
+                ozet.SonMusteriAdSoyad =
+                    reader["SON_MUSTERI_ADSOYAD"] is DBNull
+                        ? null
+                        : reader["SON_MUSTERI_ADSOYAD"].ToString();
             }
 
             return ozet;

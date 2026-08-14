@@ -5,4 +5,5 @@ export interface HesapDashboard {
   tlSayi: number;
   usdSayi: number;
   eurSayi: number;
+  sonHesapNo: string | null;
 }

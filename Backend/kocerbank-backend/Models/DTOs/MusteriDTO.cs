@@ -45,6 +45,7 @@ namespace kocerbank_backend.Models.DTOs
         public long PasifSayi { get; set; }
         public long BireyselSayi { get; set; }
         public long KurumsalSayi { get; set; }
+        public string? SonMusteriAdSoyad { get; set; }
     }
 }
 
