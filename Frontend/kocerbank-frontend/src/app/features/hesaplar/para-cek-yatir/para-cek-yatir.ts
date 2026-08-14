@@ -25,6 +25,10 @@ import {
 } from '../../../shared/enums/hesap-hareket-tipleri-enum';
 
 import {
+  HesapDurumu
+} from '../../../shared/enums/hesap-durumu-enum';
+
+import {
   extractErrorMessage
 } from '../../../shared/utils/hata-mesaji';
 
@@ -238,6 +242,15 @@ export class ParaCekYatir
 
   }
 
+  get hesapAktifDegilMi(): boolean {
+
+    return (
+      this.dogrulananHesap !== null &&
+      this.dogrulananHesap.hesapDurumKodu !== HesapDurumu.Aktif
+    );
+
+  }
+
   get ileriAktifMi(): boolean {
 
     return (
@@ -245,6 +258,7 @@ export class ParaCekYatir
       this.tutarGecerliMi &&
       this.isimSoyisimGecerliMi &&
       this.dogrulananHesap !== null &&
+      !this.hesapAktifDegilMi &&
       !this.bakiyeYetersizMi &&
       !this.yukleniyorMu &&
       !this.ibanDogrulaniyorMu
@@ -321,6 +335,13 @@ export class ParaCekYatir
                 }
 
                 this.ibanDogrulaniyorMu = false;
+
+                if (hesap.hesapDurumKodu !== HesapDurumu.Aktif) {
+
+                  this.hataMesaji =
+                    'Bu hesap aktif değildir.';
+
+                }
 
                 this.cdr.detectChanges();
 

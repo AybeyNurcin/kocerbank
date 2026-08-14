@@ -47,8 +47,16 @@ import {
   epostaGecerliMi,
   onHaneliRakamMi,
   onbirHaneliRakamMi,
-  sadeceRakamMi
+  sadeceRakamMi,
+  telefonBicimlendir,
+  telefonTemizle
 } from '../../../shared/utils/format-kontrol';
+
+import {
+  isoTarihiAyristir
+} from '../../../shared/utils/takvim';
+
+const MIN_MUSTERI_YASI = 18;
 
 @Component({
   selector: 'app-musteri-formu',
@@ -247,6 +255,30 @@ export class MusteriFormu implements OnInit {
   }
 
 
+  /*
+   * TELEFON ALANLARI DEĞİŞİMİ
+   *
+   * IBAN girişindeki (para-transfer.ts) biçimlendirme
+   * mantığıyla aynı: yazarken "0XXX XXX XXXX" olacak
+   * şekilde otomatik gruplanır, başında 0 yoksa eklenir.
+   */
+
+  telefonDegisti(deger: string): void {
+    this.aktifMusteriFormu.telefonNo =
+      telefonBicimlendir(deger);
+  }
+
+  evTelefonDegisti(deger: string): void {
+    this.iletisimFormu.evTelefonNo =
+      telefonBicimlendir(deger);
+  }
+
+  isTelefonDegisti(deger: string): void {
+    this.iletisimFormu.isTelefonNo =
+      telefonBicimlendir(deger);
+  }
+
+
   // MÜŞTERİ TİPİ SEÇİMİ
 
   musteriTipiniSec(
@@ -332,7 +364,7 @@ export class MusteriFormu implements OnInit {
 
     }
 
-    if (!sadeceRakamMi(form.telefonNo)) {
+    if (!sadeceRakamMi(telefonTemizle(form.telefonNo))) {
 
       this.hataMesaji =
         'Telefon numarası yalnızca rakamlardan oluşmalıdır.';
@@ -382,6 +414,15 @@ export class MusteriFormu implements OnInit {
 
       }
 
+      if (!this.yasYeterliMi(form.dogumTarihi)) {
+
+        this.hataMesaji =
+          `Müşteri en az ${MIN_MUSTERI_YASI} yaşında olmalıdır.`;
+
+        return false;
+
+      }
+
     }
 
     if (
@@ -419,6 +460,40 @@ export class MusteriFormu implements OnInit {
   }
 
 
+  // DOĞUM TARİHİNE GÖRE 18 YAŞ KONTROLÜ
+
+  private yasYeterliMi(
+    dogumTarihi: string | null
+  ): boolean {
+
+    const ayristirilmis =
+      dogumTarihi ? isoTarihiAyristir(dogumTarihi) : null;
+
+    if (ayristirilmis === null) {
+      return false;
+    }
+
+    const bugun = new Date();
+
+    let yas =
+      bugun.getFullYear() - ayristirilmis.yil;
+
+    const dogumGunuGecmisMi =
+      bugun.getMonth() > ayristirilmis.ay ||
+      (
+        bugun.getMonth() === ayristirilmis.ay &&
+        bugun.getDate() >= ayristirilmis.gun
+      );
+
+    if (!dogumGunuGecmisMi) {
+      yas--;
+    }
+
+    return yas >= MIN_MUSTERI_YASI;
+
+  }
+
+
   /*
    * İLETİŞİM FORMU KONTROLÜ
    *
@@ -431,7 +506,7 @@ export class MusteriFormu implements OnInit {
     if (
       this.iletisimFormu.evTelefonNo !== null &&
       this.iletisimFormu.evTelefonNo.trim() !== '' &&
-      !sadeceRakamMi(this.iletisimFormu.evTelefonNo)
+      !sadeceRakamMi(telefonTemizle(this.iletisimFormu.evTelefonNo))
     ) {
 
       this.hataMesaji =
@@ -444,7 +519,7 @@ export class MusteriFormu implements OnInit {
     if (
       this.iletisimFormu.isTelefonNo !== null &&
       this.iletisimFormu.isTelefonNo.trim() !== '' &&
-      !sadeceRakamMi(this.iletisimFormu.isTelefonNo)
+      !sadeceRakamMi(telefonTemizle(this.iletisimFormu.isTelefonNo))
     ) {
 
       this.hataMesaji =
@@ -482,7 +557,9 @@ export class MusteriFormu implements OnInit {
       .guncelle(
         this.musteri.id,
         {
-          ...this.aktifMusteriFormu
+          ...this.aktifMusteriFormu,
+          telefonNo:
+            telefonTemizle(this.aktifMusteriFormu.telefonNo)
         }
       )
       .subscribe({
@@ -551,11 +628,21 @@ export class MusteriFormu implements OnInit {
 
     const kayit: MusteriTamKaydet = {
       musteri: {
-        ...this.aktifMusteriFormu
+        ...this.aktifMusteriFormu,
+        telefonNo:
+          telefonTemizle(this.aktifMusteriFormu.telefonNo)
       },
 
       iletisim: {
-        ...this.iletisimFormu
+        ...this.iletisimFormu,
+        evTelefonNo:
+          this.iletisimFormu.evTelefonNo === null
+            ? null
+            : telefonTemizle(this.iletisimFormu.evTelefonNo),
+        isTelefonNo:
+          this.iletisimFormu.isTelefonNo === null
+            ? null
+            : telefonTemizle(this.iletisimFormu.isTelefonNo)
       }
     };
 

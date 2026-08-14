@@ -115,6 +115,7 @@ END ;
 CREATE OR REPLACE PROCEDURE KB_PERSONEL_LISTELE
 (
     P_ID          IN  KB_PERSONEL.ID%TYPE,
+    P_SICIL       IN  KB_PERSONEL.SICIL%TYPE,
     P_AD          IN  KB_PERSONEL.AD%TYPE,
     P_SOYAD       IN  KB_PERSONEL.SOYAD%TYPE,
     P_ROL         IN  KB_PERSONEL.ROL%TYPE,
@@ -136,6 +137,10 @@ BEGIN
         FROM KB_PERSONEL
         WHERE
                 (P_ID IS NULL OR ID = P_ID)
+            AND (
+                P_SICIL IS NULL
+                OR SICIL = P_SICIL
+            )
             AND (
                 P_AD IS NULL
                 OR UPPER(AD) LIKE

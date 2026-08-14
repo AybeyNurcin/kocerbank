@@ -18,22 +18,35 @@
 
       <button type="button"
               class="month-nav-button"
-              (click)="oncekiAy()">
+              (click)="geriGit()">
         ‹
       </button>
 
-      <span class="current-month-label">
-        {{ ayAdlari[gorunenAy] }} {{ gorunenYil }}
-      </span>
+      <button type="button"
+              class="current-month-label"
+              [class.static-label]="gorunumModu === 'yil'"
+              (click)="baslikTiklandi()">
+
+        @if (gorunumModu === 'gun') {
+          {{ ayAdlari[gorunenAy] }} {{ gorunenYil }}
+        } @else if (gorunumModu === 'ay') {
+          {{ gorunenYil }}
+        } @else {
+          {{ yilListesi[0] }} - {{ yilListesi[11] }}
+        }
+
+      </button>
 
       <button type="button"
               class="month-nav-button"
-              (click)="sonrakiAy()">
+              (click)="ileriGit()">
         ›
       </button>
 
     </div>
 
+
+    @if (gorunumModu === 'gun') {
 
     <div class="weekday-row">
 
@@ -63,6 +76,42 @@
       }
 
     </div>
+
+    } @else if (gorunumModu === 'ay') {
+
+    <div class="month-grid">
+
+      @for (ayAdi of ayAdlari; track ayAdi; let ayIndex = $index) {
+
+      <button type="button"
+              class="month-cell"
+              [class.selected-cell]="ayIndex === gorunenAy"
+              (click)="aySec(ayIndex)">
+        {{ ayAdi }}
+      </button>
+
+      }
+
+    </div>
+
+    } @else {
+
+    <div class="year-grid">
+
+      @for (yil of yilListesi; track yil) {
+
+      <button type="button"
+              class="year-cell"
+              [class.selected-cell]="yil === gorunenYil"
+              (click)="yilSec(yil)">
+        {{ yil }}
+      </button>
+
+      }
+
+    </div>
+
+    }
 
 
     <div class="date-picker-footer">

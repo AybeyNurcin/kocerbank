@@ -503,8 +503,9 @@
                  type="text"
                  inputmode="tel"
                  maxlength="13"
-                 [(ngModel)]="aktifMusteriFormu.telefonNo"
-                 placeholder="05XXXXXXXXX" />
+                 [ngModel]="aktifMusteriFormu.telefonNo"
+                 (ngModelChange)="telefonDegisti($event)"
+                 placeholder="05XX XXX XXXX" />
 
         </div>
 
@@ -714,8 +715,9 @@
                type="text"
                inputmode="tel"
                maxlength="13"
-               [(ngModel)]="iletisimFormu.evTelefonNo"
-               placeholder="0212XXXXXXX" />
+               [ngModel]="iletisimFormu.evTelefonNo"
+               (ngModelChange)="evTelefonDegisti($event)"
+               placeholder="0XXX XXX XXXX" />
 
       </div>
 
@@ -732,8 +734,9 @@
                type="text"
                inputmode="tel"
                maxlength="13"
-               [(ngModel)]="iletisimFormu.isTelefonNo"
-               placeholder="0212XXXXXXX" />
+               [ngModel]="iletisimFormu.isTelefonNo"
+               (ngModelChange)="isTelefonDegisti($event)"
+               placeholder="0XXX XXX XXXX" />
 
       </div>
 

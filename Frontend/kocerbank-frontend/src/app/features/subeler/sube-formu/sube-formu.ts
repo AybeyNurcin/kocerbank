@@ -20,7 +20,9 @@ import {
 } from '../../../shared/utils/hata-mesaji';
 
 import {
-  onbirHaneliRakamMi
+  onbirHaneliRakamMi,
+  telefonBicimlendir,
+  telefonTemizle
 } from '../../../shared/utils/format-kontrol';
 
 @Component({
@@ -92,6 +94,19 @@ export class SubeFormu implements OnChanges {
     };
   }
 
+  /*
+   * TELEFON ALANI DEĞİŞİMİ
+   *
+   * IBAN girişindeki (para-transfer.ts) biçimlendirme
+   * mantığıyla aynı: yazarken "0XXX XXX XXXX" olacak
+   * şekilde otomatik gruplanır, başında 0 yoksa eklenir.
+   */
+
+  telefonDegisti(deger: string): void {
+    this.formModel.subeTelefonNo =
+      telefonBicimlendir(deger);
+  }
+
   formuKapat(): void {
     this.kapat.emit();
   }
@@ -109,9 +124,12 @@ export class SubeFormu implements OnChanges {
       return;
     }
 
+    const subeTelefonTemiz =
+      telefonTemizle(this.formModel.subeTelefonNo);
+
     if (
       !onbirHaneliRakamMi(
-        this.formModel.subeTelefonNo
+        subeTelefonTemiz
       )
     ) {
       this.hataMesaji =
@@ -126,7 +144,7 @@ export class SubeFormu implements OnChanges {
     const gonderilecekSube = {
       subeAdi: this.formModel.subeAdi,
       subeTelefonNo:
-        this.formModel.subeTelefonNo,
+        subeTelefonTemiz,
       subeAdres: this.formModel.subeAdres,
       subeDurumKodu:
         this.formModel.subeDurumKodu

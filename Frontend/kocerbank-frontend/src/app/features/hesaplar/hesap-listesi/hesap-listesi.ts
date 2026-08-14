@@ -1209,6 +1209,15 @@ export class HesapListesi
   }
 
 
+  hesapIslemleriPasifMi(): boolean {
+
+    return (
+      this.seciliHesap === null ||
+      this.seciliHesap.hesapDurumKodu !== HesapDurumu.Aktif
+    );
+  }
+
+
   musteriListesineDon(): void {
 
     this.router.navigate([
@@ -1219,7 +1228,7 @@ export class HesapListesi
 
   paraCekYatirEkraninaGit(): void {
 
-    if (this.seciliHesap === null) {
+    if (this.hesapIslemleriPasifMi() || this.seciliHesap === null) {
       return;
     }
 
@@ -1239,7 +1248,7 @@ export class HesapListesi
 
   havaleEftEkraninaGit(): void {
 
-    if (this.seciliHesap === null) {
+    if (this.hesapIslemleriPasifMi() || this.seciliHesap === null) {
       return;
     }
 
@@ -1259,7 +1268,7 @@ export class HesapListesi
 
   swiftEkraninaGit(): void {
 
-    if (this.seciliHesap === null) {
+    if (this.hesapIslemleriPasifMi() || this.seciliHesap === null) {
       return;
     }
 
@@ -1279,7 +1288,7 @@ export class HesapListesi
 
   virmanEkraninaGit(): void {
 
-    if (this.seciliHesap === null) {
+    if (this.hesapIslemleriPasifMi() || this.seciliHesap === null) {
       return;
     }
 

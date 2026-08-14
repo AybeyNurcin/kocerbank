@@ -68,10 +68,28 @@
   }
 
 .current-month-label {
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  padding: 3px 8px;
   color: #34343a;
   font-size: 13px;
+  font-family: inherit;
   font-weight: 700;
+  cursor: pointer;
 }
+
+  .current-month-label:hover {
+    background-color: #faf9f3;
+  }
+
+  .current-month-label.static-label {
+    cursor: default;
+  }
+
+    .current-month-label.static-label:hover {
+      background-color: transparent;
+    }
 
 .weekday-row {
   display: grid;
@@ -114,6 +132,58 @@
     background-color: #7351a3;
     color: #ffffff;
     font-weight: 700;
+  }
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.month-cell {
+  height: 34px;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #34343a;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+  .month-cell:hover {
+    background-color: #faf9f3;
+  }
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.year-cell {
+  height: 34px;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #34343a;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+  .year-cell:hover {
+    background-color: #faf9f3;
+  }
+
+.selected-cell {
+  background-color: #7351a3;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+  .selected-cell:hover {
+    background-color: #7351a3;
   }
 
 .date-picker-footer {

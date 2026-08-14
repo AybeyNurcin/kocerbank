@@ -1150,6 +1150,16 @@
     font-size: 12px;
   }
 
+  .operations-warning {
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #fdecea;
+    color: #b3261e;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
 .operation-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

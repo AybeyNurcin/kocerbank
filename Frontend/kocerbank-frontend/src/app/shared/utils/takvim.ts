@@ -170,3 +170,21 @@ export function ayGunleriniOlustur(
   return gunler;
 
 }
+
+// Yıl seçici ızgarası için, verilen yılı içeren 12 yıllık bloğu üretir.
+export function yilBlokuOlustur(
+  yil: number
+): number[] {
+
+  const baslangic =
+    Math.floor(yil / 12) * 12;
+
+  const yillar: number[] = [];
+
+  for (let i = 0; i < 12; i++) {
+    yillar.push(baslangic + i);
+  }
+
+  return yillar;
+
+}
