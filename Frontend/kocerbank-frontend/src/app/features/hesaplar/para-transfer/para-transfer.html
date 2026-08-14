@@ -513,21 +513,6 @@
     </div>
 
 
-    <!-- İŞLEM TİPİ -->
-
-    <div class="preview-item">
-
-      <span>
-        İşlem Tipi
-      </span>
-
-      <strong>
-        {{ islemTipiEtiketi }}
-      </strong>
-
-    </div>
-
-
     <!-- GÖNDEREN IBAN -->
 
     <div class="preview-item">
@@ -606,6 +591,21 @@
     </div>
 
 
+    <!-- İŞLEM TİPİ -->
+
+    <div class="preview-item">
+
+      <span>
+        İşlem Tipi
+      </span>
+
+      <strong>
+        {{ islemTipiEtiketi }}
+      </strong>
+
+    </div>
+
+
     <!-- MASRAF TUTARI -->
     @if (transfer.komisyonTutari > 0) {
 
@@ -640,7 +640,7 @@
     <!-- KUR -->
     @if (kurBilgisiGosterilsinMi) {
 
-    <div class="preview-item">
+    <div class="preview-item preview-item-full">
 
       <span>
         Kur
@@ -657,7 +657,7 @@
 
     <!-- AÇIKLAMA -->
 
-    <div class="preview-item">
+    <div class="preview-item preview-item-full">
 
       <span>
         Açıklama

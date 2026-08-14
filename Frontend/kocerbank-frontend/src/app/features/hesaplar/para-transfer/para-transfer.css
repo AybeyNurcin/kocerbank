@@ -320,6 +320,10 @@
   border-radius: 10px;
 }
 
+.preview-item-full {
+  grid-column: 1 / -1;
+}
+
 .preview-item {
   min-height: 68px;
   padding: 14px 16px;
