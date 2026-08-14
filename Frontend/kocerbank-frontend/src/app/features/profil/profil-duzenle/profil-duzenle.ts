@@ -10,7 +10,7 @@ import { Personel } from '../../personeller/models/personel-model';
 import { PersonelApi } from '../../personeller/services/personel-api';
 import { AuthService } from '../../../core/services/auth';
 import { extractErrorMessage } from '../../../shared/utils/hata-mesaji';
-import { epostaGecerliMi, onbirHaneliRakamMi } from '../../../shared/utils/format-kontrol';
+import { epostaGecerliMi, onbirHaneliRakamMi, telefonBicimlendir, telefonTemizle } from '../../../shared/utils/format-kontrol';
 
 @Component({
   selector: 'app-profil-duzenle',
@@ -92,6 +92,19 @@ export class ProfilDuzenle implements OnInit {
       });
   }
 
+  /*
+   * TELEFON ALANI DEĞİŞİMİ
+   *
+   * IBAN girişindeki (para-transfer.ts) biçimlendirme
+   * mantığıyla aynı: yazarken "0XXX XXX XXXX" olacak
+   * şekilde otomatik gruplanır, başında 0 yoksa eklenir.
+   */
+
+  telefonDegisti(deger: string): void {
+    this.formModel.telefonNo =
+      telefonBicimlendir(deger);
+  }
+
   kaydet(): void {
 
     if (this.mevcutPersonel === null || this.personelId === null) {
@@ -116,7 +129,9 @@ export class ProfilDuzenle implements OnInit {
       return;
     }
 
-    if (!onbirHaneliRakamMi(this.formModel.telefonNo)) {
+    const telefonTemiz = telefonTemizle(this.formModel.telefonNo);
+
+    if (!onbirHaneliRakamMi(telefonTemiz)) {
       this.hataMesaji = 'Telefon numarası 11 haneli ve yalnızca rakamlardan oluşmalıdır.';
 
       return;
@@ -133,7 +148,7 @@ export class ProfilDuzenle implements OnInit {
       sifre: this.mevcutPersonel.sifre,
       rol: this.mevcutPersonel.rol,
       tckn: this.mevcutPersonel.tckn,
-      telefonNo: this.formModel.telefonNo,
+      telefonNo: telefonTemiz,
       subeKodu: this.mevcutPersonel.subeKodu,
       adres: this.formModel.adres,
       durumKodu: this.mevcutPersonel.durumKodu

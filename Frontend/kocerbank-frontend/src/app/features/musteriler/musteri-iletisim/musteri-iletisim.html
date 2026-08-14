@@ -257,8 +257,9 @@
                type="text"
                inputmode="tel"
                maxlength="13"
-               [(ngModel)]="duzenlemeFormu.telefonNo"
-               placeholder="05XXXXXXXXX" />
+               [ngModel]="duzenlemeFormu.telefonNo"
+               (ngModelChange)="cepTelefonDegisti($event)"
+               placeholder="05XX XXX XXXX" />
 
       </div>
 
@@ -293,8 +294,9 @@
                type="text"
                inputmode="tel"
                maxlength="13"
-               [(ngModel)]="duzenlemeFormu.evTelefonNo"
-               placeholder="0212XXXXXXX" />
+               [ngModel]="duzenlemeFormu.evTelefonNo"
+               (ngModelChange)="evTelefonDegisti($event)"
+               placeholder="0XXX XXX XXXX" />
 
       </div>
 
@@ -311,8 +313,9 @@
                type="text"
                inputmode="tel"
                maxlength="13"
-               [(ngModel)]="duzenlemeFormu.isTelefonNo"
-               placeholder="0212XXXXXXX" />
+               [ngModel]="duzenlemeFormu.isTelefonNo"
+               (ngModelChange)="isTelefonDegisti($event)"
+               placeholder="0XXX XXX XXXX" />
 
       </div>
 

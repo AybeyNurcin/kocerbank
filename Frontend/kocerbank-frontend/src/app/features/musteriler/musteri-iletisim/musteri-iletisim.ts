@@ -5,7 +5,7 @@ import { MusteriIletisim as MusteriIletisimModel } from '../models/musteri-ileti
 import { MusteriIletisimGuncelle } from '../models/musteri-iletisim-guncelle-model';
 import { MusteriIletisimApi } from '../services/musteri-iletisim-api';
 import { extractErrorMessage } from '../../../shared/utils/hata-mesaji';
-import { epostaGecerliMi, sadeceRakamMi } from '../../../shared/utils/format-kontrol';
+import { epostaGecerliMi, sadeceRakamMi, telefonBicimlendir, telefonTemizle } from '../../../shared/utils/format-kontrol';
 
 @Component({
   selector: 'app-musteri-iletisim',
@@ -100,6 +100,26 @@ export class MusteriIletisim implements OnInit {
     this.basariMesaji = '';
   }
 
+  /*
+   * TELEFON ALANLARI DEĞİŞİMİ
+   *
+   * IBAN girişindeki (para-transfer.ts) biçimlendirme
+   * mantığıyla aynı: yazarken "0XXX XXX XXXX" olacak
+   * şekilde otomatik gruplanır, başında 0 yoksa eklenir.
+   */
+
+  cepTelefonDegisti(deger: string): void {
+    this.duzenlemeFormu.telefonNo = telefonBicimlendir(deger);
+  }
+
+  evTelefonDegisti(deger: string): void {
+    this.duzenlemeFormu.evTelefonNo = telefonBicimlendir(deger);
+  }
+
+  isTelefonDegisti(deger: string): void {
+    this.duzenlemeFormu.isTelefonNo = telefonBicimlendir(deger);
+  }
+
   duzenlemeyiIptalEt(): void {
     if (this.kaydediliyorMu) {
       return;
@@ -120,7 +140,9 @@ export class MusteriIletisim implements OnInit {
       return;
     }
 
-    if (!sadeceRakamMi(this.duzenlemeFormu.telefonNo)) {
+    const cepTelefonTemiz = telefonTemizle(this.duzenlemeFormu.telefonNo);
+
+    if (!sadeceRakamMi(cepTelefonTemiz)) {
       this.hataMesaji = 'Cep telefonu yalnızca rakamlardan oluşmalıdır.';
       return;
     }
@@ -135,8 +157,8 @@ export class MusteriIletisim implements OnInit {
       return;
     }
 
-    const evTelefonTemiz = this.metniTemizle(this.duzenlemeFormu.evTelefonNo);
-    const isTelefonTemiz = this.metniTemizle(this.duzenlemeFormu.isTelefonNo);
+    const evTelefonTemiz = this.metniTemizle(telefonTemizle(this.duzenlemeFormu.evTelefonNo ?? ''));
+    const isTelefonTemiz = this.metniTemizle(telefonTemizle(this.duzenlemeFormu.isTelefonNo ?? ''));
 
     if (evTelefonTemiz !== null && !sadeceRakamMi(evTelefonTemiz)) {
       this.hataMesaji = 'Ev telefonu yalnızca rakamlardan oluşmalıdır.';
@@ -149,7 +171,7 @@ export class MusteriIletisim implements OnInit {
     }
 
     const guncellenecekBilgiler: MusteriIletisimGuncelle = {
-      telefonNo: this.duzenlemeFormu.telefonNo.trim(),
+      telefonNo: cepTelefonTemiz,
       eposta: this.duzenlemeFormu.eposta.trim(),
       evTelefonNo: evTelefonTemiz,
       isTelefonNo: isTelefonTemiz,

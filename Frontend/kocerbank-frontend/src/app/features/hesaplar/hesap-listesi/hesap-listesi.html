@@ -1176,13 +1176,21 @@
       <p>
         İşlem seçildiğinde seçili hesap üzerinden devam edilir.
       </p>
+
+      @if (seciliHesap !== null && hesapIslemleriPasifMi()) {
+
+      <p class="operations-warning">
+        Bu hesap "{{ hesapDurumuAdiniGetir(seciliHesap.hesapDurumKodu) }}" durumunda olduğu için para transferi işlemleri kullanılamaz.
+      </p>
+
+      }
     </div>
 
     <div class="operation-grid">
 
       <button type="button"
               class="operation-card"
-              [disabled]="seciliHesap === null"
+              [disabled]="hesapIslemleriPasifMi()"
               (click)="havaleEftEkraninaGit()">
 
         <span class="operation-icon">
@@ -1207,7 +1215,7 @@
 
       <button type="button"
               class="operation-card"
-              [disabled]="seciliHesap === null"
+              [disabled]="hesapIslemleriPasifMi()"
               (click)="swiftEkraninaGit()">
 
         <span class="operation-icon operation-icon-text">
@@ -1232,7 +1240,7 @@
 
       <button type="button"
               class="operation-card"
-              [disabled]="seciliHesap === null"
+              [disabled]="hesapIslemleriPasifMi()"
               (click)="virmanEkraninaGit()">
 
         <span class="operation-icon">
@@ -1257,7 +1265,7 @@
 
       <button type="button"
               class="operation-card"
-              [disabled]="seciliHesap === null"
+              [disabled]="hesapIslemleriPasifMi()"
               (click)="paraCekYatirEkraninaGit()">
 
         <span class="operation-icon">

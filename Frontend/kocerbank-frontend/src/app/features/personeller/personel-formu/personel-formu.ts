@@ -21,7 +21,9 @@ import {
 
 import {
   epostaGecerliMi,
-  onbirHaneliRakamMi
+  onbirHaneliRakamMi,
+  telefonBicimlendir,
+  telefonTemizle
 } from '../../../shared/utils/format-kontrol';
 
 @Component({
@@ -125,6 +127,19 @@ export class PersonelFormu implements OnChanges {
     };
   }
 
+  /*
+   * TELEFON ALANI DEĞİŞİMİ
+   *
+   * IBAN girişindeki (para-transfer.ts) biçimlendirme
+   * mantığıyla aynı: yazarken "0XXX XXX XXXX" olacak
+   * şekilde otomatik gruplanır, başında 0 yoksa eklenir.
+   */
+
+  telefonDegisti(deger: string): void {
+    this.formModel.telefonNo =
+      telefonBicimlendir(deger);
+  }
+
   sifreGosterDegistir(): void {
     this.sifreGoster = !this.sifreGoster;
   }
@@ -175,7 +190,9 @@ export class PersonelFormu implements OnChanges {
       return;
     }
 
-    if (!onbirHaneliRakamMi(this.formModel.telefonNo)) {
+    const telefonTemiz = telefonTemizle(this.formModel.telefonNo);
+
+    if (!onbirHaneliRakamMi(telefonTemiz)) {
       this.hataMesaji =
         'Telefon numarası 11 haneli ve yalnızca rakamlardan oluşmalıdır.';
 
@@ -192,7 +209,7 @@ export class PersonelFormu implements OnChanges {
       sifre: this.formModel.sifre,
       rol: this.formModel.rol,
       tckn: this.formModel.tckn,
-      telefonNo: this.formModel.telefonNo,
+      telefonNo: telefonTemiz,
       subeKodu: this.formModel.subeKodu ?? '',
       adres: this.formModel.adres,
       durumKodu:

@@ -97,9 +97,12 @@
       <input id="formTelefon"
              name="formTelefon"
              type="text"
-             [(ngModel)]="formModel.subeTelefonNo"
+             inputmode="tel"
+             [ngModel]="formModel.subeTelefonNo"
+             (ngModelChange)="telefonDegisti($event)"
              [disabled]="kaydediliyorMu"
-             maxlength="11"
+             maxlength="13"
+             placeholder="0XXX XXX XXXX"
              required />
 
     </div>
