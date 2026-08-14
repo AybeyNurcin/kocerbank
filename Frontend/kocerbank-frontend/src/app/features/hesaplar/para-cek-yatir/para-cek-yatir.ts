@@ -220,6 +220,24 @@ export class ParaCekYatir
 
   }
 
+  /*
+   * BAKİYE YETERSİZLİĞİ
+   *
+   * Yalnızca para çekme işleminde anlamlıdır;
+   * para yatırmada bakiye kısıtı yoktur.
+   */
+  get bakiyeYetersizMi(): boolean {
+
+    return (
+      this.islemTipi === 'Cek' &&
+      this.dogrulananHesap !== null &&
+      this.tutar !== null &&
+      this.tutar > 0 &&
+      this.tutar > this.dogrulananHesap.bakiye
+    );
+
+  }
+
   get ileriAktifMi(): boolean {
 
     return (
@@ -227,6 +245,7 @@ export class ParaCekYatir
       this.tutarGecerliMi &&
       this.isimSoyisimGecerliMi &&
       this.dogrulananHesap !== null &&
+      !this.bakiyeYetersizMi &&
       !this.yukleniyorMu &&
       !this.ibanDogrulaniyorMu
     );

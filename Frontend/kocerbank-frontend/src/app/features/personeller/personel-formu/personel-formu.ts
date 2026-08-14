@@ -19,6 +19,11 @@ import {
   extractErrorMessage
 } from '../../../shared/utils/hata-mesaji';
 
+import {
+  epostaGecerliMi,
+  onbirHaneliRakamMi
+} from '../../../shared/utils/format-kontrol';
+
 @Component({
   selector: 'app-personel-formu',
   standalone: false,
@@ -146,6 +151,13 @@ export class PersonelFormu implements OnChanges {
       return;
     }
 
+    if (!epostaGecerliMi(this.formModel.email)) {
+      this.hataMesaji =
+        'Geçerli bir e-posta adresi girilmelidir.';
+
+      return;
+    }
+
     if (
       this.personel === null &&
       this.formModel.sifre.trim().length < 8
@@ -156,9 +168,16 @@ export class PersonelFormu implements OnChanges {
       return;
     }
 
-    if (this.formModel.tckn.trim().length !== 11) {
+    if (!onbirHaneliRakamMi(this.formModel.tckn)) {
       this.hataMesaji =
-        'TC Kimlik Numarası 11 haneli olmalıdır.';
+        'TC Kimlik Numarası 11 haneli ve yalnızca rakamlardan oluşmalıdır.';
+
+      return;
+    }
+
+    if (!onbirHaneliRakamMi(this.formModel.telefonNo)) {
+      this.hataMesaji =
+        'Telefon numarası 11 haneli ve yalnızca rakamlardan oluşmalıdır.';
 
       return;
     }

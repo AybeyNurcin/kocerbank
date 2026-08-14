@@ -287,6 +287,24 @@
 
     </div>
 
+
+    @if (tutarBicimHataMesaji) {
+
+    <div class="error-message">
+      {{ tutarBicimHataMesaji }}
+    </div>
+
+    }
+
+
+    @if (bakiyeYetersizMi) {
+
+    <div class="error-message">
+      Gönderen hesabın bakiyesi yetersiz.
+    </div>
+
+    }
+
   </div>
 
 
@@ -300,7 +318,7 @@
 
     <input id="aciklama"
            type="text"
-           maxlength="200"
+           maxlength="100"
            placeholder="Transfer açıklaması giriniz"
            [ngModel]="transfer.aciklama"
            (ngModelChange)="

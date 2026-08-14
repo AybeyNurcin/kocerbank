@@ -33,6 +33,11 @@ import {
   DovizCinsi
 } from '../../../shared/enums/doviz-cinsi-enum';
 
+import {
+  tutarBicimGecerliMi,
+  tutarBicimHataMesajiGetir
+} from '../../../shared/utils/tutar-kontrol';
+
 type EkranTipi =
   'form' | 'onizleme' | 'basarili';
 
@@ -1014,13 +1019,41 @@ export class ParaTransferComponent
 
   /*
    * TUTAR KONTROLÜ
+   *
+   * Backend'deki TutarKontrolEt ile aynı üst
+   * sınır ve ondalık basamak kuralını uygular.
    */
 
   get tutarGecerliMi():
     boolean {
 
     return (
-      this.transfer.gonderenTutar > 0
+      this.transfer.gonderenTutar > 0 &&
+      tutarBicimGecerliMi(
+        this.transfer.gonderenTutar
+      )
+    );
+
+  }
+
+
+  /*
+   * TUTAR BİÇİM HATASI
+   *
+   * Yalnızca bir tutar girilmişken (0 hariç)
+   * ve o tutar üst sınırı aşıyor veya ikiden
+   * fazla ondalık basamak içeriyorsa dolu döner.
+   */
+
+  get tutarBicimHataMesaji():
+    string {
+
+    if (this.transfer.gonderenTutar <= 0) {
+      return '';
+    }
+
+    return tutarBicimHataMesajiGetir(
+      this.transfer.gonderenTutar
     );
 
   }
@@ -1064,6 +1097,19 @@ export class ParaTransferComponent
         !this.aliciDovizSeciciGoster ||
         this.aliciDovizSecimi !==
         DovizCinsi.None
+      ) &&
+      /*
+       * Tutar henüz girilmemişse (0) hesap/kural
+       * ön kontrolü için çağrı yine de yapılabilir;
+       * ancak girilmiş ve biçimi geçersizse (üst
+       * sınır aşımı veya ikiden fazla ondalık)
+       * boşuna başarısız olacak bir istek atılmaz.
+       */
+      (
+        this.transfer.gonderenTutar <= 0 ||
+        tutarBicimGecerliMi(
+          this.transfer.gonderenTutar
+        )
       )
     );
 
@@ -1098,6 +1144,24 @@ export class ParaTransferComponent
 
 
   /*
+   * BAKİYE YETERSİZLİĞİ
+   */
+
+  get bakiyeYetersizMi():
+    boolean {
+
+    return (
+      this.transfer.gonderenHesap !==
+      null &&
+      this.transfer.gonderenTutar > 0 &&
+      this.transfer.gonderenTutar >
+      this.transfer.gonderenHesap.bakiye
+    );
+
+  }
+
+
+  /*
    * İLERİ BUTONU AKTİF Mİ?
    */
 
@@ -1116,6 +1180,8 @@ export class ParaTransferComponent
       ) &&
       this.transfer.dovizKuru > 0 &&
       this.transfer.aliciTutar > 0 &&
+      this.tutarGecerliMi &&
+      !this.bakiyeYetersizMi &&
       !this.transferBilgileriYukleniyorMu &&
       !this.transferYapiliyorMu &&
       this.transferKuraliGecerliMi

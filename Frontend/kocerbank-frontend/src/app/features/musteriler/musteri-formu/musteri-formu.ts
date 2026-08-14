@@ -43,6 +43,13 @@ import {
   AktifPasifDurumlari
 } from '../../../shared/enums/aktif-pasif-durumlari-enum';
 
+import {
+  epostaGecerliMi,
+  onHaneliRakamMi,
+  onbirHaneliRakamMi,
+  sadeceRakamMi
+} from '../../../shared/utils/format-kontrol';
+
 @Component({
   selector: 'app-musteri-formu',
   standalone: false,
@@ -316,6 +323,24 @@ export class MusteriFormu implements OnInit {
 
     }
 
+    if (!epostaGecerliMi(form.eposta)) {
+
+      this.hataMesaji =
+        'Geçerli bir e-posta adresi girilmelidir.';
+
+      return false;
+
+    }
+
+    if (!sadeceRakamMi(form.telefonNo)) {
+
+      this.hataMesaji =
+        'Telefon numarası yalnızca rakamlardan oluşmalıdır.';
+
+      return false;
+
+    }
+
     if (
       form.durumKodu ===
       AktifPasifDurumlari.None
@@ -348,6 +373,15 @@ export class MusteriFormu implements OnInit {
 
       }
 
+      if (!onbirHaneliRakamMi(form.tckn)) {
+
+        this.hataMesaji =
+          'TCKN 11 haneli ve yalnızca rakamlardan oluşmalıdır.';
+
+        return false;
+
+      }
+
     }
 
     if (
@@ -368,6 +402,55 @@ export class MusteriFormu implements OnInit {
         return false;
 
       }
+
+      if (!onHaneliRakamMi(form.vkn)) {
+
+        this.hataMesaji =
+          'VKN 10 haneli ve yalnızca rakamlardan oluşmalıdır.';
+
+        return false;
+
+      }
+
+    }
+
+    return true;
+
+  }
+
+
+  /*
+   * İLETİŞİM FORMU KONTROLÜ
+   *
+   * Ev/İş telefonu opsiyoneldir; yalnızca
+   * doluysa rakam formatı kontrol edilir.
+   */
+
+  private iletisimFormuGecerliMi(): boolean {
+
+    if (
+      this.iletisimFormu.evTelefonNo !== null &&
+      this.iletisimFormu.evTelefonNo.trim() !== '' &&
+      !sadeceRakamMi(this.iletisimFormu.evTelefonNo)
+    ) {
+
+      this.hataMesaji =
+        'Ev telefonu yalnızca rakamlardan oluşmalıdır.';
+
+      return false;
+
+    }
+
+    if (
+      this.iletisimFormu.isTelefonNo !== null &&
+      this.iletisimFormu.isTelefonNo.trim() !== '' &&
+      !sadeceRakamMi(this.iletisimFormu.isTelefonNo)
+    ) {
+
+      this.hataMesaji =
+        'İş telefonu yalnızca rakamlardan oluşmalıdır.';
+
+      return false;
 
     }
 
@@ -460,6 +543,10 @@ export class MusteriFormu implements OnInit {
 
       return;
 
+    }
+
+    if (!this.iletisimFormuGecerliMi()) {
+      return;
     }
 
     const kayit: MusteriTamKaydet = {

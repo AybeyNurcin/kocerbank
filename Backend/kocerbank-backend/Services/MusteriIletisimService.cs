@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using kocerbank_backend.DataAccess;
 using kocerbank_backend.Models.DTOs;
 
@@ -54,6 +55,12 @@ namespace kocerbank_backend.Services
                     "Cep telefonu en fazla 13 karakter olabilir.");
             }
 
+            if (!dto.TelefonNo.All(char.IsDigit))
+            {
+                throw new ArgumentException(
+                    "Cep telefonu yalnızca rakamlardan oluşmalıdır.");
+            }
+
             if (string.IsNullOrWhiteSpace(dto.Eposta))
             {
                 throw new ArgumentException(
@@ -67,6 +74,12 @@ namespace kocerbank_backend.Services
             {
                 throw new ArgumentException(
                     "E-posta en fazla 50 karakter olabilir.");
+            }
+
+            if (!MailAddress.TryCreate(dto.Eposta, out _))
+            {
+                throw new ArgumentException(
+                    "Geçerli bir e-posta adresi girilmelidir.");
             }
 
             IletisimAlanlariniTemizleVeKontrolEt(dto);
@@ -133,6 +146,12 @@ namespace kocerbank_backend.Services
                     "Cep telefonu en fazla 13 karakter olabilir.");
             }
 
+            if (!dto.TelefonNo.All(char.IsDigit))
+            {
+                throw new ArgumentException(
+                    "Cep telefonu yalnızca rakamlardan oluşmalıdır.");
+            }
+
             if (string.IsNullOrWhiteSpace(dto.Eposta))
             {
                 throw new ArgumentException(
@@ -146,6 +165,12 @@ namespace kocerbank_backend.Services
             {
                 throw new ArgumentException(
                     "E-posta en fazla 50 karakter olabilir.");
+            }
+
+            if (!MailAddress.TryCreate(dto.Eposta, out _))
+            {
+                throw new ArgumentException(
+                    "Geçerli bir e-posta adresi girilmelidir.");
             }
 
             IletisimAlanlariniTemizleVeKontrolEt(dto);
@@ -229,11 +254,25 @@ namespace kocerbank_backend.Services
                     "Ev telefonu en fazla 13 karakter olabilir.");
             }
 
+            if (evTelefonNo is not null &&
+                !evTelefonNo.All(char.IsDigit))
+            {
+                throw new ArgumentException(
+                    "Ev telefonu yalnızca rakamlardan oluşmalıdır.");
+            }
+
             if (isTelefonNo is not null &&
                 isTelefonNo.Length > 13)
             {
                 throw new ArgumentException(
                     "İş telefonu en fazla 13 karakter olabilir.");
+            }
+
+            if (isTelefonNo is not null &&
+                !isTelefonNo.All(char.IsDigit))
+            {
+                throw new ArgumentException(
+                    "İş telefonu yalnızca rakamlardan oluşmalıdır.");
             }
 
             if (evAdres is not null &&

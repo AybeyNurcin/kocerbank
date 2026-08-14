@@ -53,6 +53,11 @@ import {
 } from '../../../shared/utils/hata-mesaji';
 
 import {
+  tutarBicimGecerliMi,
+  tutarBicimHataMesajiGetir
+} from '../../../shared/utils/tutar-kontrol';
+
+import {
   TransferKanallari
 } from '../../../shared/enums/transfer-kanallari-enum';
 
@@ -353,6 +358,25 @@ export class VirmanComponent
   }
 
 
+  /*
+   * TUTAR BİÇİM HATASI
+   *
+   * Backend'deki TutarKontrolEt ile aynı üst
+   * sınır ve ondalık basamak kuralını uygular.
+   * Yalnızca bir tutar girilmişken doludur.
+   */
+
+  get tutarBicimHataMesaji(): string {
+
+    if (this.tutar <= 0) {
+      return '';
+    }
+
+    return tutarBicimHataMesajiGetir(this.tutar);
+
+  }
+
+
   // İLERİ / GERİ
 
   get ileriAktifMi(): boolean {
@@ -361,6 +385,7 @@ export class VirmanComponent
       this.gonderenHesap !== null &&
       this.aliciHesap !== null &&
       this.tutar > 0 &&
+      tutarBicimGecerliMi(this.tutar) &&
       !this.bakiyeYetersizMi
     );
 

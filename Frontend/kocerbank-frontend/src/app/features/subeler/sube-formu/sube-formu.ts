@@ -19,6 +19,10 @@ import {
   extractErrorMessage
 } from '../../../shared/utils/hata-mesaji';
 
+import {
+  onbirHaneliRakamMi
+} from '../../../shared/utils/format-kontrol';
+
 @Component({
   selector: 'app-sube-formu',
   standalone: false,
@@ -101,6 +105,17 @@ export class SubeFormu implements OnChanges {
     ) {
       this.hataMesaji =
         'Şube adı, telefon ve adres zorunludur.';
+
+      return;
+    }
+
+    if (
+      !onbirHaneliRakamMi(
+        this.formModel.subeTelefonNo
+      )
+    ) {
+      this.hataMesaji =
+        'Şube telefon numarası 11 haneli ve yalnızca rakamlardan oluşmalıdır.';
 
       return;
     }

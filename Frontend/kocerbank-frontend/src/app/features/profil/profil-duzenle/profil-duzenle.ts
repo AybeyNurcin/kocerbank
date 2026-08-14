@@ -10,6 +10,7 @@ import { Personel } from '../../personeller/models/personel-model';
 import { PersonelApi } from '../../personeller/services/personel-api';
 import { AuthService } from '../../../core/services/auth';
 import { extractErrorMessage } from '../../../shared/utils/hata-mesaji';
+import { epostaGecerliMi, onbirHaneliRakamMi } from '../../../shared/utils/format-kontrol';
 
 @Component({
   selector: 'app-profil-duzenle',
@@ -109,8 +110,14 @@ export class ProfilDuzenle implements OnInit {
       return;
     }
 
-    if (this.formModel.telefonNo.trim().length !== 11) {
-      this.hataMesaji = 'Telefon numarası 11 haneli olmalıdır.';
+    if (!epostaGecerliMi(this.formModel.email)) {
+      this.hataMesaji = 'Geçerli bir e-posta adresi girilmelidir.';
+
+      return;
+    }
+
+    if (!onbirHaneliRakamMi(this.formModel.telefonNo)) {
+      this.hataMesaji = 'Telefon numarası 11 haneli ve yalnızca rakamlardan oluşmalıdır.';
 
       return;
     }

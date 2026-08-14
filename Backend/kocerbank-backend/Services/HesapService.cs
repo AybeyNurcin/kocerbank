@@ -114,6 +114,21 @@ namespace kocerbank_backend.Services
                 throw new ArgumentException("İşlem tutarı sıfırdan büyük olmalıdır.");
             }
 
+            if (dto.IslemTipi == HesapHareketTipleri.ParaCekme)
+            {
+                HesapDTO? hesap = _hesapRepository.GetirById(dto.HesapId);
+
+                if (hesap is null)
+                {
+                    throw new KeyNotFoundException("Hesap bulunamadı.");
+                }
+
+                if (hesap.Bakiye < dto.Tutar)
+                {
+                    throw new InvalidOperationException("Hesap bakiyesi yetersizdir.");
+                }
+            }
+
             // Frontend'den gelen RecordUser dikkate alınmaz.
             // Giriş yapan personelin sicili backend tarafından atanır.
             dto.RecordUser =
@@ -373,6 +388,24 @@ namespace kocerbank_backend.Services
             {
                 throw new ArgumentException(
                     "Şube kodu en fazla 20 karakter olabilir."
+                );
+            }
+
+            string subeKoduKontrol =
+                dto.SubeSubeKodu
+                    .Trim()
+                    .ToUpperInvariant();
+
+            if (
+                subeKoduKontrol.Length != 5 ||
+                subeKoduKontrol[0] != 'S' ||
+                !subeKoduKontrol
+                    .Substring(1)
+                    .All(char.IsDigit)
+            )
+            {
+                throw new ArgumentException(
+                    "Şube kodu S ve ardından dört rakam içermelidir."
                 );
             }
 

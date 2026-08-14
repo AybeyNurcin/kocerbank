@@ -5,6 +5,7 @@ import { MusteriIletisim as MusteriIletisimModel } from '../models/musteri-ileti
 import { MusteriIletisimGuncelle } from '../models/musteri-iletisim-guncelle-model';
 import { MusteriIletisimApi } from '../services/musteri-iletisim-api';
 import { extractErrorMessage } from '../../../shared/utils/hata-mesaji';
+import { epostaGecerliMi, sadeceRakamMi } from '../../../shared/utils/format-kontrol';
 
 @Component({
   selector: 'app-musteri-iletisim',
@@ -119,16 +120,39 @@ export class MusteriIletisim implements OnInit {
       return;
     }
 
+    if (!sadeceRakamMi(this.duzenlemeFormu.telefonNo)) {
+      this.hataMesaji = 'Cep telefonu yalnızca rakamlardan oluşmalıdır.';
+      return;
+    }
+
     if (this.duzenlemeFormu.eposta.trim() === '') {
       this.hataMesaji = 'E-posta girilmesi zorunludur.';
+      return;
+    }
+
+    if (!epostaGecerliMi(this.duzenlemeFormu.eposta)) {
+      this.hataMesaji = 'Geçerli bir e-posta adresi girilmelidir.';
+      return;
+    }
+
+    const evTelefonTemiz = this.metniTemizle(this.duzenlemeFormu.evTelefonNo);
+    const isTelefonTemiz = this.metniTemizle(this.duzenlemeFormu.isTelefonNo);
+
+    if (evTelefonTemiz !== null && !sadeceRakamMi(evTelefonTemiz)) {
+      this.hataMesaji = 'Ev telefonu yalnızca rakamlardan oluşmalıdır.';
+      return;
+    }
+
+    if (isTelefonTemiz !== null && !sadeceRakamMi(isTelefonTemiz)) {
+      this.hataMesaji = 'İş telefonu yalnızca rakamlardan oluşmalıdır.';
       return;
     }
 
     const guncellenecekBilgiler: MusteriIletisimGuncelle = {
       telefonNo: this.duzenlemeFormu.telefonNo.trim(),
       eposta: this.duzenlemeFormu.eposta.trim(),
-      evTelefonNo: this.metniTemizle(this.duzenlemeFormu.evTelefonNo),
-      isTelefonNo: this.metniTemizle(this.duzenlemeFormu.isTelefonNo),
+      evTelefonNo: evTelefonTemiz,
+      isTelefonNo: isTelefonTemiz,
       evAdres: this.metniTemizle(this.duzenlemeFormu.evAdres),
       isAdres: this.metniTemizle(this.duzenlemeFormu.isAdres)
     };
