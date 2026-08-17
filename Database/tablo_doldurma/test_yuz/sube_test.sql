@@ -308,5 +308,5 @@ SELECT
 FROM KB_SUBE
 WHERE SUBEADI LIKE '%Test Şubesi%';
 
-select * from KB_SUBE;
+select * from KB_SUBE order by id desc;
 
